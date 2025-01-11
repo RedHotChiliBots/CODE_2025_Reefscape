@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import com.revrobotics.SparkBase.IdleMode;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -60,23 +60,8 @@ public final class Constants {
     public static final double kVortexFreeSpeedRpm = 6784;
     public static final double kNeoFreeSpeedRpm = 5676;
     public static final double k550FreeSpeedRpm = 11000;
-  }
-
-  public static final class IntakeConstants {
-  }
-
-  public static final class HopperConstants {
-  }
-
-  public static final class ShooterConstants {
-  }
-
-  public static final class ClimberConstants {
-  }
-
-  public static final class TrapperConstants {
-  }
-
+  } 
+  
   public static final class ChassisConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
@@ -140,9 +125,10 @@ public final class Constants {
     public static final double kDrivingEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI)
         / kDrivingMotorReduction) / 60.0; // meters per second
 
+    public static final boolean kDrivingEncodeWrapping = false;
+    public static final boolean kTurningEncodeWrapping = true;
     public static final double kTurningEncoderPositionFactor = (2 * Math.PI); // radians
     public static final double kTurningEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
-
     public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
     public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
@@ -206,5 +192,4 @@ public final class Constants {
     public static final double kTurnI = 0.0;
     public static final double kTurnD = 0.0;
   }
-}
 }
