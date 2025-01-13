@@ -4,23 +4,21 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.AbsoluteEncoder;
 
-import com.revrobotics.RelativeEncoder;
-
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.SwerveModuleConstants;
 
 public class MAXSwerveModule {
@@ -107,9 +105,9 @@ public class MAXSwerveModule {
     // drivingSparkMax.burnFlash();
     // turningSparkMax.burnFlash();
 
-    chassisAngularOffset = chassisAngularOffset;
-    desiredState.angle = new Rotation2d(turningEncoder.getPosition());
-    drivingEncoder.setPosition(0);
+    this.chassisAngularOffset = chassisAngularOffset;
+    this.desiredState.angle = new Rotation2d(turningEncoder.getPosition());
+    this.drivingEncoder.setPosition(0);
   }
 
   /**
@@ -153,14 +151,14 @@ public class MAXSwerveModule {
         new Rotation2d(turningEncoder.getPosition()));
 
     // Command driving and turning SPARKS MAX towards their respective setpoints.
-    drivingController.setReference(optimizedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
-    turningController.setReference(optimizedDesiredState.angle.getRadians(), ControlType.kPosition);
+    this.drivingController.setReference(optimizedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
+    this.turningController.setReference(optimizedDesiredState.angle.getRadians(), ControlType.kPosition);
 
-    desiredState = desiredState;
+    this.desiredState = desiredState;
   }
 
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
-    drivingEncoder.setPosition(0);
+    this.drivingEncoder.setPosition(0);
   }
 }
