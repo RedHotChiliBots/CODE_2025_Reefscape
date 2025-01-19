@@ -23,30 +23,30 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CANIdConstants;
+import frc.robot.Constants.CANId;
 import frc.robot.Constants.ChassisConstants;
 import frc.robot.utils.SwerveUtils;
 
 public class Chassis extends SubsystemBase {
   // Create MAXSwerveModules
   private final MAXSwerveModule frontLeft = new MAXSwerveModule(
-      CANIdConstants.kFrontLeftDrivingCanId,
-      CANIdConstants.kFrontLeftTurningCanId,
+      CANId.kFrontLeftDrivingCanId,
+      CANId.kFrontLeftTurningCanId,
       ChassisConstants.kFrontLeftChassisAngularOffset);
 
   private final MAXSwerveModule frontRight = new MAXSwerveModule(
-      CANIdConstants.kFrontRightDrivingCanId,
-      CANIdConstants.kFrontRightTurningCanId,
+      CANId.kFrontRightDrivingCanId,
+      CANId.kFrontRightTurningCanId,
       ChassisConstants.kFrontRightChassisAngularOffset);
 
   private final MAXSwerveModule rearLeft = new MAXSwerveModule(
-      CANIdConstants.kRearLeftDrivingCanId,
-      CANIdConstants.kRearLeftTurningCanId,
+      CANId.kRearLeftDrivingCanId,
+      CANId.kRearLeftTurningCanId,
       ChassisConstants.kBackLeftChassisAngularOffset);
 
   private final MAXSwerveModule rearRight = new MAXSwerveModule(
-      CANIdConstants.kRearRightDrivingCanId,
-      CANIdConstants.kRearRightTurningCanId,
+      CANId.kRearRightDrivingCanId,
+      CANId.kRearRightTurningCanId,
       ChassisConstants.kBackRightChassisAngularOffset);
 
   // ==============================================================
