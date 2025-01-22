@@ -148,14 +148,13 @@ public class MAXSwerveModule {
     correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(chassisAngularOffset));
 
     // Optimize the reference state to avoid spinning further than 90 degrees.
-    SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
-        new Rotation2d(turningEncoder.getPosition()));
+    correctedDesiredState.optimize(new Rotation2d(turningEncoder.getPosition()));
 
     // Command driving and turning SPARKS MAX towards their respective setpoints.
-    this.drivingController.setReference(optimizedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
-    this.turningController.setReference(optimizedDesiredState.angle.getRadians(), ControlType.kPosition);
+    this.drivingController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
+    this.turningController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
 
-    this.desiredState = desiredState;
+    this.desiredState = correctedDesiredState;
   }
 
   /** Zeroes all the SwerveModule encoders. */
