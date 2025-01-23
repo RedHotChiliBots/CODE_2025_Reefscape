@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Algae;
@@ -37,9 +37,9 @@ public class RobotContainer {
 
 	// Replace with CommandPS4Controller or CommandJoystick if needed
 	private final CommandXboxController m_driverController = new CommandXboxController(
-			OperatorConstants.kDriverControllerPort);
+			OIConstants.kDriverControllerPort);
 	private final CommandXboxController m_operatorController = new CommandXboxController(
-			OperatorConstants.kOperatorControllerPort);
+			OIConstants.kOperatorControllerPort);
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -54,13 +54,10 @@ public class RobotContainer {
 				// Turning is controlled by the X axis of the right stick.
 				new RunCommand(
 						() -> chassis.drive(
-								-MathUtil.applyDeadband(m_driverController.getLeftY(),
-										OperatorConstants.kDriveDeadband),
-								-MathUtil.applyDeadband(m_driverController.getLeftX(),
-										OperatorConstants.kDriveDeadband),
-								-MathUtil.applyDeadband(m_driverController.getRightX(),
-										OperatorConstants.kDriveDeadband),
-								true, false),
+								-MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
+								-MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
+								-MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
+								true),
 						chassis));
 	}
 

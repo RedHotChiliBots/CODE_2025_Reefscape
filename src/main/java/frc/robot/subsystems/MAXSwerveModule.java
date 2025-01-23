@@ -4,39 +4,34 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.robot.Constants.SwerveModuleConstants;
+
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
+
+import frc.robot.Configs;
 
 public class MAXSwerveModule {
-	private final SparkFlex m_drivingSparkFlex;
-	private final SparkMax m_turningSparkMax;
-
-	private int m_drivingCANId = 0;
-	private int m_turningCANId = 0;
-
-	private final SparkMaxConfig m_drivingConfig = new SparkMaxConfig();
-	private final SparkMaxConfig m_turningConfig = new SparkMaxConfig();
-
-	private final SparkClosedLoopController m_drivingController;
-	private final SparkClosedLoopController m_turningController;
+	private final SparkFlex m_drivingSpark;
+	private final SparkMax m_turningSpark;
 
 	private final RelativeEncoder m_drivingEncoder;
 	private final AbsoluteEncoder m_turningEncoder;
+
+	private final SparkClosedLoopController m_drivingClosedLoopController;
+	private final SparkClosedLoopController m_turningClosedLoopController;
+
+	private int m_drivingCANId = 0;
+	private int m_turningCANId = 0;
 
 	private double m_chassisAngularOffset = 0;
 	private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -51,67 +46,22 @@ public class MAXSwerveModule {
 		m_drivingCANId = drivingCANId;
 		m_turningCANId = turningCANId;
 
-		m_drivingSparkFlex = new SparkFlex(drivingCANId, MotorType.kBrushless);
-		m_turningSparkMax = new SparkMax(turningCANId, MotorType.kBrushless);
+		m_drivingSpark = new SparkFlex(drivingCANId, MotorType.kBrushless);
+		m_turningSpark = new SparkMax(turningCANId, MotorType.kBrushless);
 
-		m_drivingConfig
-				.inverted(SwerveModuleConstants.kDrivingMotorInverted)
-				.idleMode(SwerveModuleConstants.kDrivingMotorIdleMode)
-				.smartCurrentLimit(SwerveModuleConstants.kDrivingMotorCurrentLimit);
-		m_drivingConfig.encoder
-				.positionConversionFactor(SwerveModuleConstants.kDrivingEncoderPositionFactor)
-				.velocityConversionFactor(SwerveModuleConstants.kDrivingEncoderVelocityFactor);
-		m_drivingConfig.closedLoop
-				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(SwerveModuleConstants.kDrivingP,
-						SwerveModuleConstants.kDrivingI,
-						SwerveModuleConstants.kDrivingD,
-						SwerveModuleConstants.kDrivingFF)
-				.outputRange(SwerveModuleConstants.kDrivingMinOutput, SwerveModuleConstants.kDrivingMaxOutput)
-				.positionWrappingEnabled(SwerveModuleConstants.kDrivingEncodeWrapping);
+		m_drivingEncoder = m_drivingSpark.getEncoder();
+		m_turningEncoder = m_turningSpark.getAbsoluteEncoder();
 
-		m_drivingController = m_drivingSparkFlex.getClosedLoopController();
-		m_drivingController.setReference(0.0, SparkBase.ControlType.kMAXMotionVelocityControl);
+		m_drivingClosedLoopController = m_drivingSpark.getClosedLoopController();
+		m_turningClosedLoopController = m_turningSpark.getClosedLoopController();
 
-		m_drivingSparkFlex.configure(m_drivingConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-		m_turningConfig
-				.inverted(SwerveModuleConstants.kTurningMotorInverted)
-				.idleMode(SwerveModuleConstants.kTurningMotorIdleMode)
-				.smartCurrentLimit(SwerveModuleConstants.kTurningMotorCurrentLimit);
-		m_turningConfig.encoder
-				.positionConversionFactor(SwerveModuleConstants.kTurningEncoderPositionFactor)
-				.velocityConversionFactor(SwerveModuleConstants.kTurningEncoderVelocityFactor);
-		m_turningConfig.closedLoop
-				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(SwerveModuleConstants.kTurningP,
-						SwerveModuleConstants.kTurningI,
-						SwerveModuleConstants.kTurningD,
-						SwerveModuleConstants.kTurningFF)
-				.outputRange(SwerveModuleConstants.kTurningMinOutput, SwerveModuleConstants.kTurningMaxOutput)
-				.positionWrappingEnabled(SwerveModuleConstants.kTurningEncodeWrapping)
-				.positionWrappingInputRange(SwerveModuleConstants.kTurningEncoderPositionPIDMinInput,
-						SwerveModuleConstants.kTurningEncoderPositionPIDMaxInput);
-
-		m_turningController = m_turningSparkMax.getClosedLoopController();
-		m_turningController.setReference(0.0, ControlType.kMAXMotionPositionControl);
-
-		m_turningSparkMax.configure(m_turningConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-		// Setup encoders and PID controllers for the driving and turning SPARKS MAX.
-		m_drivingEncoder = m_drivingSparkFlex.getEncoder();
-		m_turningEncoder = m_turningSparkMax.getAbsoluteEncoder(); // (Type.kDutyCycle);
-
-		// drivingPIDController = drivingSparkMax.getPIDController();
-		// turningPIDController = turningSparkMax.getPIDController();
-
-		// drivingPIDController.setFeedbackDevice(drivingEncoder);
-		// turningPIDController.setFeedbackDevice(turningEncoder);
-
-		// Save the SPARK MAX configurations. If a SPARK MAX browns out during
-		// operation, it will maintain the above configurations.
-		// drivingSparkMax.burnFlash();
-		// turningSparkMax.burnFlash();
+		// Apply the respective configurations to the SPARKS. Reset parameters before
+		// applying the configuration to bring the SPARK to a known good state. Persist
+		// the settings to the SPARK to avoid losing them on a power cycle.
+		m_drivingSpark.configure(Configs.MAXSwerveModule.drivingConfig, ResetMode.kResetSafeParameters,
+				PersistMode.kPersistParameters);
+		m_turningSpark.configure(Configs.MAXSwerveModule.turningConfig, ResetMode.kResetSafeParameters,
+				PersistMode.kPersistParameters);
 
 		m_chassisAngularOffset = chassisAngularOffset;
 		m_desiredState.angle = new Rotation2d(m_turningEncoder.getPosition());
@@ -157,16 +107,11 @@ public class MAXSwerveModule {
 		// Optimize the reference state to avoid spinning further than 90 degrees.
 		correctedDesiredState.optimize(new Rotation2d(m_turningEncoder.getPosition()));
 
-		// Command driving and turning SPARKS MAX towards their respective setpoints.
-		m_drivingController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
-		m_turningController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
+		// Command driving and turning SPARKS towards their respective setpoints.
+		m_drivingClosedLoopController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
+		m_turningClosedLoopController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
 
 		m_desiredState = desiredState;
-	}
-
-	/** Zeroes all the SwerveModule encoders. */
-	public void resetEncoders() {
-		this.m_drivingEncoder.setPosition(0);
 	}
 
 	public double getDriveVel() {
@@ -185,36 +130,8 @@ public class MAXSwerveModule {
 		return m_turningCANId;
 	}
 
-	// public double getDrivePosFactor() {
-	// return m_drivingEncoder.getPositionConversionFactor();
-	// }
-
-	// public double getDriveVelFactor() {
-	// return m_drivingEncoder.getVelocityConversionFactor();
-	// }
-
-	// ----- Simulation //TODO Add Simulation
-
-	// public void simulationUpdate(
-	// double driveEncoderDist,
-	// double driveEncoderRate,
-	// double driveCurrent,
-	// double steerEncoderDist,
-	// double steerEncoderRate,
-	// double steerCurrent) {
-	// driveEncoderSim.setDistance(driveEncoderDist);
-	// driveEncoderSim.setRate(driveEncoderRate);
-	// this.driveCurrentSim = driveCurrent;
-	// steerEncoderSim.setDistance(steerEncoderDist);
-	// steerEncoderSim.setRate(steerEncoderRate);
-	// this.steerCurrentSim = steerCurrent;
-	// }
-
-	// public double getDriveCurrentSim() {
-	// return driveCurrentSim;
-	// }
-
-	// public double getSteerCurrentSim() {
-	// return steerCurrentSim;
-	// }
+	/** Zeroes all the SwerveModule encoders. */
+	public void resetEncoders() {
+		m_drivingEncoder.setPosition(0);
+	}
 }
