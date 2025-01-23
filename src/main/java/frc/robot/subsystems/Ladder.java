@@ -23,9 +23,9 @@ public class Ladder extends SubsystemBase {
 
         // Define Intake Motors
         private final SparkMax leftIntake = new SparkMax(
-                        Constants.CANId.kLadderLeftIntakeCanId, MotorType.kBrushless);
+                        Constants.CANId.kLadderLeftCanId, MotorType.kBrushless);
         private final SparkMax rightIntake = new SparkMax(
-                        Constants.CANId.kLadderRightIntakeCanId, MotorType.kBrushless);
+                        Constants.CANId.kLadderRightCanId, MotorType.kBrushless);
 
         private final SparkMaxConfig leftConfig = new SparkMaxConfig();
         private final SparkMaxConfig rightConfig = new SparkMaxConfig();
