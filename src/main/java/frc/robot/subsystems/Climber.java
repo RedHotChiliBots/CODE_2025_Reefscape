@@ -23,9 +23,9 @@ public class Climber extends SubsystemBase {
 
         // Define Intake Motors
         private final SparkMax leftIntake = new SparkMax(
-                        Constants.CANId.kClimberLeftIntakeCanId, MotorType.kBrushless);
+                        Constants.CANId.kClimberLeftCanId, MotorType.kBrushless);
         private final SparkMax rightIntake = new SparkMax(
-                        Constants.CANId.kClimberRightIntakeCanId, MotorType.kBrushless);
+                        Constants.CANId.kClimberRightCanId, MotorType.kBrushless);
 
         private final SparkMaxConfig leftConfig = new SparkMaxConfig();
         private final SparkMaxConfig rightConfig = new SparkMaxConfig();

@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -33,6 +32,9 @@ public final class Constants {
   }
 
   public static final class CANId {
+
+    public static final int kPDHCanID = 0;
+    
     // Drive/Turn CAN IDs
     public static final int kRearRightDrivingCanId = 10;
     public static final int kRearLeftDrivingCanId = 11;
@@ -52,11 +54,11 @@ public final class Constants {
     public static final int kAlgaeRightIntakeCanId = 31;
     public static final int kAlgaeTiltCanId = 32;
 
-    public static final int kClimberLeftIntakeCanId = 40;
-    public static final int kClimberRightIntakeCanId = 41;
+    public static final int kClimberLeftCanId = 40;
+    public static final int kClimberRightCanId = 41;
 
-    public static final int kLadderLeftIntakeCanId = 50;
-    public static final int kLadderRightIntakeCanId = 51;
+    public static final int kLadderLeftCanId = 50;
+    public static final int kLadderRightCanId = 51;
   }
 
   public static final class MotorConstants {
@@ -65,7 +67,7 @@ public final class Constants {
     public static final double k550FreeSpeedRpm = 11000;
   }
 
-   public static final class ChassisConstants {
+  public static final class ChassisConstants {
     // not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 4.8;
@@ -89,10 +91,10 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
     // Angular offsets of the modules relative to the chassis in radians
-    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
-    public static final double kFrontRightChassisAngularOffset = 0;
-    public static final double kBackLeftChassisAngularOffset = Math.PI;
-    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+    public static final double kFrontLeftChassisAngularOffset = 0.0;	//-Math.PI / 2;
+    public static final double kFrontRightChassisAngularOffset = 0.0; //0;
+    public static final double kBackLeftChassisAngularOffset = 0.0;	//Math.PI;
+    public static final double kBackRightChassisAngularOffset = 0.0;	//Math.PI / 2;
 
     public static final boolean kGyroReversed = false;
   }
