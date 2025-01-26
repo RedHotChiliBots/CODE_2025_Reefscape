@@ -22,13 +22,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANId;
 import frc.robot.Constants.ChassisConstants;
 import frc.robot.Constants.DriveConstants;
@@ -93,8 +94,18 @@ public class Chassis extends SubsystemBase {
 	private final GenericEntry sbYaw = chassisTab.addPersistent("Yaw", 0)
 			.withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
 
-	private Pose2d origPose = null;
-	private Pose2d currPose = null;
+	private final GenericEntry sbXVel = chassisTab.addPersistent("X Vel", 0)
+			.withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
+	private final GenericEntry sbYVel = chassisTab.addPersistent("Y Vel", 0)
+			.withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
+	private final GenericEntry sbRVel = chassisTab.addPersistent("R Vel", 0)
+			.withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
+
+	private final StructPublisher<Pose2d> origPose = NetworkTableInstance.getDefault()
+			.getStructTopic("OrigPose", Pose2d.struct).publish();
+	private final StructPublisher<Pose2d> currPose = NetworkTableInstance.getDefault()
+			.getStructTopic("CurrPose", Pose2d.struct).publish();
+
 	private double pitchOffset = 0.0;
 	private double rollOffset = 0.0;
 
@@ -161,9 +172,7 @@ public class Chassis extends SubsystemBase {
 		getPose().getRotation().getDegrees();
 		resetPose(getPose());
 
-		origPose = getPose();
-		double[] origPoseArray = new double[] { origPose.getX(), origPose.getY(), origPose.getRotation().getDegrees() };
-		SmartDashboard.putNumberArray("pose/orig", origPoseArray);
+		origPose.set(getPose());
 
 		setChannelOff();
 
@@ -171,7 +180,6 @@ public class Chassis extends SubsystemBase {
 		rollOffset = Math.toRadians(-getRoll());
 
 		System.out.println("----- Ending Chassis Constructor -----");
-
 	}
 
 	@Override
@@ -186,9 +194,11 @@ public class Chassis extends SubsystemBase {
 						m_rearRight.getPosition()
 				});
 
-		currPose = getPose();
-		double[] currPoseArray = new double[] { currPose.getX(), currPose.getY(), currPose.getRotation().getDegrees() };
-		SmartDashboard.putNumberArray("pose/curr", currPoseArray);
+		currPose.set(getPose());
+
+		sbXVel.setDouble(getPose().getX());
+		sbYVel.setDouble(getPose().getY());
+		sbRVel.setDouble(getPose().getRotation().getDegrees());
 
 		sbAngle.setDouble(getAngle());
 		sbYaw.setDouble(getYaw());
