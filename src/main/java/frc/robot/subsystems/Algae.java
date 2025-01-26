@@ -33,6 +33,8 @@ public class Algae extends SubsystemBase {
 	private final SparkMaxConfig tiltConfig = new SparkMaxConfig();
 
 	private SparkClosedLoopController tiltController = tilt.getClosedLoopController();
+	private SparkClosedLoopController leftIntakeController = leftIntake.getClosedLoopController();
+	private SparkClosedLoopController rightIntakeController = rightIntake.getClosedLoopController();
 
 	private RelativeEncoder leftEncoder = null;
 	private RelativeEncoder rightEncoder = null;
@@ -116,7 +118,7 @@ public class Algae extends SubsystemBase {
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		Stop();
+		SetIntakeSpd(Constants.Algae.STOP);
 		SetTiltPos(Constants.Algae.STOW);
 
 		System.out.println("----- Ending Algae Constructor -----");
@@ -145,18 +147,8 @@ public class Algae extends SubsystemBase {
 		tiltController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
-	public void Stop() {
-		leftIntake.set(Constants.Algae.STOP);
-		rightIntake.set(Constants.Algae.STOP);
-	}
-
-	public void Intake() {
-		leftIntake.set(Constants.Algae.INTAKE);
-		rightIntake.set(Constants.Algae.INTAKE);
-	}
-
-	public void Eject() {
-		leftIntake.set(Constants.Algae.EJECT);
-		rightIntake.set(Constants.Algae.EJECT);
+	public void SetIntakeSpd(double vel) {
+		leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
+		rightIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 }
