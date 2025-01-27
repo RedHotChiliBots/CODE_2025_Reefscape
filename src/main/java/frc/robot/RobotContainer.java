@@ -6,7 +6,6 @@ package frc.robot;
 
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
@@ -30,10 +29,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private final Chassis chassis = new Chassis();
-	// private final Coral coral = new Coral();
-	// private final Algae algae = new Algae();
-	// private final Climber climber = new Climber();
-	// private final Ladder ladder = new Ladder();
+	private final Algae algae = new Algae();
+	private final Coral coral = new Coral();
+	private final Climber climber = new Climber();
+	private final Ladder ladder = new Ladder();
 
 	// Replace with CommandPS4Controller or CommandJoystick if needed
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -59,6 +58,42 @@ public class RobotContainer {
 								-MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
 								true),
 						chassis));
+
+		algae.tiltChanged.onChange(new RunCommand(() -> algae.setTiltPos(algae.getTiltSP())));
+		algae.intakeChanged.onChange(new RunCommand(() -> algae.setIntakeVel(algae.getIntakeSP())));
+
+		coral.tiltChanged.onChange(new RunCommand(() -> coral.setTiltPos(coral.getTiltSP())));
+		coral.intakeChanged.onChange(new RunCommand(() -> coral.setIntakeVel(coral.getIntakeSP())));
+
+		climber.climberChanged.onChange(new RunCommand(() -> climber.setClimberPos(climber.getClimberSP())));
+
+		ladder.ladderChanged.onChange(new RunCommand(() -> ladder.setLadderPos(ladder.getLadderSP())));
+
+		// algae.setDefaultCommand(
+		// 		// The left stick controls translation of the robot.
+		// 		// Turning is controlled by the X axis of the right stick.
+		// 		new ParallelCommandGroup(
+		// 				new RunCommand( () -> algae.setTiltPos(coral.getTiltSP()), algae),
+		// 				new RunCommand( () -> algae.setIntakeVel(coral.getIntakeSP()))));
+
+		// coral.setDefaultCommand(
+		// 		// The left stick controls translation of the robot.
+		// 		// Turning is controlled by the X axis of the right stick.
+		// 		new ParallelCommandGroup(
+		// 				new RunCommand( () -> coral.setTiltPos(coral.getTiltSP()), coral),
+		// 				new RunCommand( () -> coral.setIntakeVel(coral.getIntakeSP()))));
+
+		// climber.setDefaultCommand(
+		// 		// The left stick controls translation of the robot.
+		// 		// Turning is controlled by the X axis of the right stick.
+		// 		new RunCommand(
+		// 				() -> climber.setPos(climber.getClimberSP()), climber));
+
+		// ladder.setDefaultCommand(
+		// 		// The left stick controls translation of the robot.
+		// 		// Turning is controlled by the X axis of the right stick.
+		// 		new RunCommand(
+		// 			() -> ladder.setPos(ladder.getLadderSP()), ladder));
 	}
 
 	/**
