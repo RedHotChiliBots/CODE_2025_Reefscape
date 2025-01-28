@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
@@ -104,6 +105,8 @@ public class Ladder extends SubsystemBase {
 		rightIntake.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+		SmartDashboard.putData(this);
+
 		// Initialize intake start positions
 		setLadderPos(ladderSP);
 
@@ -116,6 +119,8 @@ public class Ladder extends SubsystemBase {
 		sbLeftPos.setDouble(getLeftPos());
 		sbRightPos.setDouble(getRightPos());
 		sbLadderSP.setDouble(getLadderSP());
+
+		setLadderSP(sbLadderSP.getDouble(0.0));
 	}
 
 	private boolean getLadderSPChanged() {
@@ -124,6 +129,10 @@ public class Ladder extends SubsystemBase {
 		prevLadderSP = currLadderSP;
 		return changed;
 	}
+
+	// public boolean isLeftOnTarget() {
+	// 	return leftController.atSetpoint();
+	// }
 
 	public double getLeftPos() {
 		return leftEncoder.getPosition();

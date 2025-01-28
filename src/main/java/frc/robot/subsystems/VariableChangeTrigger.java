@@ -20,7 +20,7 @@ public class VariableChangeTrigger extends Trigger {
 
 	// @Override
 	// public boolean get() {
-	// 	boolean currentValue = condition.get();
+	// 	boolean currentValue = condition.getAsBoolean();
 	// 	boolean changed = currentValue != previousValue;
 	// 	previousValue = currentValue;
 	// 	return changed;

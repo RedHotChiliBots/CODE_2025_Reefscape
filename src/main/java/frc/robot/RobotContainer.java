@@ -59,49 +59,48 @@ public class RobotContainer {
 								true),
 						chassis));
 
-		algae.tiltChanged.onChange(new RunCommand(() -> algae.setTiltPos(algae.getTiltSP())));
-		algae.intakeChanged.onChange(new RunCommand(() -> algae.setIntakeVel(algae.getIntakeSP())));
+		algae.tiltChanged.onTrue(new RunCommand(() -> algae.setTiltPos(algae.getTiltSP())));
+		algae.intakeChanged.onTrue(new RunCommand(() -> algae.setIntakeVel(algae.getIntakeSP())));
 
-		coral.tiltChanged.onChange(new RunCommand(() -> coral.setTiltPos(coral.getTiltSP())));
-		coral.intakeChanged.onChange(new RunCommand(() -> coral.setIntakeVel(coral.getIntakeSP())));
+		coral.tiltChanged.onTrue(new RunCommand(() -> coral.setTiltPos(coral.getTiltSP())));
+		coral.intakeChanged.onTrue(new RunCommand(() -> coral.setIntakeVel(coral.getIntakeSP())));
 
-		climber.climberChanged.onChange(new RunCommand(() -> climber.setClimberPos(climber.getClimberSP())));
+		climber.climberChanged.onTrue(new RunCommand(() -> climber.setClimberPos(climber.getClimberSP())));
 
-		ladder.ladderChanged.onChange(new RunCommand(() -> ladder.setLadderPos(ladder.getLadderSP())));
+		ladder.ladderChanged.onTrue(new RunCommand(() -> ladder.setLadderPos(ladder.getLadderSP())));
 
 		// algae.setDefaultCommand(
-		// 		// The left stick controls translation of the robot.
-		// 		// Turning is controlled by the X axis of the right stick.
-		// 		new ParallelCommandGroup(
-		// 				new RunCommand( () -> algae.setTiltPos(coral.getTiltSP()), algae),
-		// 				new RunCommand( () -> algae.setIntakeVel(coral.getIntakeSP()))));
+		// // The left stick controls translation of the robot.
+		// // Turning is controlled by the X axis of the right stick.
+		// new ParallelCommandGroup(
+		// new RunCommand( () -> algae.setTiltPos(coral.getTiltSP()), algae),
+		// new RunCommand( () -> algae.setIntakeVel(coral.getIntakeSP()))));
 
 		// coral.setDefaultCommand(
-		// 		// The left stick controls translation of the robot.
-		// 		// Turning is controlled by the X axis of the right stick.
-		// 		new ParallelCommandGroup(
-		// 				new RunCommand( () -> coral.setTiltPos(coral.getTiltSP()), coral),
-		// 				new RunCommand( () -> coral.setIntakeVel(coral.getIntakeSP()))));
+		// // The left stick controls translation of the robot.
+		// // Turning is controlled by the X axis of the right stick.
+		// new ParallelCommandGroup(
+		// new RunCommand( () -> coral.setTiltPos(coral.getTiltSP()), coral),
+		// new RunCommand( () -> coral.setIntakeVel(coral.getIntakeSP()))));
 
 		// climber.setDefaultCommand(
-		// 		// The left stick controls translation of the robot.
-		// 		// Turning is controlled by the X axis of the right stick.
-		// 		new RunCommand(
-		// 				() -> climber.setPos(climber.getClimberSP()), climber));
+		// // The left stick controls translation of the robot.
+		// // Turning is controlled by the X axis of the right stick.
+		// new RunCommand(
+		// () -> climber.setPos(climber.getClimberSP()), climber));
 
 		// ladder.setDefaultCommand(
-		// 		// The left stick controls translation of the robot.
-		// 		// Turning is controlled by the X axis of the right stick.
-		// 		new RunCommand(
-		// 			() -> ladder.setPos(ladder.getLadderSP()), ladder));
+		// // The left stick controls translation of the robot.
+		// // Turning is controlled by the X axis of the right stick.
+		// new RunCommand(
+		// () -> ladder.setPos(ladder.getLadderSP()), ladder));
 	}
 
 	/**
 	 * Use this method to define your trigger->command mappings. Triggers can be
 	 * created via the
 	 * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-	 * an arbitrary
-	 * predicate, or via the named factories in {@link
+	 * an arbitrary predicate, or via the named factories in {@link
 	 * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
 	 * {@link
 	 * CommandXboxController

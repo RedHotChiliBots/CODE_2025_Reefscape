@@ -15,6 +15,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -127,6 +128,8 @@ public class Algae extends SubsystemBase {
 
 		setIntakeVel(intakeSP);
 		setTiltPos(tiltSP);
+		
+		SmartDashboard.putData(this);
 
 		System.out.println("----- Ending Algae Constructor -----");
 	}
@@ -139,6 +142,9 @@ public class Algae extends SubsystemBase {
 		sbIntakeSP.setDouble(getIntakeSP());
 		sbTiltPos.setDouble(getTiltPos());
 		sbTiltSP.setDouble(getTiltSP());
+
+		setTiltSP(sbTiltSP.getDouble(0.0));
+		setIntakeSP(sbIntakeSP.getDouble(0.0));
 	}
 
 	private boolean getTiltSPChanged() {
