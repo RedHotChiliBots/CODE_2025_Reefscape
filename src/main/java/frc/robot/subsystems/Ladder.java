@@ -14,7 +14,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
@@ -22,23 +21,23 @@ import frc.robot.Constants;
 public class Ladder extends SubsystemBase {
 
 	// Define Intake Motors
-	private final SparkMax leftIntake = new SparkMax(
+	private final SparkMax leftLadder = new SparkMax(
 			Constants.CANId.kLadderLeftCanId, MotorType.kBrushless);
-	private final SparkMax rightIntake = new SparkMax(
+	private final SparkMax rightLadder = new SparkMax(
 			Constants.CANId.kLadderRightCanId, MotorType.kBrushless);
 
 	private final SparkMaxConfig leftConfig = new SparkMaxConfig();
 	private final SparkMaxConfig rightConfig = new SparkMaxConfig();
 
-	private SparkClosedLoopController leftController = leftIntake.getClosedLoopController();
-	private SparkClosedLoopController rightController = rightIntake.getClosedLoopController();
+	private SparkClosedLoopController leftController = leftLadder.getClosedLoopController();
+	private SparkClosedLoopController rightController = rightLadder.getClosedLoopController();
 
-	private RelativeEncoder leftEncoder = null;
-	private RelativeEncoder rightEncoder = null;
+	private RelativeEncoder leftEncoder = leftLadder.getEncoder();
+	private RelativeEncoder rightEncoder = rightLadder.getEncoder();
 
 	private double ladderSP = Constants.Ladder.STOW;
 
-	private double prevLadderSP = 0.0;
+	private double prevLadderSP = ladderSP;
 	public VariableChangeTrigger ladderChanged = new VariableChangeTrigger(() -> getLadderSPChanged());
 
 	private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
@@ -49,7 +48,7 @@ public class Ladder extends SubsystemBase {
 	private final GenericEntry sbLadderSP = ladderTab.addPersistent("Ladder SP", 0)
 			.withWidget("Text View").withPosition(4, 0).withSize(2, 1).getEntry();
 
-			// Creates a new Ladder.
+	// Creates a new Ladder.
 	public Ladder() {
 		System.out.println("+++++ Starting Ladder Constructor +++++");
 
@@ -76,7 +75,7 @@ public class Ladder extends SubsystemBase {
 						ClosedLoopSlot.kSlot1)
 				.positionWrappingEnabled(Constants.Ladder.kLeftEncodeWrapping);
 
-		leftIntake.configure(leftConfig,
+		leftLadder.configure(leftConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 		// Configure Right Intake motor
@@ -102,10 +101,8 @@ public class Ladder extends SubsystemBase {
 						ClosedLoopSlot.kSlot1)
 				.positionWrappingEnabled(Constants.Ladder.kRightEncodeWrapping);
 
-		rightIntake.configure(rightConfig,
+		rightLadder.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-		SmartDashboard.putData(this);
 
 		// Initialize intake start positions
 		setLadderPos(ladderSP);
@@ -131,7 +128,7 @@ public class Ladder extends SubsystemBase {
 	}
 
 	// public boolean isLeftOnTarget() {
-	// 	return leftController.atSetpoint();
+	// return leftController.atSetpoint();
 	// }
 
 	public double getLeftPos() {

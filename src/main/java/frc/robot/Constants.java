@@ -46,9 +46,8 @@ public final class Constants {
 		public static final int kFrontLeftTurningCanId = 17;
 		public static final int kFrontRightTurningCanId = 18;
 
-		public static final int kCoralLeftIntakeCanId = 20;
-		public static final int kCoralRightIntakeCanId = 21;
-		public static final int kCoralTiltCanId = 22;
+		public static final int kCoralIntakeCanId = 20;
+		public static final int kCoralTiltCanId = 21;
 
 		public static final int kAlgaeLeftIntakeCanId = 30;
 		public static final int kAlgaeRightIntakeCanId = 31;
@@ -205,34 +204,22 @@ public final class Constants {
 		public static final double kDriveWheelFreeSpeedRps = (kLeftMotorFreeSpeedRps * kWheelCircumferenceMeters)
 				/ kLeftMotorReduction;
 
-		public static final double kLeftEncoderPositionFactor = (kWheelDiameterMeters * Math.PI)
+		public static final double kIntakeEncoderPositionFactor = (kWheelDiameterMeters * Math.PI)
 				/ kLeftMotorReduction; // meters
-		public static final double kLeftEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI)
+		public static final double kIntakeEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI)
 				/ kLeftMotorReduction) / 60.0; // meters per second
-
-		public static final double kRightEncoderPositionFactor = (2 * Math.PI); // radians
-		public static final double kRightEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
-		public static final double kRightEncoderPositionPIDMinInput = 0; // radians
-		public static final double kRightEncoderPositionPIDMaxInput = kRightEncoderPositionFactor; // radians
 
 		public static final double kTiltEncoderPositionFactor = (2 * Math.PI); // radians
 		public static final double kTiltEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
 		public static final double kTiltEncoderPositionPIDMinInput = 0; // radians
-		public static final double kTiltEncoderPositionPIDMaxInput = kRightEncoderPositionFactor; // radians
+		public static final double kTiltEncoderPositionPIDMaxInput = kTiltEncoderPositionFactor; // radians
 
-		public static final double kLeftP = 0.04;
-		public static final double kLeftI = 0;
-		public static final double kLeftD = 0;
-		public static final double kLeftFF = 1 / kDriveWheelFreeSpeedRps;
-		public static final double kLeftMinOutput = -1;
-		public static final double kLeftMaxOutput = 1;
-
-		public static final double kRightP = 1;
-		public static final double kRightI = 0;
-		public static final double kRightD = 0;
-		public static final double kRightFF = 0;
-		public static final double kRightMinOutput = -1;
-		public static final double kRightMaxOutput = 1;
+		public static final double kIntakeP = 0.04;
+		public static final double kIntakeI = 0;
+		public static final double kIntakeD = 0;
+		public static final double kIntakeFF = 1 / kDriveWheelFreeSpeedRps;
+		public static final double kIntakeMinOutput = -1;
+		public static final double kIntakeMaxOutput = 1;
 
 		public static final double kTiltP = 1;
 		public static final double kTiltI = 0;
@@ -241,12 +228,10 @@ public final class Constants {
 		public static final double kTiltMinOutput = -1;
 		public static final double kTiltMaxOutput = 1;
 
-		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
-		public static final IdleMode kRightIdleMode = IdleMode.kBrake;
+		public static final IdleMode kIntakeIdleMode = IdleMode.kBrake;
 		public static final IdleMode kTiltIdleMode = IdleMode.kBrake;
 
 		public static final int kLeftCurrentLimit = 20; // amps
-		public static final int kRightCurrentLimit = 20; // amps
 		public static final int kTiltCurrentLimit = 20; // amps
 	}
 

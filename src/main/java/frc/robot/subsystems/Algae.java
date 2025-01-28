@@ -15,7 +15,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -37,17 +36,17 @@ public class Algae extends SubsystemBase {
 	private SparkClosedLoopController leftIntakeController = leftIntake.getClosedLoopController();
 	private SparkClosedLoopController rightIntakeController = rightIntake.getClosedLoopController();
 
-	private RelativeEncoder leftEncoder = null;
-	private RelativeEncoder rightEncoder = null;
-	private AbsoluteEncoder tiltEncoder = null;
+	private RelativeEncoder leftEncoder = leftIntake.getEncoder();
+	private RelativeEncoder rightEncoder = rightIntake.getEncoder();
+	private AbsoluteEncoder tiltEncoder = tilt.getAbsoluteEncoder();
 
 	private double tiltSP = Constants.Algae.STOW;
 	private double intakeSP = Constants.Algae.STOP;
 
-	private double prevTiltSP = 0.0;
+	private double prevTiltSP = tiltSP;
 	public VariableChangeTrigger tiltChanged = new VariableChangeTrigger(() -> getTiltSPChanged());
 
-	private double prevIntakeSP = 0.0;
+	private double prevIntakeSP = intakeSP;
 	public VariableChangeTrigger intakeChanged = new VariableChangeTrigger(() -> getIntakeSPChanged());
 
 	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
@@ -128,8 +127,6 @@ public class Algae extends SubsystemBase {
 
 		setIntakeVel(intakeSP);
 		setTiltPos(tiltSP);
-		
-		SmartDashboard.putData(this);
 
 		System.out.println("----- Ending Algae Constructor -----");
 	}

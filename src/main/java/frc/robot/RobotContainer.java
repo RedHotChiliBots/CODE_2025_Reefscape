@@ -12,6 +12,8 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -40,10 +42,23 @@ public class RobotContainer {
 	private final CommandXboxController m_operatorController = new CommandXboxController(
 			OIConstants.kOperatorControllerPort);
 
+	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
+	private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
+	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
+	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
+	private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
+	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
+
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
+		compTab.add("Chassis", chassis);
+		compTab.add("Coral", coral);
+		compTab.add("Algae", algae);
+		compTab.add("Ladder", ladder);
+		compTab.add("Climber", climber);
+
 		// Configure the trigger bindings
 		configureBindings();
 

@@ -14,7 +14,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
@@ -22,23 +21,23 @@ import frc.robot.Constants;
 public class Climber extends SubsystemBase {
 
 	// Define Intake Motors
-	private final SparkMax leftIntake = new SparkMax(
+	private final SparkMax leftClimber = new SparkMax(
 			Constants.CANId.kClimberLeftCanId, MotorType.kBrushless);
-	private final SparkMax rightIntake = new SparkMax(
+	private final SparkMax rightClimber = new SparkMax(
 			Constants.CANId.kClimberRightCanId, MotorType.kBrushless);
 
 	private final SparkMaxConfig leftConfig = new SparkMaxConfig();
 	private final SparkMaxConfig rightConfig = new SparkMaxConfig();
 
-	private SparkClosedLoopController leftController = leftIntake.getClosedLoopController();
-	private SparkClosedLoopController rightController = rightIntake.getClosedLoopController();
+	private SparkClosedLoopController leftController = leftClimber.getClosedLoopController();
+	private SparkClosedLoopController rightController = rightClimber.getClosedLoopController();
 
-	private AbsoluteEncoder leftEncoder = null;
-	private AbsoluteEncoder rightEncoder = null;
+	private AbsoluteEncoder leftEncoder = leftClimber.getAbsoluteEncoder();
+	private AbsoluteEncoder rightEncoder = rightClimber.getAbsoluteEncoder();
 
 	private double climberSP = Constants.Ladder.STOW;
 
-	private double prevClimberSP = 0.0;
+	private double prevClimberSP = climberSP;
 	public VariableChangeTrigger climberChanged = new VariableChangeTrigger(() -> getClimberSPChanged());
 
 	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
@@ -79,7 +78,7 @@ public class Climber extends SubsystemBase {
 						ClosedLoopSlot.kSlot1)
 				.positionWrappingEnabled(Constants.Climber.kLeftEncodeWrapping);
 
-		leftIntake.configure(leftConfig,
+		leftClimber.configure(leftConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 		// Configure Right Intake motor
@@ -105,13 +104,11 @@ public class Climber extends SubsystemBase {
 						ClosedLoopSlot.kSlot1)
 				.positionWrappingEnabled(Constants.Climber.kRightEncodeWrapping);
 
-		rightIntake.configure(rightConfig,
+		rightClimber.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 		// Initialize intake start positions
 		setClimberPos(Constants.Climber.STOW);
-
-		SmartDashboard.putData(this);
 
 		System.out.println("----- Ending Climber Constructor -----");
 	}
