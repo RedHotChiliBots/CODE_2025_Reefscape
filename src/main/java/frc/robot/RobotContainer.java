@@ -6,14 +6,16 @@ package frc.robot;
 
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -30,10 +32,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private final Chassis chassis = new Chassis();
-	// private final Coral coral = new Coral();
-	// private final Algae algae = new Algae();
-	// private final Climber climber = new Climber();
-	// private final Ladder ladder = new Ladder();
+	private final Algae algae = new Algae();
+	private final Coral coral = new Coral();
+	private final Climber climber = new Climber();
+	private final Ladder ladder = new Ladder();
 
 	// Replace with CommandPS4Controller or CommandJoystick if needed
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -41,10 +43,23 @@ public class RobotContainer {
 	private final CommandXboxController m_operatorController = new CommandXboxController(
 			OIConstants.kOperatorControllerPort);
 
+	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
+	private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
+	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
+	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
+	private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
+	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
+
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
+		compTab.add("Chassis", chassis);
+		compTab.add("Coral", coral);
+		compTab.add("Algae", algae);
+		compTab.add("Ladder", ladder);
+		compTab.add("Climber", climber);
+
 		// Configure the trigger bindings
 		configureBindings();
 
@@ -59,14 +74,49 @@ public class RobotContainer {
 								-MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
 								true),
 						chassis));
+
+		algae.tiltChanged.onTrue(new RunCommand(() -> algae.setTiltPos(algae.getTiltSP())));
+		algae.intakeChanged.onTrue(new RunCommand(() -> algae.setIntakeVel(algae.getIntakeSP())));
+
+		coral.tiltChanged.onTrue(new RunCommand(() -> coral.setTiltPos(coral.getTiltSP())));
+		coral.intakeChanged.onTrue(new RunCommand(() -> coral.setIntakeVel(coral.getIntakeSP())));
+
+		climber.climberChanged.onTrue(new RunCommand(() -> climber.setClimberPos(climber.getClimberSP())));
+
+		ladder.ladderChanged.onTrue(new RunCommand(() -> ladder.setLadderPos(ladder.getLadderSP())));
+
+		algae.setDefaultCommand(
+		// The left stick controls translation of the robot.
+		// Turning is controlled by the X axis of the right stick.
+		new ParallelCommandGroup(
+		new RunCommand( () -> algae.setTiltPos(coral.getTiltSP()), algae),
+		new RunCommand( () -> algae.setIntakeVel(coral.getIntakeSP()))));
+
+		coral.setDefaultCommand(
+		// The left stick controls translation of the robot.
+		// Turning is controlled by the X axis of the right stick.
+		new ParallelCommandGroup(
+		new RunCommand( () -> coral.setTiltPos(coral.getTiltSP()), coral),
+		new RunCommand( () -> coral.setIntakeVel(coral.getIntakeSP()))));
+
+		climber.setDefaultCommand(
+		// The left stick controls translation of the robot.
+		// Turning is controlled by the X axis of the right stick.
+		new RunCommand(
+		() -> climber.setClimberPos(climber.getClimberSP()), climber));
+
+		ladder.setDefaultCommand(
+		// The left stick controls translation of the robot.
+		// Turning is controlled by the X axis of the right stick.
+		new RunCommand(
+		() -> ladder.setLadderPos(ladder.getLadderSP()), ladder));
 	}
 
 	/**
 	 * Use this method to define your trigger->command mappings. Triggers can be
 	 * created via the
 	 * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-	 * an arbitrary
-	 * predicate, or via the named factories in {@link
+	 * an arbitrary predicate, or via the named factories in {@link
 	 * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
 	 * {@link
 	 * CommandXboxController

@@ -21,37 +21,37 @@ import frc.robot.Constants;
 public class Coral extends SubsystemBase {
 
 	// Define Intake Motors
-	private final SparkMax leftIntake = new SparkMax(
-			Constants.CANId.kCoralLeftIntakeCanId, MotorType.kBrushless);
-	private final SparkMax rightIntake = new SparkMax(
-			Constants.CANId.kCoralRightIntakeCanId, MotorType.kBrushless);
+	private final SparkMax intake = new SparkMax(
+			Constants.CANId.kCoralIntakeCanId, MotorType.kBrushless);
 	private final SparkMax tilt = new SparkMax(
 			Constants.CANId.kCoralTiltCanId, MotorType.kBrushless);
 
-	private final SparkMaxConfig leftConfig = new SparkMaxConfig();
-	private final SparkMaxConfig rightConfig = new SparkMaxConfig();
+	private final SparkMaxConfig intakeConfig = new SparkMaxConfig();
 	private final SparkMaxConfig tiltConfig = new SparkMaxConfig();
 
+	private SparkClosedLoopController intakeController = intake.getClosedLoopController();
 	private SparkClosedLoopController tiltController = tilt.getClosedLoopController();
-	private SparkClosedLoopController leftIntakeController = tilt.getClosedLoopController();
-	private SparkClosedLoopController rightIntakeController = tilt.getClosedLoopController();
 
-	private RelativeEncoder leftEncoder = null;
-	private RelativeEncoder rightEncoder = null;
-	private AbsoluteEncoder tiltEncoder = null;
+	private RelativeEncoder intakeEncoder = intake.getEncoder();
+	private AbsoluteEncoder tiltEncoder = tilt.getAbsoluteEncoder();
+
+	private double intakeSP = Constants.Coral.STOP;
+	private double tiltSP = Constants.Coral.STOW;
+
+	private double prevIntakeSP = intakeSP;
+	public VariableChangeTrigger intakeChanged = new VariableChangeTrigger(() -> getIntakeSPChanged());
+
+	private double prevTiltSP = tiltSP;
+	public VariableChangeTrigger tiltChanged = new VariableChangeTrigger(() -> getTiltSPChanged());
 
 	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
-	private final GenericEntry sbLeftPos = coralTab.addPersistent("Left Pos", 0)
+	private final GenericEntry sbIntakeVel = coralTab.addPersistent("Intake Vel", 0)
 			.withWidget("Text View").withPosition(2, 0).withSize(2, 1).getEntry();
-	private final GenericEntry sbLeftPosSP = coralTab.addPersistent("Left Pos SP", 0)
+	private final GenericEntry sbIntakeSP = coralTab.addPersistent("Intake SP", 0)
 			.withWidget("Text View").withPosition(4, 0).withSize(2, 1).getEntry();
-	private final GenericEntry sbRightPos = coralTab.addPersistent("Right Pos", 0)
-			.withWidget("Text View").withPosition(2, 1).withSize(2, 1).getEntry();
-	private final GenericEntry sbRightPosSP = coralTab.addPersistent("Right Pos SP", 0)
-			.withWidget("Text View").withPosition(4, 1).withSize(2, 1).getEntry();
 	private final GenericEntry sbTiltPos = coralTab.addPersistent("Tilt Pos", 0)
 			.withWidget("Text View").withPosition(2, 1).withSize(2, 1).getEntry();
-	private final GenericEntry sbTiltPosSP = coralTab.addPersistent("Tilt Pos SP", 0)
+	private final GenericEntry sbTiltSP = coralTab.addPersistent("Tilt SP", 0)
 			.withWidget("Text View").withPosition(4, 1).withSize(2, 1).getEntry();
 
 	// Creates a new Coral.
@@ -59,43 +59,23 @@ public class Coral extends SubsystemBase {
 		System.out.println("+++++ Starting Coral Constructor +++++");
 
 		// Configure Left Intake motor
-		leftConfig
+		intakeConfig
 				.inverted(Constants.Coral.kLeftMotorInverted)
-				.idleMode(Constants.Coral.kLeftIdleMode)
+				.idleMode(Constants.Coral.kIntakeIdleMode)
 				.smartCurrentLimit(Constants.Coral.kLeftCurrentLimit);
-		leftConfig.encoder
-				.positionConversionFactor(Constants.Coral.kLeftEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Coral.kLeftEncoderVelocityFactor);
-		leftConfig.closedLoop
+		intakeConfig.encoder
+				.positionConversionFactor(Constants.Coral.kIntakeEncoderPositionFactor)
+				.velocityConversionFactor(Constants.Coral.kIntakeEncoderVelocityFactor);
+		intakeConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(Constants.Coral.kLeftP,
-						Constants.Coral.kLeftI,
-						Constants.Coral.kLeftD,
-						Constants.Coral.kLeftFF)
-				.outputRange(Constants.Coral.kLeftMinOutput, Constants.Coral.kLeftMaxOutput)
+				.pidf(Constants.Coral.kIntakeP,
+						Constants.Coral.kIntakeI,
+						Constants.Coral.kIntakeD,
+						Constants.Coral.kIntakeFF)
+				.outputRange(Constants.Coral.kIntakeMinOutput, Constants.Coral.kIntakeMaxOutput)
 				.positionWrappingEnabled(Constants.Coral.kLeftEncodeWrapping);
 
-		leftIntake.configure(leftConfig,
-				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-		// Configure Right Intake motor
-		rightConfig
-				.inverted(Constants.Coral.kRightMotorInverted)
-				.idleMode(Constants.Coral.kRightIdleMode)
-				.smartCurrentLimit(Constants.Coral.kRightCurrentLimit);
-		rightConfig.encoder
-				.positionConversionFactor(Constants.Coral.kRightEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Coral.kRightEncoderVelocityFactor);
-		rightConfig.closedLoop
-				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(Constants.Coral.kRightP,
-						Constants.Coral.kRightI,
-						Constants.Coral.kRightD,
-						Constants.Coral.kRightFF)
-				.outputRange(Constants.Coral.kRightMinOutput, Constants.Coral.kRightMaxOutput)
-				.positionWrappingEnabled(Constants.Coral.kRightEncodeWrapping);
-
-		rightIntake.configure(rightConfig,
+		intake.configure(intakeConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 		// Configure Tilt motor
@@ -118,8 +98,8 @@ public class Coral extends SubsystemBase {
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		SetIntakeSpd(Constants.Coral.STOP);
-		SetTiltPos(Constants.Coral.STOW);
+		setIntakeVel(intakeSP);
+		setTiltPos(tiltSP);
 
 		System.out.println("----- Ending Coral Constructor -----");
 	}
@@ -128,26 +108,60 @@ public class Coral extends SubsystemBase {
 	public void periodic() {
 		// This method will be called once per scheduler run
 
+		setTiltSP(sbTiltSP.getDouble(0.0));
+		setIntakeSP(sbIntakeSP.getDouble(0.0));
+		
+		sbIntakeVel.setDouble(getIntakeVel());
+		sbIntakeSP.setDouble(getIntakeSP());
+		sbTiltPos.setDouble(getTiltPos());
+		sbTiltSP.setDouble(getTiltSP());
 	}
 
-	public double GetLeftVel() {
-		return leftEncoder.getVelocity();
+	private boolean getTiltSPChanged() {
+		double currTiltSP = getTiltSP();
+		boolean changed = prevTiltSP != currTiltSP;
+		prevTiltSP = currTiltSP;
+		return changed;
 	}
 
-	public double GetRightVel() {
-		return rightEncoder.getVelocity();
+	private boolean getIntakeSPChanged() {
+		double currIntakeSP = getIntakeSP();
+		boolean changed = prevIntakeSP != currIntakeSP;
+		prevIntakeSP = currIntakeSP;
+		return changed;
 	}
 
-	public double GetTiltPos() {
+	public double getIntakeVel() {
+		return intakeEncoder.getVelocity();
+	}
+
+	public double getTiltPos() {
 		return tiltEncoder.getPosition();
 	}
 
-	public void SetTiltPos(double pos) {
+	public void setTiltPos(double pos) {
+		setTiltSP(pos);
 		tiltController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
-	public void SetIntakeSpd(double vel) {
-		leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
-		rightIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
+	public void setIntakeVel(double vel) {
+		setIntakeSP(vel);
+		intakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
+	}
+
+	public void setIntakeSP(double sp) {
+		intakeSP = sp;
+	}
+
+	public double getIntakeSP() {
+		return intakeSP;
+	}
+
+	public void setTiltSP(double sp) {
+		tiltSP = sp;
+	}
+
+	public double getTiltSP() {
+		return tiltSP;
 	}
 }

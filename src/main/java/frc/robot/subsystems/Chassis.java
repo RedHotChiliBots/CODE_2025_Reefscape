@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANId;
 import frc.robot.Constants.ChassisConstants;
 import frc.robot.Constants.DriveConstants;
@@ -176,8 +177,10 @@ public class Chassis extends SubsystemBase {
 
 		setChannelOff();
 
-		pitchOffset = Math.toRadians(-getPitch());
-		rollOffset = Math.toRadians(-getRoll());
+		pitchOffset = -getRawPitch();
+		rollOffset =  -getRawRoll();
+
+		SmartDashboard.putData(this);
 
 		System.out.println("----- Ending Chassis Constructor -----");
 	}
@@ -370,10 +373,18 @@ public class Chassis extends SubsystemBase {
 	}
 
 	public double getRoll() {
-		return Math.toDegrees(SwerveUtils.WrapAngle(Math.toRadians(-m_ahrs.getRoll()) + rollOffset));
+		return Math.toDegrees(SwerveUtils.WrapAngle(Math.toRadians(-m_ahrs.getRoll()))) + rollOffset;
+	}
+
+	public double getRawRoll() {
+		return Math.toDegrees(SwerveUtils.WrapAngle(Math.toRadians(-m_ahrs.getRoll())));
 	}
 
 	public double getPitch() {
+		return m_ahrs.getPitch() + pitchOffset;
+	}
+
+	public double getRawPitch() {
 		return m_ahrs.getPitch();
 	}
 

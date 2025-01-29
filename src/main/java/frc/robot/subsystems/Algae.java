@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
@@ -15,7 +16,6 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import frc.robot.Constants;
 
 public class Algae extends SubsystemBase {
@@ -36,23 +36,32 @@ public class Algae extends SubsystemBase {
 	private SparkClosedLoopController leftIntakeController = leftIntake.getClosedLoopController();
 	private SparkClosedLoopController rightIntakeController = rightIntake.getClosedLoopController();
 
-	private RelativeEncoder leftEncoder = null;
-	private RelativeEncoder rightEncoder = null;
-	private AbsoluteEncoder tiltEncoder = null;
+	private RelativeEncoder leftEncoder = leftIntake.getEncoder();
+	private RelativeEncoder rightEncoder = rightIntake.getEncoder();
+	private AbsoluteEncoder tiltEncoder = tilt.getAbsoluteEncoder();
+
+	private double tiltSP = Constants.Algae.STOW;
+	private double intakeSP = Constants.Algae.STOP;
+
+	private double prevTiltSP = tiltSP;
+	public VariableChangeTrigger tiltChanged = new VariableChangeTrigger(() -> getTiltSPChanged());
+
+	private double prevIntakeSP = intakeSP;
+	public VariableChangeTrigger intakeChanged = new VariableChangeTrigger(() -> getIntakeSPChanged());
 
 	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
-	private final GenericEntry sbLeftPos = algaeTab.addPersistent("Left Pos", 0)
+	private final GenericEntry sbLeftVel = algaeTab.addPersistent("Left Vel", 0)
 			.withWidget("Text View").withPosition(2, 0).withSize(2, 1).getEntry();
-	private final GenericEntry sbLeftPosSP = algaeTab.addPersistent("Left Pos SP", 0)
-			.withWidget("Text View").withPosition(4, 0).withSize(2, 1).getEntry();
-	private final GenericEntry sbRightPos = algaeTab.addPersistent("Right Pos", 0)
-			.withWidget("Text View").withPosition(2, 1).withSize(2, 1).getEntry();
-	private final GenericEntry sbRightPosSP = algaeTab.addPersistent("Right Pos SP", 0)
+	private final GenericEntry sbRightVel = algaeTab.addPersistent("Right Vel", 0)
 			.withWidget("Text View").withPosition(4, 1).withSize(2, 1).getEntry();
+	private final GenericEntry sbIntakeSP = algaeTab.addPersistent("Intake SP", 0)
+			.withWidget("Text View").withPosition(4, 0).withSize(2, 1).getEntry();
 	private final GenericEntry sbTiltPos = algaeTab.addPersistent("Tilt Pos", 0)
 			.withWidget("Text View").withPosition(2, 1).withSize(2, 1).getEntry();
-	private final GenericEntry sbTiltPosSP = algaeTab.addPersistent("Tilt Pos SP", 0)
+	private final GenericEntry sbTiltSP = algaeTab.addPersistent("Tilt SP", 0)
 			.withWidget("Text View").withPosition(4, 1).withSize(2, 1).getEntry();
+
+	private int loopCtr = 0;
 
 	// Creates a new Algae.
 	public Algae() {
@@ -118,8 +127,8 @@ public class Algae extends SubsystemBase {
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		SetIntakeSpd(Constants.Algae.STOP);
-		SetTiltPos(Constants.Algae.STOW);
+		setIntakeVel(intakeSP);
+		setTiltPos(tiltSP);
 
 		System.out.println("----- Ending Algae Constructor -----");
 	}
@@ -127,28 +136,77 @@ public class Algae extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run SuffleBoard
+		setTiltSP(sbTiltSP.getDouble(0.0));
+		setIntakeSP(sbIntakeSP.getDouble(0.0));
+
+		sbLeftVel.setDouble(getLeftVel());
+		sbRightVel.setDouble(getRightVel());
+		sbIntakeSP.setDouble(getIntakeSP());
+		sbTiltPos.setDouble(getTiltPos());
+		sbTiltSP.setDouble(getTiltSP());
+
+		if (loopCtr++ % 20 == 0.0) {
+			System.out.println("Tilt SP: " + tiltSP + "  " + sbTiltSP.getDouble(0.0));
+			System.out.println("Intake SP: " + intakeSP + "  " + sbIntakeSP.getDouble(0.0));
+		}
+	}
+
+	private boolean getTiltSPChanged() {
+		double currTiltSP = getTiltSP();
+		boolean changed = prevTiltSP != currTiltSP;
+		if (changed)
+			System.out.println("Algae Tilt SP Changed from " + prevTiltSP + " to " + currTiltSP);
+		prevTiltSP = currTiltSP;
+		return changed;
+	}
+
+	private boolean getIntakeSPChanged() {
+		double currIntakeSP = getIntakeSP();
+		boolean changed = prevIntakeSP != currIntakeSP;
+		if (changed)
+			System.out.println("Algae Intake SP Changed from " + prevIntakeSP + " to " + currIntakeSP);
+		prevIntakeSP = currIntakeSP;
+		return changed;
 	}
 
 	// Getting the position of the encoders
-	public double GetLeftVel() {
+	public double getLeftVel() {
 		return leftEncoder.getVelocity();
 	}
 
-	public double GetRightVel() {
+	public double getRightVel() {
 		return rightEncoder.getVelocity();
 	}
 
-	public double GetTiltPos() {
+	public double getTiltPos() {
 		return tiltEncoder.getPosition();
 	}
 
 	// Sets the position of the encoders
-	public void SetTiltPos(double pos) {
+	public void setTiltPos(double pos) {
+		setTiltSP(pos);
 		tiltController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
-	public void SetIntakeSpd(double vel) {
+	public void setIntakeVel(double vel) {
+		setIntakeSP(vel);
 		leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 		rightIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
+	}
+
+	public void setIntakeSP(double sp) {
+		intakeSP = sp;
+	}
+
+	public double getIntakeSP() {
+		return intakeSP;
+	}
+
+	public void setTiltSP(double sp) {
+		tiltSP = sp;
+	}
+
+	public double getTiltSP() {
+		return tiltSP;
 	}
 }
