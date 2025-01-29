@@ -113,11 +113,12 @@ public class Ladder extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
+
+		setLadderSP(sbLadderSP.getDouble(0.0));
+		
 		sbLeftPos.setDouble(getLeftPos());
 		sbRightPos.setDouble(getRightPos());
 		sbLadderSP.setDouble(getLadderSP());
-
-		setLadderSP(sbLadderSP.getDouble(0.0));
 	}
 
 	private boolean getLadderSPChanged() {
@@ -140,6 +141,7 @@ public class Ladder extends SubsystemBase {
 	}
 
 	public void setLadderPos(double pos) {
+		setLadderSP(pos);
 		leftController.setReference(pos,
 				SparkBase.ControlType.kMAXMotionPositionControl);
 		rightController.setReference(pos,

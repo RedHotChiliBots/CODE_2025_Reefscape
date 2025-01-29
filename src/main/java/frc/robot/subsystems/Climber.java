@@ -116,11 +116,12 @@ public class Climber extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
+
+		setClimberSP(sbClimberSP.getDouble(0.0));
+		
 		sbLeftPos.setDouble(getLeftPos());
 		sbRightPos.setDouble(getRightPos());
 		sbClimberSP.setDouble(getClimberSP());
-
-		setClimberSP(sbClimberSP.getDouble(0.0));
 	}
 
 	private boolean getClimberSPChanged() {
@@ -139,6 +140,7 @@ public class Climber extends SubsystemBase {
 	}
 
 	public void setClimberPos(double pos) {
+		setClimberSP(pos);
 		leftController.setReference(pos,
 				SparkBase.ControlType.kMAXMotionPositionControl);
 		rightController.setReference(pos,

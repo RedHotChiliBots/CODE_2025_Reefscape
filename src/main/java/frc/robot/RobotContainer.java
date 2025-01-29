@@ -15,6 +15,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -84,31 +85,31 @@ public class RobotContainer {
 
 		ladder.ladderChanged.onTrue(new RunCommand(() -> ladder.setLadderPos(ladder.getLadderSP())));
 
-		// algae.setDefaultCommand(
-		// // The left stick controls translation of the robot.
-		// // Turning is controlled by the X axis of the right stick.
-		// new ParallelCommandGroup(
-		// new RunCommand( () -> algae.setTiltPos(coral.getTiltSP()), algae),
-		// new RunCommand( () -> algae.setIntakeVel(coral.getIntakeSP()))));
+		algae.setDefaultCommand(
+		// The left stick controls translation of the robot.
+		// Turning is controlled by the X axis of the right stick.
+		new ParallelCommandGroup(
+		new RunCommand( () -> algae.setTiltPos(coral.getTiltSP()), algae),
+		new RunCommand( () -> algae.setIntakeVel(coral.getIntakeSP()))));
 
-		// coral.setDefaultCommand(
-		// // The left stick controls translation of the robot.
-		// // Turning is controlled by the X axis of the right stick.
-		// new ParallelCommandGroup(
-		// new RunCommand( () -> coral.setTiltPos(coral.getTiltSP()), coral),
-		// new RunCommand( () -> coral.setIntakeVel(coral.getIntakeSP()))));
+		coral.setDefaultCommand(
+		// The left stick controls translation of the robot.
+		// Turning is controlled by the X axis of the right stick.
+		new ParallelCommandGroup(
+		new RunCommand( () -> coral.setTiltPos(coral.getTiltSP()), coral),
+		new RunCommand( () -> coral.setIntakeVel(coral.getIntakeSP()))));
 
-		// climber.setDefaultCommand(
-		// // The left stick controls translation of the robot.
-		// // Turning is controlled by the X axis of the right stick.
-		// new RunCommand(
-		// () -> climber.setPos(climber.getClimberSP()), climber));
+		climber.setDefaultCommand(
+		// The left stick controls translation of the robot.
+		// Turning is controlled by the X axis of the right stick.
+		new RunCommand(
+		() -> climber.setClimberPos(climber.getClimberSP()), climber));
 
-		// ladder.setDefaultCommand(
-		// // The left stick controls translation of the robot.
-		// // Turning is controlled by the X axis of the right stick.
-		// new RunCommand(
-		// () -> ladder.setPos(ladder.getLadderSP()), ladder));
+		ladder.setDefaultCommand(
+		// The left stick controls translation of the robot.
+		// Turning is controlled by the X axis of the right stick.
+		new RunCommand(
+		() -> ladder.setLadderPos(ladder.getLadderSP()), ladder));
 	}
 
 	/**

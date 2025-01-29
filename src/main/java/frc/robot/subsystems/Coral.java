@@ -107,13 +107,14 @@ public class Coral extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
+
+		setTiltSP(sbTiltSP.getDouble(0.0));
+		setIntakeSP(sbIntakeSP.getDouble(0.0));
+		
 		sbIntakeVel.setDouble(getIntakeVel());
 		sbIntakeSP.setDouble(getIntakeSP());
 		sbTiltPos.setDouble(getTiltPos());
 		sbTiltSP.setDouble(getTiltSP());
-
-		setTiltSP(sbTiltSP.getDouble(0.0));
-		setIntakeSP(sbIntakeSP.getDouble(0.0));
 	}
 
 	private boolean getTiltSPChanged() {
@@ -139,10 +140,12 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setTiltPos(double pos) {
+		setTiltSP(pos);
 		tiltController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
 	public void setIntakeVel(double vel) {
+		setIntakeSP(vel);
 		intakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 

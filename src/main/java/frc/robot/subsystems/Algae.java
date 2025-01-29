@@ -61,6 +61,8 @@ public class Algae extends SubsystemBase {
 	private final GenericEntry sbTiltSP = algaeTab.addPersistent("Tilt SP", 0)
 			.withWidget("Text View").withPosition(4, 1).withSize(2, 1).getEntry();
 
+	private int loopCtr = 0;
+
 	// Creates a new Algae.
 	public Algae() {
 		System.out.println("+++++ Starting Algae Constructor +++++");
@@ -134,19 +136,26 @@ public class Algae extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run SuffleBoard
+		setTiltSP(sbTiltSP.getDouble(0.0));
+		setIntakeSP(sbIntakeSP.getDouble(0.0));
+
 		sbLeftVel.setDouble(getLeftVel());
 		sbRightVel.setDouble(getRightVel());
 		sbIntakeSP.setDouble(getIntakeSP());
 		sbTiltPos.setDouble(getTiltPos());
 		sbTiltSP.setDouble(getTiltSP());
 
-		setTiltSP(sbTiltSP.getDouble(0.0));
-		setIntakeSP(sbIntakeSP.getDouble(0.0));
+		if (loopCtr++ % 20 == 0.0) {
+			System.out.println("Tilt SP: " + tiltSP + "  " + sbTiltSP.getDouble(0.0));
+			System.out.println("Intake SP: " + intakeSP + "  " + sbIntakeSP.getDouble(0.0));
+		}
 	}
 
 	private boolean getTiltSPChanged() {
 		double currTiltSP = getTiltSP();
 		boolean changed = prevTiltSP != currTiltSP;
+		if (changed)
+			System.out.println("Algae Tilt SP Changed from " + prevTiltSP + " to " + currTiltSP);
 		prevTiltSP = currTiltSP;
 		return changed;
 	}
@@ -154,6 +163,8 @@ public class Algae extends SubsystemBase {
 	private boolean getIntakeSPChanged() {
 		double currIntakeSP = getIntakeSP();
 		boolean changed = prevIntakeSP != currIntakeSP;
+		if (changed)
+			System.out.println("Algae Intake SP Changed from " + prevIntakeSP + " to " + currIntakeSP);
 		prevIntakeSP = currIntakeSP;
 		return changed;
 	}
@@ -173,10 +184,12 @@ public class Algae extends SubsystemBase {
 
 	// Sets the position of the encoders
 	public void setTiltPos(double pos) {
+		setTiltSP(pos);
 		tiltController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
 	public void setIntakeVel(double vel) {
+		setIntakeSP(vel);
 		leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 		rightIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
