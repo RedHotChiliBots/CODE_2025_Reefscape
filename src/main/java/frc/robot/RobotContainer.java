@@ -4,6 +4,19 @@
 
 package frc.robot;
 
+import java.util.Map;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
 import frc.robot.subsystems.Algae;
@@ -11,14 +24,6 @@ import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -32,10 +37,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private final Chassis chassis = new Chassis();
-	private final Algae algae = new Algae();
-	private final Coral coral = new Coral();
-	private final Climber climber = new Climber();
 	private final Ladder ladder = new Ladder();
+	private final Algae algae = new Algae(ladder);
+	private final Coral coral = new Coral(ladder);
+	private final Climber climber = new Climber();
 
 	// Replace with CommandPS4Controller or CommandJoystick if needed
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -75,41 +80,177 @@ public class RobotContainer {
 								true),
 						chassis));
 
-		algae.tiltChanged.onTrue(new RunCommand(() -> algae.setTiltPos(algae.getTiltSP())));
-		algae.intakeChanged.onTrue(new RunCommand(() -> algae.setIntakeVel(algae.getIntakeSP())));
+		// algae.tiltChanged.onTrue(new RunCommand(() ->
+		// algae.setTiltPos(algae.getTiltSP())));
+		// algae.intakeChanged.onTrue(new RunCommand(() ->
+		// algae.setIntakeVel(algae.getIntakeSP())));
 
-		coral.tiltChanged.onTrue(new RunCommand(() -> coral.setTiltPos(coral.getTiltSP())));
-		coral.intakeChanged.onTrue(new RunCommand(() -> coral.setIntakeVel(coral.getIntakeSP())));
+		// coral.tiltChanged.onTrue(new RunCommand(() ->
+		// coral.setTiltPos(coral.getTiltSP())));
+		// coral.intakeChanged.onTrue(new RunCommand(() ->
+		// coral.setIntakeVel(coral.getIntakeSP())));
 
-		climber.climberChanged.onTrue(new RunCommand(() -> climber.setClimberPos(climber.getClimberSP())));
+		// climber.climberChanged.onTrue(new RunCommand(() ->
+		// climber.setClimberPos(climber.getClimberSP())));
 
-		ladder.ladderChanged.onTrue(new RunCommand(() -> ladder.setLadderPos(ladder.getLadderSP())));
+		// ladder.ladderChanged.onTrue(new RunCommand(() ->
+		// ladder.setLadderPos(ladder.getLadderSP())));
 
 		algae.setDefaultCommand(
-		// The left stick controls translation of the robot.
-		// Turning is controlled by the X axis of the right stick.
-		new ParallelCommandGroup(
-		new RunCommand( () -> algae.setTiltPos(coral.getTiltSP()), algae),
-		new RunCommand( () -> algae.setIntakeVel(coral.getIntakeSP()))));
+				// The left stick controls translation of the robot.
+				// Turning is controlled by the X axis of the right stick.
+				new ParallelCommandGroup(
+						new RunCommand(() -> algae.setTiltPos(coral.getTiltSP()), algae),
+						new RunCommand(() -> algae.setIntakeVel(coral.getLeftIntakeSP()))));
 
 		coral.setDefaultCommand(
-		// The left stick controls translation of the robot.
-		// Turning is controlled by the X axis of the right stick.
-		new ParallelCommandGroup(
-		new RunCommand( () -> coral.setTiltPos(coral.getTiltSP()), coral),
-		new RunCommand( () -> coral.setIntakeVel(coral.getIntakeSP()))));
+				// The left stick controls translation of the robot.
+				// Turning is controlled by the X axis of the right stick.
+				new ParallelCommandGroup(
+						new RunCommand(() -> coral.setTiltPos(coral.getTiltSP()), coral),
+						new RunCommand(() -> coral.setLeftIntakeVel(coral.getLeftIntakeSP())),
+						new RunCommand(() -> coral.setRightIntakeVel(coral.getRightIntakeSP()))));
 
 		climber.setDefaultCommand(
-		// The left stick controls translation of the robot.
-		// Turning is controlled by the X axis of the right stick.
-		new RunCommand(
-		() -> climber.setClimberPos(climber.getClimberSP()), climber));
+				// The left stick controls translation of the robot.
+				// Turning is controlled by the X axis of the right stick.
+				new RunCommand(
+						() -> climber.setClimberPos(climber.getClimberSP()), climber));
 
 		ladder.setDefaultCommand(
-		// The left stick controls translation of the robot.
-		// Turning is controlled by the X axis of the right stick.
-		new RunCommand(
-		() -> ladder.setLadderPos(ladder.getLadderSP()), ladder));
+				// The left stick controls translation of the robot.
+				// Turning is controlled by the X axis of the right stick.
+				new RunCommand(
+						() -> ladder.setLadderPos(ladder.getLadderSP()), ladder));
+
+		// ParallelCommandGroup algaeBarge = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.BARGE), ladder),
+		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.BARGE), algae));
+		// ParallelCommandGroup algaeL3 = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L3), ladder),
+		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.L3), algae));
+		// ParallelCommandGroup algaeL2 = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L2), ladder),
+		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.L2), algae));
+		// ParallelCommandGroup algaeProcessor = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.PROCESSOR), ladder),
+		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.PROCESSOR), algae));
+		// ParallelCommandGroup algaeFloor = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.FLOOR), ladder),
+		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.FLOOR), algae));
+		// ParallelCommandGroup algaeStow = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.STOW), ladder),
+		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.STOW), algae));
+		// ParallelCommandGroup algaePos = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderPos(), ladder),
+		// new RunCommand(() -> algae.setTiltPos(), algae));
+
+		// ParallelCommandGroup coralL4 = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L4), ladder),
+		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.L4), coral));
+		// ParallelCommandGroup coralL3 = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L3), ladder),
+		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.L3), coral));
+		// ParallelCommandGroup coralL2 = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L2), ladder),
+		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.L2), coral));
+		// ParallelCommandGroup coralL1 = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L1), ladder),
+		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.L1), coral));
+		// ParallelCommandGroup coralStation = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.STATION), ladder),
+		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.STATION), coral));
+		// ParallelCommandGroup coralStow = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.STOW), ladder),
+		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.STOW), coral));
+		// ParallelCommandGroup coralPos = new ParallelCommandGroup(
+		// new RunCommand(() -> ladder.setLadderPos(), ladder),
+		// new RunCommand(() -> coral.setTiltPos(), coral));
+
+		// RunCommand algaeIntake = new RunCommand(() ->
+		// algae.setIntakeSP(Constants.Algae.INTAKE), algae);
+		// RunCommand algaeScore = new RunCommand(() ->
+		// algae.setIntakeSP(Constants.Algae.EJECT), algae);
+
+		// RunCommand coralIntake = new RunCommand(() ->
+		// coral.setIntakeSP(Constants.Coral.INTAKE), coral);
+		// RunCommand coralScore = new RunCommand(() ->
+		// coral.setIntakeSP(Constants.Coral.EJECT), coral);
+
+		// RunCommand climberClimb = new RunCommand(() ->
+		// climber.setClimberPos(Constants.Climber.CLIMB), climber);
+		// RunCommand climberReady = new RunCommand(() ->
+		// climber.setClimberPos(Constants.Climber.READY), climber);
+		// RunCommand climberStow = new RunCommand(() ->
+		// climber.setClimberPos(Constants.Climber.STOW), climber);
+
+		// ladderTab.addPersistent("Ladder Limit", false)
+		// .withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
+
+		ShuffleboardLayout algaeCommands = Shuffleboard.getTab("Competition")
+				.getLayout("Algae Commands", BuiltInLayouts.kList)
+				.withSize(2, 5)
+				.withPosition(0, 1);
+		// .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for
+		// commands
+		algaeCommands.add("Barge", algae.algaeBarge());
+		algaeCommands.add("L3", algae.algaeL3());
+		algaeCommands.add("L2", algae.algaeL2());
+		algaeCommands.add("Floor", algae.algaeFloor());
+		algaeCommands.add("Stow", algae.algaeStow());
+		algaeCommands.add("Intake", algae.algaeIntake());
+		algaeCommands.add("Eject", algae.algaeEject());
+
+		ShuffleboardLayout coralCommands = Shuffleboard.getTab("Competition")
+				.getLayout("Coral Commands", BuiltInLayouts.kList)
+				.withSize(2, 5)
+				.withPosition(2, 1);
+		// .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for
+		// commands
+		coralCommands.add("L4", coral.coralL4());
+		coralCommands.add("L3", coral.coralL3());
+		coralCommands.add("L2", coral.coralL2());
+		coralCommands.add("L1", coral.coralL1());
+		coralCommands.add("Station", coral.coralStation());
+		coralCommands.add("Stow", coral.coralStow());
+		coralCommands.add("Left Intake", coral.coralLeftIntake());
+		coralCommands.add("Left Eject", coral.coralLeftEject());
+		coralCommands.add("Right Intake", coral.coralRightIntake());
+		coralCommands.add("Right Eject", coral.coralRightEject());
+
+		ShuffleboardLayout climberCommands = Shuffleboard.getTab("Competition")
+				.getLayout("Climber Commands", BuiltInLayouts.kList)
+				.withSize(2, 2)
+				.withPosition(4, 1);
+		// .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for
+		// commands
+		climberCommands.add("Climb", climber.climberClimb());
+		climberCommands.add("Ready", climber.climberReady());
+		climberCommands.add("Stow", climber.climberStow());
+
+		// algaeTab.add("Algae Barge", algaeBarge);
+		// algaeTab.add("Algae L3", algaeL3);
+		// algaeTab.add("Algae L2", algaeL2);
+		// algaeTab.add("Algae Processor", algaeProcessor);
+		// algaeTab.add("Algae Floor", algaeFloor);
+		// algaeTab.add("Algae Stow", algaeStow);
+
+		// coralTab.add("Coral L4", coralL4);
+		// coralTab.add("Coral L3", coralL3);
+		// coralTab.add("Coral L2", coralL2);
+		// coralTab.add("Coral L1", coralL1);
+		// coralTab.add("Coral Station", coralStation);
+		// coralTab.add("Coral Stow", coralStow);
+
+		// algaeTab.add("Algae Score", algaeScore);
+		// algaeTab.add("Algae Intake", algaeIntake);
+
+		// coralTab.add("Coral Score", coralScore);
+		// coralTab.add("Coral Intake", coralIntake);
+
+		// climberTab.add("Climber Climb", climberClimb);
+		// climberTab.add("Climber Ready", climberReady);
+		// climberTab.add("Climber Stow", climberStow);
 	}
 
 	/**
@@ -126,10 +267,13 @@ public class RobotContainer {
 	 * joysticks}.
 	 */
 	private void configureBindings() {
-		// Schedule `exampleMethodCommand` when the Xbox controller's B button is
-		// pressed,
-		// cancelling on release.
 		// m_driverController.b().whileTrue(chassis.exampleMethodCommand());
+		// new Trigger(m_exampleSubsystem::exampleCondition).onTrue(new
+		// ExampleCommand(m_exampleSubsystem));
+
+		new Trigger(algae.getTiltSPChanged()).onTrue(algae.setTiltCmd());
+		new Trigger(algae.getIntakeSPChanged()).onTrue(algae.setIntakeCmd());
+
 	}
 
 	/**
