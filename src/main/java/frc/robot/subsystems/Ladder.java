@@ -15,8 +15,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
 public class Ladder extends SubsystemBase {
@@ -42,7 +43,7 @@ public class Ladder extends SubsystemBase {
 	private double ladderSP = Constants.Ladder.STOW;
 
 	private double prevLadderSP = ladderSP;
-	public VariableChangeTrigger ladderChanged = new VariableChangeTrigger(() -> getLadderSPChanged());
+	public Trigger ladderChanged = new Trigger(() -> getLadderSPChanged());
 
 	private boolean firstPeriod = true;
 	private boolean zeroingLadder = false;
@@ -144,10 +145,33 @@ public class Ladder extends SubsystemBase {
 
 		if (isLimit()) {
 			leftLadder.set(Constants.Ladder.STOP);
-			leftEncoder.setPosition(Constants.Ladder.STOW);
-			setLadderPos(Constants.Ladder.STOW);
+			leftEncoder.setPosition(Constants.Ladder.START);
+			setLadderPos(Constants.Ladder.START);
 			zeroingLadder = false;
 		}
+
+		if (isLimit() && zeroingLadder) {
+			setLadderPos(Constants.Ladder.STOW);
+			setLadderPos(Constants.Ladder.STOW);
+			setLadderPos(Constants.Ladder.STOW);
+		}
+	}
+
+	
+	/**
+	 * setTiltCmd - command factory method to update the Tilt pos
+	 * 
+	 * @return a command
+	 */
+	public Command setLadderCmd(double pos) {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			setLadderPos(pos);
+		});
+	}
+
+	public Command setLadderCmd() {
+		return setLadderCmd(getLadderSP());
 	}
 
 	private boolean getLadderSPChanged() {

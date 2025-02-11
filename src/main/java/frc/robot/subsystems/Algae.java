@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -19,7 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
 public class Algae extends SubsystemBase {
@@ -58,7 +56,10 @@ public class Algae extends SubsystemBase {
 	private double intakeSP = Constants.Algae.STOP;
 
 	private double prevTiltSP = tiltSP;
+	public Trigger tiltChanged = new Trigger(() -> getTiltSPChanged());
+
 	private double prevIntakeSP = intakeSP;
+	public Trigger leftIntakeChanged = new Trigger(() -> getIntakeSPChanged());
 
 	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
 	private final GenericEntry sbLeftVel = algaeTab.addPersistent("Intake Vel", 0)
@@ -150,8 +151,8 @@ public class Algae extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run SuffleBoard
-		setTiltSP(sbTiltSP.getDouble(0.0));
-		setIntakeSP(sbIntakeSP.getDouble(0.0));
+		// setTiltSP(sbTiltSP.getDouble(0.0));
+		// setIntakeSP(sbIntakeSP.getDouble(0.0));
 
 		sbLeftVel.setDouble(getIntakeVel());
 		// sbRightVel.setDouble(getRightVel());
@@ -161,8 +162,8 @@ public class Algae extends SubsystemBase {
 		sbLimit.setBoolean(isLimit());
 
 		if (loopCtr++ % 20 == 0.0) {
-			System.out.println("Tilt SP: " + tiltSP + " " + sbTiltSP.getDouble(0.0));
-			System.out.println("Intake SP: " + intakeSP + " " +
+			System.out.println("Algae Tilt SP: " + tiltSP + " " + sbTiltSP.getDouble(0.0));
+			System.out.println("Algae Intake SP: " + intakeSP + " " +
 					sbIntakeSP.getDouble(0.0));
 		}
 	}
@@ -227,22 +228,22 @@ public class Algae extends SubsystemBase {
 		return false;
 	}
 
-	public BooleanSupplier getTiltSPChanged() {
+	public boolean getTiltSPChanged() {
 		double currTiltSP = getTiltSP();
 		boolean changed = prevTiltSP != currTiltSP;
 		if (changed)
 			System.out.println("Algae Tilt SP Changed from " + prevTiltSP + " to " + currTiltSP);
 		prevTiltSP = currTiltSP;
-		return () -> changed;
+		return changed;
 	}
 
-	public BooleanSupplier getIntakeSPChanged() {
+	public boolean getIntakeSPChanged() {
 		double currIntakeSP = getIntakeSP();
 		boolean changed = prevIntakeSP != currIntakeSP;
 		if (changed)
 			System.out.println("Algae Intake SP Changed from " + prevIntakeSP + " to " + currIntakeSP);
 		prevIntakeSP = currIntakeSP;
-		return () -> changed;
+		return changed;
 	}
 
 	// Getting the position of the encoders
@@ -279,6 +280,7 @@ public class Algae extends SubsystemBase {
 	}
 
 	public void setIntakeSP(double sp) {
+		System.out.println("Setting Algae Intake SP to " + sp);
 		intakeSP = sp;
 	}
 
@@ -287,7 +289,7 @@ public class Algae extends SubsystemBase {
 	}
 
 	public void setTiltSP(double sp) {
-		System.out.println("Setting Algae SP to " + sp);
+		System.out.println("Setting Algae Tilt SP to " + sp);
 		tiltSP = sp;
 	}
 

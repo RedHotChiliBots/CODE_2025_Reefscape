@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
 public class Climber extends SubsystemBase {
@@ -43,7 +43,7 @@ public class Climber extends SubsystemBase {
 	private double climberSP = Constants.Ladder.STOW;
 
 	private double prevClimberSP = climberSP;
-	public VariableChangeTrigger climberChanged = new VariableChangeTrigger(() -> getClimberSPChanged());
+	public Trigger climberChanged = new Trigger(() -> getClimberSPChanged());
 
 	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
 	private final GenericEntry sbLeftPos = climberTab.addPersistent("Climber Pos", 0)
@@ -125,7 +125,7 @@ public class Climber extends SubsystemBase {
 	public void periodic() {
 		// This method will be called once per scheduler run
 
-		setClimberSP(sbClimberSP.getDouble(0.0));
+		// setClimberSP(sbClimberSP.getDouble(0.0));
 
 		sbLeftPos.setDouble(getLeftPos());
 		// sbRightPos.setDouble(getRightPos());
@@ -133,12 +133,21 @@ public class Climber extends SubsystemBase {
 		sbLimit.setBoolean(getLimitSwitch());
 	}
 
-	public Command setClimbertCommand(double pos) {
+	public Command setClimberCmd(double pos) {
 		// Inline construction of command goes here.
 		// Subsystem::RunOnce implicitly requires `this` subsystem.
 		return runOnce(
 				() -> {
 					setClimberPos(pos);
+				});
+	}
+
+	public Command setClimberCmd() {
+		// Inline construction of command goes here.
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(
+				() -> {
+					setClimberPos(getClimberSP());
 				});
 	}
 

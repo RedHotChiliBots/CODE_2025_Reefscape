@@ -4,10 +4,7 @@
 
 package frc.robot;
 
-import java.util.Map;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -271,9 +268,16 @@ public class RobotContainer {
 		// new Trigger(m_exampleSubsystem::exampleCondition).onTrue(new
 		// ExampleCommand(m_exampleSubsystem));
 
-		new Trigger(algae.getTiltSPChanged()).onTrue(algae.setTiltCmd());
-		new Trigger(algae.getIntakeSPChanged()).onTrue(algae.setIntakeCmd());
+		new Trigger(algae.tiltChanged).onTrue(algae.setTiltCmd());
+		new Trigger(algae.leftIntakeChanged).onTrue(algae.setIntakeCmd());
 
+		new Trigger(coral.tiltChanged).onTrue(coral.setTiltCmd());
+		new Trigger(coral.leftIntakeChanged).onTrue(coral.setLeftIntakeCmd());
+		new Trigger(coral.rightIntakeChanged).onTrue(coral.setRightIntakeCmd());
+
+		new Trigger(climber.climberChanged).onTrue(climber.setClimberCmd());
+
+		new Trigger(ladder.ladderChanged).onTrue(ladder.setLadderCmd());
 	}
 
 	/**

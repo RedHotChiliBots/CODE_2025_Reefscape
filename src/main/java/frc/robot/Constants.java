@@ -333,7 +333,8 @@ public final class Constants {
 		public static final double STOP = 0.0;
 
 		// define ladder positions
-		public static final double STOW = 3.0;
+		public static final double START = 0.0;
+		public static final double STOW = 0.5;
 		public static final double FLOOR = 0.5;
 		public static final double PROCESSOR = 0.0 + (7.0 / 12.0);		
 		public static final double STATION = 3.0 + (1.5 / 12.0);

@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
 public class Coral extends SubsystemBase {
@@ -55,11 +55,20 @@ public class Coral extends SubsystemBase {
 
 	private double prevLeftIntakeSP = leftIntakeSP;
 	private double prevRightIntakeSP = rightIntakeSP;
-	public VariableChangeTrigger leftIntakeChanged = new VariableChangeTrigger(() -> getLeftIntakeSPChanged());
-	public VariableChangeTrigger rightIntakeChanged = new VariableChangeTrigger(() -> getRightIntakeSPChanged());
+	public Trigger leftIntakeChanged = new Trigger(() -> getLeftIntakeSPChanged());
+	public Trigger rightIntakeChanged = new Trigger(() -> getRightIntakeSPChanged());
 
 	private double prevTiltSP = tiltSP;
-	public VariableChangeTrigger tiltChanged = new VariableChangeTrigger(() -> getTiltSPChanged());
+	public Trigger tiltChanged = new Trigger(() -> getTiltSPChanged());
+
+	private enum LRSide {
+		Null,
+		LEFT,
+		RIGHT
+	}
+
+	private LRSide side = LRSide.Null;
+
 
 	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
 	private final GenericEntry sbLeftIntakeVel = coralTab.addPersistent("Left Intake Vel", 0)
@@ -78,6 +87,8 @@ public class Coral extends SubsystemBase {
 			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbRightLimit = coralTab.addPersistent("Right Limit", false)
 			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
+	private final GenericEntry sbSide = coralTab.addPersistent("Side", 0)
+			.withWidget("Text View").withPosition(5, 0).withSize(1, 1).getEntry();
 
 	// Creates a new Coral.
 	public Coral(Ladder ladder) {
@@ -157,9 +168,9 @@ public class Coral extends SubsystemBase {
 	public void periodic() {
 		// This method will be called once per scheduler run
 
-		setTiltSP(sbTiltSP.getDouble(0.0));
-		setLeftIntakeSP(sbLeftIntakeSP.getDouble(0.0));
-		setRightIntakeSP(sbRightIntakeSP.getDouble(0.0));
+		// setTiltSP(sbTiltSP.getDouble(0.0));
+		// setLeftIntakeSP(sbLeftIntakeSP.getDouble(0.0));
+		// setRightIntakeSP(sbRightIntakeSP.getDouble(0.0));
 
 		sbLeftIntakeVel.setDouble(getLeftIntakeVel());
 		sbLeftIntakeSP.setDouble(getLeftIntakeSP());
@@ -169,6 +180,45 @@ public class Coral extends SubsystemBase {
 		sbTiltSP.setDouble(getTiltSP());
 		sbLeftLimit.setBoolean(isLeftLimit());
 		sbRightLimit.setBoolean(isRightLimit());
+		sbSide.setString(getSide().toString());
+	}
+
+	/**
+	 * setTiltCmd - command factory method to update the Tilt pos
+	 * 
+	 * @return a command
+	 */
+	public Command setLeftIntakeCmd(double vel) {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			setLeftIntakeVel(vel);
+		});
+	}
+
+	public Command setLeftIntakeCmd() {
+		return setLeftIntakeCmd(getLeftIntakeSP());
+	}
+
+	public Command setRightIntakeCmd(double vel) {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			setRightIntakeVel(vel);
+		});
+	}
+
+	public Command setRightIntakeCmd() {
+		return setLeftIntakeCmd(getLeftIntakeSP());
+	}
+
+	public Command setTiltCmd(double pos) {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			setTiltPos(pos);
+		});
+	}
+
+	public Command setTiltCmd() {
+		return setTiltCmd(getTiltSP());
 	}
 
 	private boolean getTiltSPChanged() {
@@ -224,10 +274,12 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setLeftIntakeSP(double sp) {
+		System.out.println("Setting Coral Left Intake SP to " + sp);
 		leftIntakeSP = sp;
 	}
 
 	public void setRightIntakeSP(double sp) {
+		System.out.println("Setting Coral Right Intake SP to " + sp);
 		rightIntakeSP = sp;
 	}
 
@@ -240,6 +292,7 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setTiltSP(double sp) {
+		System.out.println("Setting Coral Tilt SP to " + sp);
 		tiltSP = sp;
 	}
 
@@ -253,6 +306,14 @@ public class Coral extends SubsystemBase {
 
 	public boolean isRightLimit() {
 		return rightFwdLimitSwitch.isPressed();
+	}
+
+	public LRSide getSide() {
+		return side;
+	}
+
+	public void setSide(LRSide side) {
+		this.side = side;
 	}
 
 	public Command coralL4() {
