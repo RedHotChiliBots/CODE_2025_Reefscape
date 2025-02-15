@@ -11,6 +11,7 @@ import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
+import org.photonvision.PhotonCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -36,6 +37,10 @@ public class RobotContainer {
 	private final Coral coral = new Coral();
 	private final Climber climber = new Climber();
 	private final Ladder ladder = new Ladder();
+	private final PhotonCamera camera1;
+	private final PhotonCamera camera2;
+	private final PhotonCamera camera3;
+	private final PhotonCamera camera4;
 
 	// Replace with CommandPS4Controller or CommandJoystick if needed
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -59,6 +64,10 @@ public class RobotContainer {
 		compTab.add("Algae", algae);
 		compTab.add("Ladder", ladder);
 		compTab.add("Climber", climber);
+		camera1 = new PhotonCamera("OrangePiCamera1");
+		camera2 = new PhotonCamera("OrangePiCamera2");
+		camera3 = new PhotonCamera("OrangePiCamera3");
+		camera4 = new PhotonCamera("OrangePiCamera4");
 
 		// Configure the trigger bindings
 		configureBindings();
