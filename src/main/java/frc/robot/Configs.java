@@ -31,14 +31,14 @@ public final class Configs {
 					.velocityFF(drivingVelocityFeedForward)
 					.outputRange(-1, 1);
 			drivingConfig.signals
-					.appliedOutputPeriodMs(10)
-					.primaryEncoderVelocityPeriodMs(20)
-					.primaryEncoderPositionPeriodMs(20)
-					.analogVoltagePeriodMs(20)
-					.externalOrAltEncoderPosition(20)
-					.externalOrAltEncoderVelocity(20)
-					.absoluteEncoderPositionPeriodMs(20)
-					.absoluteEncoderVelocityPeriodMs(20);
+					.appliedOutputPeriodMs(10);
+					// .primaryEncoderVelocityPeriodMs(20)
+					// .primaryEncoderPositionPeriodMs(20)
+					// .analogVoltagePeriodMs(20)
+					// .externalOrAltEncoderPosition(20)
+					// .externalOrAltEncoderVelocity(20)
+					// .absoluteEncoderPositionPeriodMs(20)
+					// .absoluteEncoderVelocityPeriodMs(20);
 
 			turningConfig
 					.idleMode(IdleMode.kBrake)
@@ -61,14 +61,14 @@ public final class Configs {
 					.positionWrappingEnabled(true)
 					.positionWrappingInputRange(0.0, turningFactor);
 			turningConfig.signals
-					.appliedOutputPeriodMs(10)
-					.primaryEncoderVelocityPeriodMs(20)
-					.primaryEncoderPositionPeriodMs(20)
-					.analogVoltagePeriodMs(20)
-					.externalOrAltEncoderPosition(20)
-					.externalOrAltEncoderVelocity(20)
-					.absoluteEncoderPositionPeriodMs(20)
-					.absoluteEncoderVelocityPeriodMs(20);
+					.appliedOutputPeriodMs(10);
+					// .primaryEncoderVelocityPeriodMs(20)
+					// .primaryEncoderPositionPeriodMs(20)
+					// .analogVoltagePeriodMs(20)
+					// .externalOrAltEncoderPosition(20)
+					// .externalOrAltEncoderVelocity(20)
+					// .absoluteEncoderPositionPeriodMs(20)
+					// .absoluteEncoderVelocityPeriodMs(20);
 		}
 	}
 }

@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
 public class Algae extends SubsystemBase {
@@ -35,45 +34,56 @@ public class Algae extends SubsystemBase {
 	private final SparkMaxConfig tiltConfig = new SparkMaxConfig();
 
 	private SparkClosedLoopController tiltController = tilt.getClosedLoopController();
-	private SparkClosedLoopController leftIntakeController = leftIntake.getClosedLoopController();
-	// private SparkClosedLoopController rightIntakeController =
-	// rightIntake.getClosedLoopController();
+	private SparkClosedLoopController intakeController = leftIntake.getClosedLoopController(); // rightIntake.getClosedLoopController();
 
-	private RelativeEncoder leftEncoder = leftIntake.getEncoder();
-	// private RelativeEncoder rightEncoder = rightIntake.getEncoder();
+	private RelativeEncoder intakeEncoder = leftIntake.getEncoder(); // rightIntake.getEncoder();
 	private AbsoluteEncoder tiltEncoder = tilt.getAbsoluteEncoder();
 
-	private SparkLimitSwitch leftForLimitSwitch = leftIntake.getForwardLimitSwitch();
-	private SparkLimitSwitch leftRevLimitSwitch = leftIntake.getReverseLimitSwitch();
-	// private SparkLimitSwitch rightForLimitSwitch =
-	// rightIntake.getForwardLimitSwitch();
-	// private SparkLimitSwitch rightRevLimitSwitch =
-	// rightIntake.getReverseLimitSwitch();
+	private SparkLimitSwitch isLimitSwitch = leftIntake.getForwardLimitSwitch(); // leftIntake.getReverseLimitSwitch();
 
 	private Ladder ladder = null;
 
-	private double tiltSP = Constants.Algae.STOW;
+	public enum AlgaeSP {
+		STOW(90.0),
+		FLOOR(-45.0),
+		PROCESSOR(-10.0),
+		L2(-35.0),
+		L3(-35.0),
+		BARGE(-20.0);
+
+		private final double sp;
+
+		AlgaeSP(final double sp) {
+			this.sp = sp;
+		}
+
+		public double getValue() {
+			return sp;
+		}
+	}
+
+	private AlgaeSP tiltSP = AlgaeSP.STOW;
 	private double intakeSP = Constants.Algae.STOP;
 
-	private double prevTiltSP = tiltSP;
-	public Trigger tiltChanged = new Trigger(() -> getTiltSPChanged());
-
-	private double prevIntakeSP = intakeSP;
-	public Trigger leftIntakeChanged = new Trigger(() -> getIntakeSPChanged());
+	private boolean extractAlgae = false;
 
 	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
-	private final GenericEntry sbLeftVel = algaeTab.addPersistent("Intake Vel", 0)
+	private final GenericEntry sbIntakeVel = algaeTab.addPersistent("Intake Vel", 0)
 			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbIntakeSP = algaeTab.addPersistent("Intake SP", 0)
 			.withWidget("Text View").withPosition(3, 0).withSize(1, 1).getEntry();
-	private final GenericEntry sbTiltPos = algaeTab.addPersistent("Tilt Pos", 0)
+
+	private final GenericEntry sbTxtTiltSP = algaeTab.addPersistent("Tilt tSP", "")
+			.withWidget("Text View").withPosition(1, 1).withSize(1, 1).getEntry();
+	private final GenericEntry sbDblTiltSP = algaeTab.addPersistent("Tilt dSP", 0)
 			.withWidget("Text View").withPosition(2, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbTiltSP = algaeTab.addPersistent("Tilt SP", 0)
+	private final GenericEntry sbTiltPos = algaeTab.addPersistent("Tilt Pos", 0)
 			.withWidget("Text View").withPosition(3, 1).withSize(1, 1).getEntry();
 	private final GenericEntry sbLimit = algaeTab.addPersistent("Limit", false)
 			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
 
-	private int loopCtr = 0;
+	private final GenericEntry sbExtract = algaeTab.addPersistent("Expel", false)
+			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
 
 	// Creates a new Algae.
 	public Algae(Ladder ladder) {
@@ -154,18 +164,13 @@ public class Algae extends SubsystemBase {
 		// setTiltSP(sbTiltSP.getDouble(0.0));
 		// setIntakeSP(sbIntakeSP.getDouble(0.0));
 
-		sbLeftVel.setDouble(getIntakeVel());
-		// sbRightVel.setDouble(getRightVel());
+		sbIntakeVel.setDouble(getIntakeVel());
 		sbIntakeSP.setDouble(getIntakeSP());
 		sbTiltPos.setDouble(getTiltPos());
-		sbTiltSP.setDouble(getTiltSP());
+		sbTxtTiltSP.setString(getTiltSP().toString());
+		sbDblTiltSP.setDouble(getTiltSP().getValue());
 		sbLimit.setBoolean(isLimit());
-
-		if (loopCtr++ % 20 == 0.0) {
-			System.out.println("Algae Tilt SP: " + tiltSP + " " + sbTiltSP.getDouble(0.0));
-			System.out.println("Algae Intake SP: " + intakeSP + " " +
-					sbIntakeSP.getDouble(0.0));
-		}
+		sbExtract.setBoolean(getExtract());
 	}
 
 	/**
@@ -173,18 +178,18 @@ public class Algae extends SubsystemBase {
 	 * 
 	 * @return a command
 	 */
-	public Command setTiltCmd(double pos) {
+	public Command setTiltPosCmd(AlgaeSP pos) {
 		// Subsystem::RunOnce implicitly requires `this` subsystem.
 		return runOnce(() -> {
 			setTiltPos(pos);
 		});
 	}
 
-	public Command setTiltCmd() {
-		return setTiltCmd(getTiltSP());
+	public Command setTiltPosCmd() {
+		return setTiltPosCmd(getTiltSP());
 	}
 
-	public Command setTiltSPCmd(double sp) {
+	public Command setTiltSPCmd(AlgaeSP sp) {
 		return runOnce(() -> {
 			setTiltSP(sp);
 		});
@@ -192,20 +197,21 @@ public class Algae extends SubsystemBase {
 
 	/**
 	 * Example command factory method.
-	 *
-	 * @return a command
+	 * 
+	 * @param Intake motor velocity
+	 * @return Command to set velocity
 	 */
-	public Command setIntakeCmd(double pos) {
+	public Command setIntakeCmd(double vel) {
 		// Subsystem::RunOnce implicitly requires `this` subsystem.
 		return runOnce(() -> {
-			setIntakeVel(pos);
+			setIntakeVel(vel);
 		});
 	}
 
 	/**
 	 * Example command factory method.
 	 *
-	 * @return a command
+	 * @return Command to set velocity using preset SP
 	 */
 	public Command setIntakeCmd() {
 		return setIntakeCmd(getIntakeSP());
@@ -217,70 +223,36 @@ public class Algae extends SubsystemBase {
 		});
 	}
 
-	/**
-	 * An example method querying a boolean state of the subsystem (for example, a
-	 * digital sensor).
-	 *
-	 * @return value of some boolean subsystem state, such as a digital sensor.
-	 */
-	public boolean exampleCondition() {
-		// Query some boolean state, such as a digital sensor.
-		return false;
-	}
-
-	public boolean getTiltSPChanged() {
-		double currTiltSP = getTiltSP();
-		boolean changed = prevTiltSP != currTiltSP;
-		if (changed)
-			System.out.println("Algae Tilt SP Changed from " + prevTiltSP + " to " + currTiltSP);
-		prevTiltSP = currTiltSP;
-		return changed;
-	}
-
-	public boolean getIntakeSPChanged() {
-		double currIntakeSP = getIntakeSP();
-		boolean changed = prevIntakeSP != currIntakeSP;
-		if (changed)
-			System.out.println("Algae Intake SP Changed from " + prevIntakeSP + " to " + currIntakeSP);
-		prevIntakeSP = currIntakeSP;
-		return changed;
-	}
-
 	// Getting the position of the encoders
 	public double getIntakeVel() {
-		return leftEncoder.getVelocity();
+		return intakeEncoder.getVelocity();
 	}
-
-	// public double getRightVel() {
-	// return rightEncoder.getVelocity();
-	// }
 
 	public double getTiltPos() {
 		return tiltEncoder.getPosition();
 	}
 
 	// Sets the position of the encoders
-	public void setTiltPos(double pos) {
+	public void setTiltPos(AlgaeSP pos) {
 		setTiltSP(pos);
-		tiltController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
+		tiltController.setReference(pos.getValue(), SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
 	// Sets the position of the encoders
 	public void setTiltPos() {
-		tiltController.setReference(getTiltSP(), SparkBase.ControlType.kMAXMotionPositionControl);
+		setTiltPos(getTiltSP());
 	}
 
 	public void setIntakeVel(double vel) {
 		setIntakeSP(vel);
-		leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
+		intakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 
 	public void setIntakeVel() {
-		leftIntakeController.setReference(getIntakeSP(), SparkBase.ControlType.kMAXMotionVelocityControl);
+		intakeController.setReference(getIntakeSP(), SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 
 	public void setIntakeSP(double sp) {
-		System.out.println("Setting Algae Intake SP to " + sp);
 		intakeSP = sp;
 	}
 
@@ -288,54 +260,94 @@ public class Algae extends SubsystemBase {
 		return intakeSP;
 	}
 
-	public void setTiltSP(double sp) {
-		System.out.println("Setting Algae Tilt SP to " + sp);
+	public void setTiltSP(AlgaeSP sp) {
 		tiltSP = sp;
 	}
 
-	public double getTiltSP() {
+	public AlgaeSP getTiltSP() {
 		return tiltSP;
 	}
 
 	public boolean isLimit() {
-		return leftForLimitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
+		return isLimitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
+	}
+
+	public void toggleExtract() {
+		extractAlgae = !extractAlgae;
+	}
+
+	public boolean getExtract() {
+		return extractAlgae;
+	}
+
+	/**
+	 * doAction - performs Algea action based on Ladder position
+	 */
+	public void doAction() {
+		double vel = 0.0;
+
+		switch (ladder.getLadderSP()) {
+			case BARGE:
+			case PROCESSOR:
+				vel = Constants.Algae.EJECT;
+				break;
+			case L3:
+			case L2:
+				if (extractAlgae) {
+					vel = Constants.Algae.INTAKE;
+				}
+				break;
+			case FLOOR:
+				vel = Constants.Algae.INTAKE;
+				break;
+			default:
+		}
+
+		setIntakeVel(vel);
+	}
+
+	/**
+	 * doActionCmd - Command to perform doAction
+	 */
+	public Command doActionCmd() {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			doAction();
+		});
+	}
+
+	public Command toggleExtractCmd() {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			toggleExtract();
+		});
 	}
 
 	public Command algaeBarge() {
-		System.out.println("Running algaeBarge");
-		return this.runOnce(() -> setTiltSP(Constants.Algae.BARGE))
-				.andThen(() -> ladder.setLadderSP(Constants.Algae.BARGE));
+		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.BARGE));
 	}
 
 	public Command algaeL3() {
-		System.out.println("Running algaeL3");
-		return this.runOnce(() -> setTiltSP(Constants.Algae.L3)).andThen(() -> ladder.setLadderSP(Constants.Algae.L3));
+		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.L3));
 	}
 
 	public Command algaeL2() {
-		System.out.println("Running algaeL2");
-		return this.runOnce(() -> setTiltSP(Constants.Algae.L2)).andThen(() -> ladder.setLadderSP(Constants.Algae.L2));
+		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.L2));
 	}
 
 	public Command algaeFloor() {
-		System.out.println("Running algaeFloor");
-		return this.runOnce(() -> setTiltSP(Constants.Algae.FLOOR))
-				.andThen(() -> ladder.setLadderSP(Constants.Algae.FLOOR));
+		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.FLOOR));
 	}
 
 	public Command algaeStow() {
-		System.out.println("Running algaeStow");
-		return this.runOnce(() -> setTiltSP(Constants.Algae.STOW))
-				.andThen(() -> ladder.setLadderSP(Constants.Algae.STOW));
+		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.STOW));
 	}
 
 	public Command algaeIntake() {
-		System.out.println("Running algaeIntake");
 		return this.runOnce(() -> setIntakeSP(Constants.Algae.INTAKE));
 	}
 
 	public Command algaeEject() {
-		System.out.println("Running algaeEject");
 		return this.runOnce(() -> setIntakeSP(Constants.Algae.EJECT));
 	}
 }

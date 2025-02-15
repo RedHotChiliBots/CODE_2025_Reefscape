@@ -163,12 +163,12 @@ public final class Constants {
 	public static final class Coral {
 
 		// define coral positions
-		public static final double STOW = 90.0; 	// degrees
-		public static final double STATION = 55.0; 	// degrees
-		public static final double L1 = 0.0;		// degrees
-		public static final double L2 = -35.0;		// degrees
-		public static final double L3 = -35.0;		// degrees
-		public static final double L4 = -45.0;		// degrees
+		// public static final double STOW = 90.0; 	// degrees
+		// public static final double STATION = 55.0; 	// degrees
+		// public static final double L1 = 0.0;		// degrees
+		// public static final double L2 = -35.0;		// degrees
+		// public static final double L3 = -35.0;		// degrees
+		// public static final double L4 = -45.0;		// degrees
 
 		// define coral velocities
 		public static final double STOP = 0.0;
@@ -237,14 +237,6 @@ public final class Constants {
 	}
 
 	public static final class Algae {
-
-		// define algae positions
-		public static final double STOW = 90.0;
-		public static final double FLOOR = -45.0;
-		public static final double PROCESSOR = -10.0;
-		public static final double L2 = -35.0;
-		public static final double L3 = -35.0;
-		public static final double BARGE = -20.0;
 
 		// define algae velocities
 		public static final double STOP = 0.0;
@@ -329,20 +321,8 @@ public final class Constants {
 	public static final class Ladder {
 
 		// define ladder zeroing speeds
-		public static final double DOWN = 0.15;
+		public static final double DOWN = -0.10;
 		public static final double STOP = 0.0;
-
-		// define ladder positions
-		public static final double START = 0.0;
-		public static final double STOW = 0.5;
-		public static final double FLOOR = 0.5;
-		public static final double PROCESSOR = 0.0 + (7.0 / 12.0);		
-		public static final double STATION = 3.0 + (1.5 / 12.0);
-		public static final double L1 = 1.0 + (6.0 / 12.0);
-		public static final double L2 = 2.0 + (7.825 / 12.0);
-		public static final double L3 = 3.0 + (11.625 / 12.0);
-		public static final double L4 = 6.0 + (0.0 / 12.0);
-		public static final double BARGE = 8.0 + (5.0 / 12.0);
 
 		// The MAXSwerve module can be configured with one of three pinion gears: 12T,
 		// 13T, or 14T.
@@ -354,10 +334,10 @@ public final class Constants {
 		// Invert the right encoder, since the output shaft rotates in the opposite
 		// direction of
 		// the steering motor in the MAXSwerve Module.
-		public static final boolean kRightEncoderInverted = false;
+		public static final boolean kRightEncoderInverted = true;
 
 		public static final boolean kRightMotorInverted = false;
-		public static final boolean kLeftMotorInverted = true;
+		public static final boolean kLeftMotorInverted = false;
 
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;

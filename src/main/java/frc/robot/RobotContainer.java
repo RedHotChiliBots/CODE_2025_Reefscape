@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
@@ -44,13 +47,15 @@ public class RobotContainer {
 			OIConstants.kDriverControllerPort);
 	private final CommandXboxController m_operatorController = new CommandXboxController(
 			OIConstants.kOperatorControllerPort);
+	private final GenericHID m_operatorHID = new GenericHID(
+			OIConstants.kOperatorControllerPort);
 
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
-	private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
-	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
-	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
-	private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
-	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
+	// private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
+	// private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
+	// private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
+	// private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
+	// private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -76,113 +81,6 @@ public class RobotContainer {
 								-MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
 								true),
 						chassis));
-
-		// algae.tiltChanged.onTrue(new RunCommand(() ->
-		// algae.setTiltPos(algae.getTiltSP())));
-		// algae.intakeChanged.onTrue(new RunCommand(() ->
-		// algae.setIntakeVel(algae.getIntakeSP())));
-
-		// coral.tiltChanged.onTrue(new RunCommand(() ->
-		// coral.setTiltPos(coral.getTiltSP())));
-		// coral.intakeChanged.onTrue(new RunCommand(() ->
-		// coral.setIntakeVel(coral.getIntakeSP())));
-
-		// climber.climberChanged.onTrue(new RunCommand(() ->
-		// climber.setClimberPos(climber.getClimberSP())));
-
-		// ladder.ladderChanged.onTrue(new RunCommand(() ->
-		// ladder.setLadderPos(ladder.getLadderSP())));
-
-		algae.setDefaultCommand(
-				// The left stick controls translation of the robot.
-				// Turning is controlled by the X axis of the right stick.
-				new ParallelCommandGroup(
-						new RunCommand(() -> algae.setTiltPos(coral.getTiltSP()), algae),
-						new RunCommand(() -> algae.setIntakeVel(coral.getLeftIntakeSP()))));
-
-		coral.setDefaultCommand(
-				// The left stick controls translation of the robot.
-				// Turning is controlled by the X axis of the right stick.
-				new ParallelCommandGroup(
-						new RunCommand(() -> coral.setTiltPos(coral.getTiltSP()), coral),
-						new RunCommand(() -> coral.setLeftIntakeVel(coral.getLeftIntakeSP())),
-						new RunCommand(() -> coral.setRightIntakeVel(coral.getRightIntakeSP()))));
-
-		climber.setDefaultCommand(
-				// The left stick controls translation of the robot.
-				// Turning is controlled by the X axis of the right stick.
-				new RunCommand(
-						() -> climber.setClimberPos(climber.getClimberSP()), climber));
-
-		ladder.setDefaultCommand(
-				// The left stick controls translation of the robot.
-				// Turning is controlled by the X axis of the right stick.
-				new RunCommand(
-						() -> ladder.setLadderPos(ladder.getLadderSP()), ladder));
-
-		// ParallelCommandGroup algaeBarge = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.BARGE), ladder),
-		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.BARGE), algae));
-		// ParallelCommandGroup algaeL3 = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L3), ladder),
-		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.L3), algae));
-		// ParallelCommandGroup algaeL2 = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L2), ladder),
-		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.L2), algae));
-		// ParallelCommandGroup algaeProcessor = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.PROCESSOR), ladder),
-		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.PROCESSOR), algae));
-		// ParallelCommandGroup algaeFloor = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.FLOOR), ladder),
-		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.FLOOR), algae));
-		// ParallelCommandGroup algaeStow = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.STOW), ladder),
-		// new RunCommand(() -> algae.setTiltSP(Constants.Algae.STOW), algae));
-		// ParallelCommandGroup algaePos = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderPos(), ladder),
-		// new RunCommand(() -> algae.setTiltPos(), algae));
-
-		// ParallelCommandGroup coralL4 = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L4), ladder),
-		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.L4), coral));
-		// ParallelCommandGroup coralL3 = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L3), ladder),
-		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.L3), coral));
-		// ParallelCommandGroup coralL2 = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L2), ladder),
-		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.L2), coral));
-		// ParallelCommandGroup coralL1 = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.L1), ladder),
-		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.L1), coral));
-		// ParallelCommandGroup coralStation = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.STATION), ladder),
-		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.STATION), coral));
-		// ParallelCommandGroup coralStow = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderSP(Constants.Ladder.STOW), ladder),
-		// new RunCommand(() -> coral.setTiltSP(Constants.Coral.STOW), coral));
-		// ParallelCommandGroup coralPos = new ParallelCommandGroup(
-		// new RunCommand(() -> ladder.setLadderPos(), ladder),
-		// new RunCommand(() -> coral.setTiltPos(), coral));
-
-		// RunCommand algaeIntake = new RunCommand(() ->
-		// algae.setIntakeSP(Constants.Algae.INTAKE), algae);
-		// RunCommand algaeScore = new RunCommand(() ->
-		// algae.setIntakeSP(Constants.Algae.EJECT), algae);
-
-		// RunCommand coralIntake = new RunCommand(() ->
-		// coral.setIntakeSP(Constants.Coral.INTAKE), coral);
-		// RunCommand coralScore = new RunCommand(() ->
-		// coral.setIntakeSP(Constants.Coral.EJECT), coral);
-
-		// RunCommand climberClimb = new RunCommand(() ->
-		// climber.setClimberPos(Constants.Climber.CLIMB), climber);
-		// RunCommand climberReady = new RunCommand(() ->
-		// climber.setClimberPos(Constants.Climber.READY), climber);
-		// RunCommand climberStow = new RunCommand(() ->
-		// climber.setClimberPos(Constants.Climber.STOW), climber);
-
-		// ladderTab.addPersistent("Ladder Limit", false)
-		// .withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
 
 		ShuffleboardLayout algaeCommands = Shuffleboard.getTab("Competition")
 				.getLayout("Algae Commands", BuiltInLayouts.kList)
@@ -224,30 +122,6 @@ public class RobotContainer {
 		climberCommands.add("Climb", climber.climberClimb());
 		climberCommands.add("Ready", climber.climberReady());
 		climberCommands.add("Stow", climber.climberStow());
-
-		// algaeTab.add("Algae Barge", algaeBarge);
-		// algaeTab.add("Algae L3", algaeL3);
-		// algaeTab.add("Algae L2", algaeL2);
-		// algaeTab.add("Algae Processor", algaeProcessor);
-		// algaeTab.add("Algae Floor", algaeFloor);
-		// algaeTab.add("Algae Stow", algaeStow);
-
-		// coralTab.add("Coral L4", coralL4);
-		// coralTab.add("Coral L3", coralL3);
-		// coralTab.add("Coral L2", coralL2);
-		// coralTab.add("Coral L1", coralL1);
-		// coralTab.add("Coral Station", coralStation);
-		// coralTab.add("Coral Stow", coralStow);
-
-		// algaeTab.add("Algae Score", algaeScore);
-		// algaeTab.add("Algae Intake", algaeIntake);
-
-		// coralTab.add("Coral Score", coralScore);
-		// coralTab.add("Coral Intake", coralIntake);
-
-		// climberTab.add("Climber Climb", climberClimb);
-		// climberTab.add("Climber Ready", climberReady);
-		// climberTab.add("Climber Stow", climberStow);
 	}
 
 	/**
@@ -268,16 +142,66 @@ public class RobotContainer {
 		// new Trigger(m_exampleSubsystem::exampleCondition).onTrue(new
 		// ExampleCommand(m_exampleSubsystem));
 
-		new Trigger(algae.tiltChanged).onTrue(algae.setTiltCmd());
-		new Trigger(algae.leftIntakeChanged).onTrue(algae.setIntakeCmd());
+		m_driverController.y().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.STOW), climber));
 
-		new Trigger(coral.tiltChanged).onTrue(coral.setTiltCmd());
-		new Trigger(coral.leftIntakeChanged).onTrue(coral.setLeftIntakeCmd());
-		new Trigger(coral.rightIntakeChanged).onTrue(coral.setRightIntakeCmd());
+		m_driverController.b().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.READY), climber));
 
-		new Trigger(climber.climberChanged).onTrue(climber.setClimberCmd());
+		m_driverController.a().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.CLIMB), climber));
 
-		new Trigger(ladder.ladderChanged).onTrue(ladder.setLadderCmd());
+		new POVButton(m_operatorHID, 0).onTrue(new ParallelCommandGroup(
+				ladder.setLadderSPCmd(Ladder.LadderSP.BARGE),
+				coral.setTiltSPCmd(Coral.CoralSP.STOW),
+				algae.setTiltSPCmd(Algae.AlgaeSP.BARGE)));
+
+		new POVButton(m_operatorHID, 90).onTrue(new ParallelCommandGroup(
+				ladder.setLadderSPCmd(Ladder.LadderSP.PROCESSOR),
+				coral.setTiltSPCmd(Coral.CoralSP.STOW),
+				algae.setTiltSPCmd(Algae.AlgaeSP.PROCESSOR)));
+
+		new POVButton(m_operatorHID, 180).onTrue(new ParallelCommandGroup(
+				ladder.setLadderSPCmd(Ladder.LadderSP.FLOOR),
+				coral.setTiltSPCmd(Coral.CoralSP.STOW),
+				algae.setTiltSPCmd(Algae.AlgaeSP.FLOOR)));
+
+		new POVButton(m_operatorHID, 270).onTrue(new ParallelCommandGroup(
+				ladder.setLadderSPCmd(Ladder.LadderSP.STATION),
+				coral.setTiltSPCmd(Coral.CoralSP.STATION),
+				algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
+
+		m_operatorController.y().onTrue(new ParallelCommandGroup(
+				ladder.setLadderSPCmd(Ladder.LadderSP.L4),
+				coral.setTiltSPCmd(Coral.CoralSP.L4),
+				algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
+
+		m_operatorController.b().onTrue(new ParallelCommandGroup(
+				ladder.setLadderSPCmd(Ladder.LadderSP.L3),
+				coral.setTiltSPCmd(Coral.CoralSP.L3),
+				algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
+
+		m_operatorController.a().onTrue(new ParallelCommandGroup(
+				ladder.setLadderSPCmd(Ladder.LadderSP.L2),
+				coral.setTiltSPCmd(Coral.CoralSP.L2),
+				algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
+
+		m_operatorController.x().onTrue(new ParallelCommandGroup(
+				ladder.setLadderSPCmd(Ladder.LadderSP.L1),
+				coral.setTiltSPCmd(Coral.CoralSP.L1),
+				algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
+
+		m_operatorController.leftBumper().onTrue(new ParallelCommandGroup(
+				ladder.setLadderPosCmd(),
+				coral.setTiltPosCmd(),
+				algae.setTiltPosCmd()));
+
+		m_operatorController.rightBumper().onTrue(new ParallelCommandGroup(
+				coral.doActionCmd(),
+				algae.doActionCmd()));
+
+		m_operatorController.start().debounce(0.1, DebounceType.kRising)
+				.onTrue(coral.toggleSideCmd());
+
+		m_operatorController.back().debounce(0.1, DebounceType.kRising)
+				.onTrue(algae.toggleExtractCmd());
 	}
 
 	/**

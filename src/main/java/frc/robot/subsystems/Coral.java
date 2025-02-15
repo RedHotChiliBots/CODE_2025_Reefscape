@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
 public class Coral extends SubsystemBase {
@@ -42,33 +41,35 @@ public class Coral extends SubsystemBase {
 	private RelativeEncoder rightIntakeEncoder = rightIntake.getEncoder();
 	private AbsoluteEncoder tiltEncoder = tilt.getAbsoluteEncoder();
 
-	private SparkLimitSwitch leftFwdLimitSwitch = leftIntake.getForwardLimitSwitch();
-	private SparkLimitSwitch leftRevLimitSwitch = leftIntake.getReverseLimitSwitch();
-	private SparkLimitSwitch rightFwdLimitSwitch = rightIntake.getForwardLimitSwitch();
-	private SparkLimitSwitch rightRevLimitSwitch = rightIntake.getReverseLimitSwitch();
+	private SparkLimitSwitch leftLimitSwitch = leftIntake.getForwardLimitSwitch(); // leftIntake.getReverseLimitSwitch();
+	private SparkLimitSwitch rightLimitSwitch = rightIntake.getForwardLimitSwitch(); // rightIntake.getReverseLimitSwitch();
+
+	public enum CoralSP {
+		STOW(90.0), // degrees
+		STATION(55.0), // degrees
+		L1(0.0), // degrees
+		L2(-35.0), // degrees
+		L3(-35.0), // degrees
+		L4(-45.0); // degrees
+
+		private final double sp;
+
+		CoralSP(final double sp) {
+			this.sp = sp;
+		}
+
+		public double getValue() {
+			return sp;
+		}
+	}
 
 	private Ladder ladder = null;
 
 	private double leftIntakeSP = Constants.Coral.STOP;
 	private double rightIntakeSP = Constants.Coral.STOP;
-	private double tiltSP = Constants.Coral.STOW;
+	private CoralSP tiltSP = CoralSP.STOW;
 
-	private double prevLeftIntakeSP = leftIntakeSP;
-	private double prevRightIntakeSP = rightIntakeSP;
-	public Trigger leftIntakeChanged = new Trigger(() -> getLeftIntakeSPChanged());
-	public Trigger rightIntakeChanged = new Trigger(() -> getRightIntakeSPChanged());
-
-	private double prevTiltSP = tiltSP;
-	public Trigger tiltChanged = new Trigger(() -> getTiltSPChanged());
-
-	private enum LRSide {
-		Null,
-		LEFT,
-		RIGHT
-	}
-
-	private LRSide side = LRSide.Null;
-
+	private boolean leftCoral = true;
 
 	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
 	private final GenericEntry sbLeftIntakeVel = coralTab.addPersistent("Left Intake Vel", 0)
@@ -79,16 +80,20 @@ public class Coral extends SubsystemBase {
 			.withWidget("Text View").withPosition(2, 1).withSize(1, 1).getEntry();
 	private final GenericEntry sbRightIntakeSP = coralTab.addPersistent("Right Intake SP", 0)
 			.withWidget("Text View").withPosition(3, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbTiltPos = coralTab.addPersistent("Tilt Pos", 0)
+
+	private final GenericEntry sbTxtTiltSP = coralTab.addPersistent("Tilt tSP", "")
+			.withWidget("Text View").withPosition(1, 2).withSize(1, 1).getEntry();
+	private final GenericEntry sbDblTiltSP = coralTab.addPersistent("Tilt dSP", 0)
 			.withWidget("Text View").withPosition(2, 2).withSize(1, 1).getEntry();
-	private final GenericEntry sbTiltSP = coralTab.addPersistent("Tilt SP", 0)
+	private final GenericEntry sbTiltPos = coralTab.addPersistent("Tilt Pos", 0)
 			.withWidget("Text View").withPosition(3, 2).withSize(1, 1).getEntry();
+	private final GenericEntry sbSide = coralTab.addPersistent("Side", "")
+			.withWidget("Text View").withPosition(5, 0).withSize(1, 1).getEntry();
+
 	private final GenericEntry sbLeftLimit = coralTab.addPersistent("Left Limit", false)
 			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbRightLimit = coralTab.addPersistent("Right Limit", false)
 			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbSide = coralTab.addPersistent("Side", 0)
-			.withWidget("Text View").withPosition(5, 0).withSize(1, 1).getEntry();
 
 	// Creates a new Coral.
 	public Coral(Ladder ladder) {
@@ -116,7 +121,7 @@ public class Coral extends SubsystemBase {
 				leftIntakeConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-				// Configure Left Intake motor
+		// Configure Left Intake motor
 		rightIntakeConfig
 				.inverted(Constants.Coral.kLeftMotorInverted)
 				.idleMode(Constants.Coral.kIntakeIdleMode)
@@ -176,70 +181,19 @@ public class Coral extends SubsystemBase {
 		sbLeftIntakeSP.setDouble(getLeftIntakeSP());
 		sbRightIntakeVel.setDouble(getRightIntakeVel());
 		sbRightIntakeSP.setDouble(getRightIntakeSP());
+
+		sbTxtTiltSP.setString(getTiltSP().toString());
+		sbDblTiltSP.setDouble(getTiltSP().getValue());
 		sbTiltPos.setDouble(getTiltPos());
-		sbTiltSP.setDouble(getTiltSP());
+
+		if (leftCoral) {
+			sbSide.setString("Left");
+		} else {
+			sbSide.setString("Right");
+		}
+
 		sbLeftLimit.setBoolean(isLeftLimit());
 		sbRightLimit.setBoolean(isRightLimit());
-		sbSide.setString(getSide().toString());
-	}
-
-	/**
-	 * setTiltCmd - command factory method to update the Tilt pos
-	 * 
-	 * @return a command
-	 */
-	public Command setLeftIntakeCmd(double vel) {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setLeftIntakeVel(vel);
-		});
-	}
-
-	public Command setLeftIntakeCmd() {
-		return setLeftIntakeCmd(getLeftIntakeSP());
-	}
-
-	public Command setRightIntakeCmd(double vel) {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setRightIntakeVel(vel);
-		});
-	}
-
-	public Command setRightIntakeCmd() {
-		return setLeftIntakeCmd(getLeftIntakeSP());
-	}
-
-	public Command setTiltCmd(double pos) {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setTiltPos(pos);
-		});
-	}
-
-	public Command setTiltCmd() {
-		return setTiltCmd(getTiltSP());
-	}
-
-	private boolean getTiltSPChanged() {
-		double currTiltSP = getTiltSP();
-		boolean changed = prevTiltSP != currTiltSP;
-		prevTiltSP = currTiltSP;
-		return changed;
-	}
-
-	private boolean getLeftIntakeSPChanged() {
-		double currLeftIntakeSP = getLeftIntakeSP();
-		boolean changed = prevLeftIntakeSP != currLeftIntakeSP;
-		prevLeftIntakeSP = currLeftIntakeSP;
-		return changed;
-	}
-
-	private boolean getRightIntakeSPChanged() {
-		double currRightIntakeSP = getRightIntakeSP();
-		boolean changed = prevRightIntakeSP != currRightIntakeSP;
-		prevRightIntakeSP = currRightIntakeSP;
-		return changed;
 	}
 
 	public double getLeftIntakeVel() {
@@ -254,13 +208,13 @@ public class Coral extends SubsystemBase {
 		return tiltEncoder.getPosition();
 	}
 
-	public void setTiltPos(double pos) {
+	public void setTiltPos(CoralSP pos) {
 		setTiltSP(pos);
-		tiltController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
+		tiltController.setReference(pos.getValue(), SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
 	public void setTiltPos() {
-		tiltController.setReference(getTiltSP(), SparkBase.ControlType.kMAXMotionPositionControl);
+		tiltController.setReference(getTiltSP().getValue(), SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
 	public void setLeftIntakeVel(double vel) {
@@ -274,12 +228,10 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setLeftIntakeSP(double sp) {
-		System.out.println("Setting Coral Left Intake SP to " + sp);
 		leftIntakeSP = sp;
 	}
 
 	public void setRightIntakeSP(double sp) {
-		System.out.println("Setting Coral Right Intake SP to " + sp);
 		rightIntakeSP = sp;
 	}
 
@@ -291,53 +243,132 @@ public class Coral extends SubsystemBase {
 		return rightIntakeSP;
 	}
 
-	public void setTiltSP(double sp) {
-		System.out.println("Setting Coral Tilt SP to " + sp);
+	public void setTiltSP(CoralSP sp) {
 		tiltSP = sp;
 	}
 
-	public double getTiltSP() {
+	public CoralSP getTiltSP() {
 		return tiltSP;
 	}
 
 	public boolean isLeftLimit() {
-		return leftFwdLimitSwitch.isPressed();
+		return leftLimitSwitch.isPressed();
 	}
 
 	public boolean isRightLimit() {
-		return rightFwdLimitSwitch.isPressed();
+		return rightLimitSwitch.isPressed();
 	}
 
-	public LRSide getSide() {
-		return side;
+	public void toggleSide() {
+		leftCoral = !leftCoral;
 	}
 
-	public void setSide(LRSide side) {
-		this.side = side;
+	public void doAction() {
+		double vel = 0.0;
+
+		switch (ladder.getLadderSP()) {
+			case STATION:
+				vel = Constants.Algae.INTAKE;
+				break;
+			case L4:
+			case L3:
+			case L2:
+			case L1:
+				vel = Constants.Algae.EJECT;
+				break;
+			default:
+		}
+
+		if (leftCoral) {
+			setLeftIntakeVel(vel);
+		} else {
+			setRightIntakeVel(vel);
+		}
+	}
+
+	public Command doActionCmd() {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			doAction();
+		});
+	}
+
+	public Command toggleSideCmd() {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			toggleSide();
+		});
+	}
+
+	/**
+	 * setTiltCmd - command factory method to update the Tilt pos
+	 * 
+	 * @return a command
+	 */
+	public Command setLeftIntakeCmd(double vel) {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			setLeftIntakeVel(vel);
+		});
+	}
+
+	public Command setRightIntakeCmd(double vel) {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			setRightIntakeVel(vel);
+		});
+	}
+
+	public Command setRightIntakeCmd() {
+		return setLeftIntakeCmd(getLeftIntakeSP());
+	}
+
+	public Command setTiltSPCmd(CoralSP sp) {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			setTiltSP(sp);
+		});
+	}
+
+	public Command setTiltSPCmd() {
+		return setTiltSPCmd(getTiltSP());
+	}
+
+	public Command setTiltPosCmd(CoralSP pos) {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			setTiltPos(pos);
+		});
+	}
+
+	public Command setTiltPosCmd() {
+		return setTiltPosCmd(getTiltSP());
 	}
 
 	public Command coralL4() {
-		return this.runOnce(() -> setTiltSP(Constants.Coral.L4)).andThen(() -> ladder.setLadderSP(Constants.Coral.L4));
+		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L4));
 	}
 
 	public Command coralL3() {
-		return this.runOnce(() -> setTiltSP(Constants.Coral.L3)).andThen(() -> ladder.setLadderSP(Constants.Coral.L3));
+		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L3));
 	}
 
 	public Command coralL2() {
-		return this.runOnce(() -> setTiltSP(Constants.Coral.L2)).andThen(() -> ladder.setLadderSP(Constants.Coral.L2));
+		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L2));
 	}
 
 	public Command coralL1() {
-		return this.runOnce(() -> setTiltSP(Constants.Coral.L1)).andThen(() -> ladder.setLadderSP(Constants.Coral.L1));
+		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L1));
 	}
 
 	public Command coralStation() {
-		return this.runOnce(() -> setTiltSP(Constants.Coral.STATION)).andThen(() -> ladder.setLadderSP(Constants.Coral.STATION));
+		return this.runOnce(() -> setTiltSP(
+				Coral.CoralSP.STATION));
 	}
 
 	public Command coralStow() {
-		return this.runOnce(() -> setTiltSP(Constants.Coral.STOW)).andThen(() -> ladder.setLadderSP(Constants.Coral.STOW));
+		return this.runOnce(() -> setTiltSP(
+				Coral.CoralSP.STOW));
 	}
 
 	public Command coralLeftIntake() {
