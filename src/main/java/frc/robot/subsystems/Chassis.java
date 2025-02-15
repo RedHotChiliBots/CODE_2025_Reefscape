@@ -116,16 +116,6 @@ public class Chassis extends SubsystemBase {
 	public Chassis() {
 		System.out.println("+++++ Starting Chassis Constructor +++++");
 
-		System.out.println("Rear Right Drive CAN Id: " + m_rearRight.getDrivingCANId());
-		System.out.println("Rear Right Turn CAN Id: " + m_rearRight.getTurningCANId());
-		System.out.println("Rear Left Drive CAN Id: " + m_rearLeft.getDrivingCANId());
-		System.out.println("Rear Left Turn CAN Id: " + m_rearLeft.getTurningCANId());
-
-		System.out.println("Front Left Drive CAN Id: " + m_frontLeft.getDrivingCANId());
-		System.out.println("Front Left Turn CAN Id: " + m_frontLeft.getTurningCANId());
-		System.out.println("Front Right Drive CAN Id: " + m_frontRight.getDrivingCANId());
-		System.out.println("Front Right Turn CAN Id: " + m_frontRight.getTurningCANId());
-
 		// Usage reporting for MAXSwerve template
 		HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
 

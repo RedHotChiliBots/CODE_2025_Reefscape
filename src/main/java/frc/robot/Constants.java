@@ -33,7 +33,7 @@ public final class Constants {
 
 	public static final class CANId {
 
-		public static final int kPDHCanID = 0;
+		public static final int kPDHCanID = 1;
 
 		// Drive/Turn CAN IDs
 		public static final int kRearRightDrivingCanId = 10;
@@ -46,8 +46,9 @@ public final class Constants {
 		public static final int kFrontLeftTurningCanId = 17;
 		public static final int kFrontRightTurningCanId = 18;
 
-		public static final int kCoralIntakeCanId = 20;
-		public static final int kCoralTiltCanId = 21;
+		public static final int kCoralLeftIntakeCanId = 20;
+		public static final int kCoralRightIntakeCanId = 21;
+		public static final int kCoralTiltCanId = 22;
 
 		public static final int kAlgaeLeftIntakeCanId = 30;
 		public static final int kAlgaeRightIntakeCanId = 31;
@@ -162,12 +163,12 @@ public final class Constants {
 	public static final class Coral {
 
 		// define coral positions
-		public static final double STOW = 1.0;
-		public static final double STATION = 1.0;
-		public static final double L1 = 1.0;
-		public static final double L2 = 1.0;
-		public static final double L3 = 1.0;
-		public static final double L4 = 1.0;
+		// public static final double STOW = 90.0; 	// degrees
+		// public static final double STATION = 55.0; 	// degrees
+		// public static final double L1 = 0.0;		// degrees
+		// public static final double L2 = -35.0;		// degrees
+		// public static final double L3 = -35.0;		// degrees
+		// public static final double L4 = -45.0;		// degrees
 
 		// define coral velocities
 		public static final double STOP = 0.0;
@@ -236,15 +237,6 @@ public final class Constants {
 	}
 
 	public static final class Algae {
-
-		// define algae positions
-		public static final double STOW = 1.0;
-		public static final double FLOOR = 1.0;
-		public static final double L1 = 1.0;
-		public static final double L2 = 1.0;
-		public static final double L3 = 1.0;
-		public static final double L4 = 1.0;
-		public static final double BARGE = 1.0;
 
 		// define algae velocities
 		public static final double STOP = 0.0;
@@ -328,15 +320,9 @@ public final class Constants {
 
 	public static final class Ladder {
 
-		// define ladder positions
-		public static final double STOW = 1.0;
-		public static final double FLOOR = 1.0;
-		public static final double STATION = 1.0;
-		public static final double L1 = 1.0;
-		public static final double L2 = 1.0;
-		public static final double L3 = 1.0;
-		public static final double L4 = 1.0;
-		public static final double BARGE = 1.0;
+		// define ladder zeroing speeds
+		public static final double DOWN = -0.10;
+		public static final double STOP = 0.0;
 
 		// The MAXSwerve module can be configured with one of three pinion gears: 12T,
 		// 13T, or 14T.
@@ -348,10 +334,10 @@ public final class Constants {
 		// Invert the right encoder, since the output shaft rotates in the opposite
 		// direction of
 		// the steering motor in the MAXSwerve Module.
-		public static final boolean kRightEncoderInverted = false;
+		public static final boolean kRightEncoderInverted = true;
 
 		public static final boolean kRightMotorInverted = false;
-		public static final boolean kLeftMotorInverted = true;
+		public static final boolean kLeftMotorInverted = false;
 
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;
@@ -414,9 +400,9 @@ public final class Constants {
 	public static final class Climber {
 
 		// define climber positions
-		public static final double STOW = 1.0;
-		public static final double READY = 1.0;
-		public static final double CLIMB = 1.0;
+		public static final double STOW = 90.0;		// degrees, straight up
+		public static final double READY = 0.0; 	// degrees, horizontal but not lifting
+		public static final double CLIMB = -25.0; 	// degrees, fully lifting
 
 		// The MAXSwerve module can be configured with one of three pinion gears: 12T,
 		// 13T, or 14T.
