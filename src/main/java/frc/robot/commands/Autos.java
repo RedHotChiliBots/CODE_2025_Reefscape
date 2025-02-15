@@ -10,9 +10,9 @@ import frc.robot.subsystems.Chassis;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */
-  public static Command exampleAuto(Chassis subsystem) {
-    return Commands.sequence(new ExampleCommand(subsystem));
-  }
+ public static Command exampleAuto(Chassis subsystem) {
+   return Commands.sequence(new ExampleCommand(subsystem));
+ }
 
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
