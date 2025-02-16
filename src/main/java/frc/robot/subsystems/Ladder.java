@@ -100,13 +100,6 @@ public class Ladder extends SubsystemBase {
 				.i(Constants.Ladder.kLeftPosI)
 				.d(Constants.Ladder.kLeftPosD)
 				.outputRange(Constants.Ladder.kLeftPosMinOutput, Constants.Ladder.kLeftPosMaxOutput)
-
-				.p(Constants.Ladder.kLeftVelP, ClosedLoopSlot.kSlot1)
-				.i(Constants.Ladder.kLeftVelI, ClosedLoopSlot.kSlot1)
-				.d(Constants.Ladder.kLeftVelD, ClosedLoopSlot.kSlot1)
-				// .velocityFF(Constants.Ladder.kLeftVelFF, ClosedLoopSlot.kSlot1)
-				.outputRange(Constants.Ladder.kLeftVelMinOutput, Constants.Ladder.kLeftVelMaxOutput,
-						ClosedLoopSlot.kSlot1)
 				.positionWrappingEnabled(Constants.Ladder.kLeftEncodeWrapping);
 
 		leftLadder.configure(leftConfig,

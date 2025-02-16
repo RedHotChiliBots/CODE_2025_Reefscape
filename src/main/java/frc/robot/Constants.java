@@ -358,13 +358,6 @@ public final class Constants {
 		public static final double kLeftPosMinOutput = -1;
 		public static final double kLeftPosMaxOutput = 1;
 
-		public static final double kLeftVelP = 0.04;
-		public static final double kLeftVelI = 0;
-		public static final double kLeftVelD = 0;
-		// public static final double kLeftVelFF = 1 / kDriveWheelFreeSpeedRps;
-		public static final double kLeftVelMinOutput = -1;
-		public static final double kLeftVelMaxOutput = 1;
-
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
 		public static final IdleMode kRightIdleMode = IdleMode.kBrake;
 
