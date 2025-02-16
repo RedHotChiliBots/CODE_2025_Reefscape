@@ -162,14 +162,6 @@ public final class Constants {
 
 	public static final class Coral {
 
-		// define coral positions
-		// public static final double STOW = 90.0; 	// degrees
-		// public static final double STATION = 55.0; 	// degrees
-		// public static final double L1 = 0.0;		// degrees
-		// public static final double L2 = -35.0;		// degrees
-		// public static final double L3 = -35.0;		// degrees
-		// public static final double L4 = -45.0;		// degrees
-
 		// define coral velocities
 		public static final double STOP = 0.0;
 		public static final double INTAKE = 1.0;
@@ -342,53 +334,60 @@ public final class Constants {
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;
 
-		// Calculations required for left motor conversion factors and feed forward
-		public static final double kLeftMotorFreeSpeedRps = MotorConstants.k550FreeSpeedRpm / 60;
-		public static final double kWheelDiameterMeters = Units.feetToMeters(0.33333);// 0.0762;
-		public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
-		// 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
-		// teeth on the bevel pinion
-		public static final double kLeftMotorReduction = (45.0 * 22) / (kLeftMotorPinionTeeth * 15);
-		public static final double kDriveWheelFreeSpeedRps = (kLeftMotorFreeSpeedRps * kWheelCircumferenceMeters)
-				/ kLeftMotorReduction;
+		// // Calculations required for left motor conversion factors and feed forward
+		// public static final double kLeftMotorFreeSpeedRps = MotorConstants.k550FreeSpeedRpm / 60;
+		// public static final double kWheelDiameterMeters = Units.feetToMeters(0.33333);// 0.0762;
+		// public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
+		// // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
+		// // teeth on the bevel pinion
+		// public static final double kLeftMotorReduction = (45.0 * 22) / (kLeftMotorPinionTeeth * 15);
+		// public static final double kDriveWheelFreeSpeedRps = (kLeftMotorFreeSpeedRps * kWheelCircumferenceMeters)
+		// 		/ kLeftMotorReduction;
 
-		public static final double kLeftEncoderPositionFactor = (2 * Math.PI); // radians
-		public static final double kLeftEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
-		public static final double kleftEncoderPositionPIDMinInput = 0; // radians
-		public static final double kLeftEncoderPositionPIDMaxInput = kLeftEncoderPositionFactor; // radians
+		public static final double kLiftGearBox = 25.0;	// to 1 ratio
+		public static final double kSprocketDia = 2.0;	// inches
+		public static final double kStage3perStage1 = 3.0;	// ratio
 
-		public static final double kRightEncoderPositionFactor = (2 * Math.PI); // radians
-		public static final double kRightEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
-		public static final double kRightEncoderPositionPIDMinInput = 0; // radians
-		public static final double kRightEncoderPositionPIDMaxInput = kRightEncoderPositionFactor; // radians
+		public static final double kLiftPostionFactor = ((Math.PI * kSprocketDia) / kLiftGearBox) * kStage3perStage1;
+		public static final double kLiftVelocityFactor = kLiftPostionFactor / 60.0;
+
+		// public static final double kLeftEncoderPositionFactor = (2 * Math.PI); // radians
+		// public static final double kLeftEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
+		// public static final double kleftEncoderPositionPIDMinInput = 0; // radians
+		// public static final double kLeftEncoderPositionPIDMaxInput = kLeftEncoderPositionFactor; // radians
+
+		// public static final double kRightEncoderPositionFactor = (2 * Math.PI); // radians
+		// public static final double kRightEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
+		// public static final double kRightEncoderPositionPIDMinInput = 0; // radians
+		// public static final double kRightEncoderPositionPIDMaxInput = kRightEncoderPositionFactor; // radians
 
 		public static final double kLeftPosP = 0.04;
 		public static final double kLeftPosI = 0;
 		public static final double kLeftPosD = 0;
-		public static final double kLeftPosFF = 1 / kDriveWheelFreeSpeedRps;
+		// public static final double kLeftPosFF = 1 / kDriveWheelFreeSpeedRps;
 		public static final double kLeftPosMinOutput = -1;
 		public static final double kLeftPosMaxOutput = 1;
 
 		public static final double kLeftVelP = 0.04;
 		public static final double kLeftVelI = 0;
 		public static final double kLeftVelD = 0;
-		public static final double kLeftVelFF = 1 / kDriveWheelFreeSpeedRps;
+		// public static final double kLeftVelFF = 1 / kDriveWheelFreeSpeedRps;
 		public static final double kLeftVelMinOutput = -1;
 		public static final double kLeftVelMaxOutput = 1;
 
-		public static final double kRightPosP = 1;
-		public static final double kRightPosI = 0;
-		public static final double kRightPosD = 0;
-		public static final double kRightPosFF = 0;
-		public static final double kRightPosMinOutput = -1;
-		public static final double kRightPosMaxOutput = 1;
+		// public static final double kRightPosP = 1;
+		// public static final double kRightPosI = 0;
+		// public static final double kRightPosD = 0;
+		// public static final double kRightPosFF = 0;
+		// public static final double kRightPosMinOutput = -1;
+		// public static final double kRightPosMaxOutput = 1;
 
-		public static final double kRightVelP = 1;
-		public static final double kRightVelI = 0;
-		public static final double kRightVelD = 0;
-		public static final double kRightVelFF = 0;
-		public static final double kRightVelMinOutput = -1;
-		public static final double kRightVelMaxOutput = 1;
+		// public static final double kRightVelP = 1;
+		// public static final double kRightVelI = 0;
+		// public static final double kRightVelD = 0;
+		// public static final double kRightVelFF = 0;
+		// public static final double kRightVelMinOutput = -1;
+		// public static final double kRightVelMaxOutput = 1;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
 		public static final IdleMode kRightIdleMode = IdleMode.kBrake;

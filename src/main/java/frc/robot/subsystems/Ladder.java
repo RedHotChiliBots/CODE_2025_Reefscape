@@ -92,20 +92,20 @@ public class Ladder extends SubsystemBase {
 				.idleMode(Constants.Ladder.kLeftIdleMode)
 				.smartCurrentLimit(Constants.Ladder.kLeftCurrentLimit);
 		leftConfig.encoder
-				.positionConversionFactor(Constants.Ladder.kLeftEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Ladder.kLeftEncoderVelocityFactor);
+				.positionConversionFactor(Constants.Ladder.kLiftPostionFactor)
+				.velocityConversionFactor(Constants.Ladder.kLiftVelocityFactor);
 		leftConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.p(Constants.Climber.kLeftPosP)
-				.i(Constants.Climber.kLeftPosI)
-				.d(Constants.Climber.kLeftPosD)
-				.outputRange(Constants.Climber.kLeftPosMinOutput, Constants.Climber.kLeftPosMaxOutput)
+				.p(Constants.Ladder.kLeftPosP)
+				.i(Constants.Ladder.kLeftPosI)
+				.d(Constants.Ladder.kLeftPosD)
+				.outputRange(Constants.Ladder.kLeftPosMinOutput, Constants.Ladder.kLeftPosMaxOutput)
 
-				.p(Constants.Climber.kLeftVelP, ClosedLoopSlot.kSlot1)
-				.i(Constants.Climber.kLeftVelI, ClosedLoopSlot.kSlot1)
-				.d(Constants.Climber.kLeftVelD, ClosedLoopSlot.kSlot1)
-				.velocityFF(Constants.Climber.kLeftVelFF, ClosedLoopSlot.kSlot1)
-				.outputRange(Constants.Climber.kLeftVelMinOutput, Constants.Climber.kLeftVelMaxOutput,
+				.p(Constants.Ladder.kLeftVelP, ClosedLoopSlot.kSlot1)
+				.i(Constants.Ladder.kLeftVelI, ClosedLoopSlot.kSlot1)
+				.d(Constants.Ladder.kLeftVelD, ClosedLoopSlot.kSlot1)
+				// .velocityFF(Constants.Ladder.kLeftVelFF, ClosedLoopSlot.kSlot1)
+				.outputRange(Constants.Ladder.kLeftVelMinOutput, Constants.Ladder.kLeftVelMaxOutput,
 						ClosedLoopSlot.kSlot1)
 				.positionWrappingEnabled(Constants.Ladder.kLeftEncodeWrapping);
 
