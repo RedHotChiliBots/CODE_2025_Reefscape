@@ -4,7 +4,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -80,21 +79,14 @@ public class Climber extends SubsystemBase {
 				.idleMode(Constants.Climber.kLeftIdleMode)
 				.smartCurrentLimit(Constants.Climber.kLeftCurrentLimit);
 		leftConfig.encoder
-				.positionConversionFactor(Constants.Climber.kLeftEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Climber.kLeftEncoderVelocityFactor);
+				.positionConversionFactor(Constants.Climber.kTiltPositionFactor)
+				.velocityConversionFactor(Constants.Climber.kTiltVelocityFactor);
 		leftConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
 				.p(Constants.Climber.kLeftPosP)
 				.i(Constants.Climber.kLeftPosI)
 				.d(Constants.Climber.kLeftPosD)
 				.outputRange(Constants.Climber.kLeftPosMinOutput, Constants.Climber.kLeftPosMaxOutput)
-
-				.p(Constants.Climber.kLeftVelP, ClosedLoopSlot.kSlot1)
-				.i(Constants.Climber.kLeftVelI, ClosedLoopSlot.kSlot1)
-				.d(Constants.Climber.kLeftVelD, ClosedLoopSlot.kSlot1)
-				.velocityFF(Constants.Climber.kLeftVelFF, ClosedLoopSlot.kSlot1)
-				.outputRange(Constants.Climber.kLeftVelMinOutput, Constants.Climber.kLeftVelMaxOutput,
-						ClosedLoopSlot.kSlot1)
 				.positionWrappingEnabled(Constants.Climber.kLeftEncodeWrapping);
 
 		leftClimber.configure(leftConfig,

@@ -106,14 +106,13 @@ public class Coral extends SubsystemBase {
 				.idleMode(Constants.Coral.kIntakeIdleMode)
 				.smartCurrentLimit(Constants.Coral.kLeftCurrentLimit);
 		leftIntakeConfig.encoder
-				.positionConversionFactor(Constants.Coral.kIntakeEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Coral.kIntakeEncoderVelocityFactor);
+				.positionConversionFactor(Constants.Coral.kIntakePositionFactor)
+				.velocityConversionFactor(Constants.Coral.kIntakeVelocityFactor);
 		leftIntakeConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(Constants.Coral.kIntakeP,
-						Constants.Coral.kIntakeI,
-						Constants.Coral.kIntakeD,
-						Constants.Coral.kIntakeFF)
+				.p(Constants.Coral.kIntakeP)
+				.i(Constants.Coral.kIntakeI)
+				.d(Constants.Coral.kIntakeD)
 				.outputRange(Constants.Coral.kIntakeMinOutput, Constants.Coral.kIntakeMaxOutput)
 				.positionWrappingEnabled(Constants.Coral.kLeftEncodeWrapping);
 
@@ -127,14 +126,13 @@ public class Coral extends SubsystemBase {
 				.idleMode(Constants.Coral.kIntakeIdleMode)
 				.smartCurrentLimit(Constants.Coral.kLeftCurrentLimit);
 		rightIntakeConfig.encoder
-				.positionConversionFactor(Constants.Coral.kIntakeEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Coral.kIntakeEncoderVelocityFactor);
+				.positionConversionFactor(Constants.Coral.kIntakePositionFactor)
+				.velocityConversionFactor(Constants.Coral.kIntakeVelocityFactor);
 		rightIntakeConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(Constants.Coral.kIntakeP,
-						Constants.Coral.kIntakeI,
-						Constants.Coral.kIntakeD,
-						Constants.Coral.kIntakeFF)
+				.p(Constants.Coral.kIntakeP)
+				.i(Constants.Coral.kIntakeI)
+				.d(Constants.Coral.kIntakeD)
 				.outputRange(Constants.Coral.kIntakeMinOutput, Constants.Coral.kIntakeMaxOutput)
 				.positionWrappingEnabled(Constants.Coral.kLeftEncodeWrapping);
 
@@ -148,14 +146,13 @@ public class Coral extends SubsystemBase {
 				.idleMode(Constants.Coral.kTiltIdleMode)
 				.smartCurrentLimit(Constants.Coral.kTiltCurrentLimit);
 		tiltConfig.encoder
-				.positionConversionFactor(Constants.Coral.kTiltEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Coral.kTiltEncoderVelocityFactor);
+				.positionConversionFactor(Constants.Coral.kTiltPositionFactor)
+				.velocityConversionFactor(Constants.Coral.kTiltVelocityFactor);
 		tiltConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(Constants.Coral.kTiltP,
-						Constants.Coral.kTiltI,
-						Constants.Coral.kTiltD,
-						Constants.Coral.kTiltFF)
+				.p(Constants.Coral.kTiltP)
+				.i(Constants.Coral.kTiltI)
+				.d(Constants.Coral.kTiltD)
 				.outputRange(Constants.Coral.kTiltMinOutput, Constants.Coral.kTiltMaxOutput)
 				.positionWrappingEnabled(Constants.Coral.kTiltEncodeWrapping);
 
