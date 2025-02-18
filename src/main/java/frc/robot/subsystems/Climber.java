@@ -30,12 +30,13 @@ public class Climber extends SubsystemBase {
 	private final SparkMaxConfig rightConfig = new SparkMaxConfig();
 
 	private SparkClosedLoopController leftController = leftClimber.getClosedLoopController();
-	// private SparkClosedLoopController rightController = rightClimber.getClosedLoopController();
+	// private SparkClosedLoopController rightController =
+	// rightClimber.getClosedLoopController();
 
 	private AbsoluteEncoder leftEncoder = leftClimber.getAbsoluteEncoder();
 	// private AbsoluteEncoder rightEncoder = rightClimber.getAbsoluteEncoder();
 
-	private SparkLimitSwitch isLimitSwitch = leftClimber.getForwardLimitSwitch();	// leftClimber.getReverseLimitSwitch();
+	private SparkLimitSwitch isLimitSwitch = leftClimber.getForwardLimitSwitch(); // leftClimber.getReverseLimitSwitch();
 
 	public enum ClimberSP {
 		STOW(90.0), // degrees
@@ -65,8 +66,11 @@ public class Climber extends SubsystemBase {
 	private final GenericEntry sbLeftPos = climberTab.addPersistent("Climber Pos", 0)
 			.withWidget("Text View").withPosition(3, 0)
 			.withSize(1, 1).getEntry();
+	private final GenericEntry sbOnTgt = climberTab.addPersistent("On Tgt", false)
+			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
+
 	private final GenericEntry sbLimit = climberTab.addPersistent("Climber Limit", false)
-			.withWidget("Boolean Box").withPosition(4, 0)
+			.withWidget("Boolean Box").withPosition(6, 0)
 			.withSize(1, 1).getEntry();
 
 	// Creates a new Climber.
@@ -122,7 +126,7 @@ public class Climber extends SubsystemBase {
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 		// Initialize intake start positions
-		setClimberPos(Climber.ClimberSP.STOW);
+		setClimberPos(climberSP);
 
 		System.out.println("----- Ending Climber Constructor -----");
 	}
@@ -130,13 +134,16 @@ public class Climber extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-		sbLeftPos.setDouble(getLeftPos());
+		sbLeftPos.setDouble(getClimberPos());
 		sbTxtSP.setString(getClimberSP().toString());
 		sbDblSP.setDouble(getClimberSP().getValue());
+
+		sbOnTgt.setBoolean(onTarget());
+
 		sbLimit.setBoolean(getLimitSwitch());
 	}
 
-	public Command setClimberCmd(ClimberSP pos) {
+	public Command setClimberPosCmd(ClimberSP pos) {
 		// Inline construction of command goes here.
 		// Subsystem::RunOnce implicitly requires `this` subsystem.
 		return runOnce(
@@ -145,29 +152,31 @@ public class Climber extends SubsystemBase {
 				});
 	}
 
-	public Command setClimberCmd() {
+	public Command setClimberPosCmd() {
 		// Inline construction of command goes here.
 		// Subsystem::RunOnce implicitly requires `this` subsystem.
 		return runOnce(
 				() -> {
-					setClimberPos(getClimberSP());
+					setClimberPosCmd(getClimberSP());
 				});
 	}
 
-	public double getLeftPos() {
+	public double getClimberPos() {
 		return leftEncoder.getPosition();
 	}
-
-	// public double getRightPos() {
-	// 	return rightEncoder.getPosition();
-	// }
 
 	public void setClimberPos(ClimberSP pos) {
 		setClimberSP(pos);
 		leftController.setReference(pos.getValue(),
 				SparkBase.ControlType.kMAXMotionPositionControl);
-		// rightController.setReference(pos,
-		// SparkBase.ControlType.kMAXMotionPositionControl);
+	}
+
+	public void setClimberPos() {
+		setClimberPos(getClimberSP());
+	}
+
+	public boolean onTarget() {
+		return Math.abs(getClimberPos() - getClimberSP().getValue()) < Constants.Climber.kTollerance;
 	}
 
 	public void setClimberSP(ClimberSP sp) {

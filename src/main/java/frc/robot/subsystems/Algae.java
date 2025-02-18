@@ -72,6 +72,8 @@ public class Algae extends SubsystemBase {
 			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbIntakeSP = algaeTab.addPersistent("Intake SP", 0)
 			.withWidget("Text View").withPosition(3, 0).withSize(1, 1).getEntry();
+	private final GenericEntry sbIntakeOnTgt = algaeTab.addPersistent("Intake On Tgt", false)
+			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
 
 	private final GenericEntry sbTxtTiltSP = algaeTab.addPersistent("Tilt tSP", "")
 			.withWidget("Text View").withPosition(1, 1).withSize(1, 1).getEntry();
@@ -79,11 +81,13 @@ public class Algae extends SubsystemBase {
 			.withWidget("Text View").withPosition(2, 1).withSize(1, 1).getEntry();
 	private final GenericEntry sbTiltPos = algaeTab.addPersistent("Tilt Pos", 0)
 			.withWidget("Text View").withPosition(3, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbLimit = algaeTab.addPersistent("Limit", false)
-			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
-
-	private final GenericEntry sbExtract = algaeTab.addPersistent("Expel", false)
+	private final GenericEntry sbTiltOnTgt = algaeTab.addPersistent("Tilt On Tgt", false)
 			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
+
+	private final GenericEntry sbLimit = algaeTab.addPersistent("Limit", false)
+			.withWidget("Boolean Box").withPosition(6, 0).withSize(1, 1).getEntry();
+	private final GenericEntry sbExtract = algaeTab.addPersistent("Expel", false)
+			.withWidget("Boolean Box").withPosition(6, 1).withSize(1, 1).getEntry();
 
 	// Creates a new Algae.
 	public Algae(Ladder ladder) {
@@ -111,7 +115,7 @@ public class Algae extends SubsystemBase {
 
 		// Configure Right Intake motor
 		rightConfig
-				.follow(leftIntake)
+				.follow(leftIntake, true)
 				.inverted(Constants.Algae.kRightMotorInverted)
 				.idleMode(Constants.Algae.kRightIdleMode)
 				.smartCurrentLimit(Constants.Algae.kRightCurrentLimit);
@@ -167,6 +171,10 @@ public class Algae extends SubsystemBase {
 		sbTiltPos.setDouble(getTiltPos());
 		sbTxtTiltSP.setString(getTiltSP().toString());
 		sbDblTiltSP.setDouble(getTiltSP().getValue());
+
+		sbTiltOnTgt.setBoolean(onTiltTarget());
+		sbIntakeOnTgt.setBoolean(onIntakeTarget());
+
 		sbLimit.setBoolean(isLimit());
 		sbExtract.setBoolean(getExtract());
 	}
@@ -248,6 +256,14 @@ public class Algae extends SubsystemBase {
 
 	public void setIntakeVel() {
 		intakeController.setReference(getIntakeSP(), SparkBase.ControlType.kMAXMotionVelocityControl);
+	}
+
+	public boolean onTiltTarget() {
+		return Math.abs(getTiltPos() - getTiltSP().getValue()) < Constants.Algae.kTiltTollerance;
+	}
+
+	public boolean onIntakeTarget() {
+		return Math.abs(getIntakeVel() - getIntakeSP()) < Constants.Algae.kIntakeTollerance;
 	}
 
 	public void setIntakeSP(double sp) {

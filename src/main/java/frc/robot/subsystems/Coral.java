@@ -76,10 +76,15 @@ public class Coral extends SubsystemBase {
 			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbLeftIntakeSP = coralTab.addPersistent("Left Intake SP", 0)
 			.withWidget("Text View").withPosition(3, 0).withSize(1, 1).getEntry();
+	private final GenericEntry sbLeftInOnTgt = coralTab.addPersistent("Left On Tgt", false)
+			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
+
 	private final GenericEntry sbRightIntakeVel = coralTab.addPersistent("Right Intake Vel", 0)
 			.withWidget("Text View").withPosition(2, 1).withSize(1, 1).getEntry();
 	private final GenericEntry sbRightIntakeSP = coralTab.addPersistent("Right Intake SP", 0)
 			.withWidget("Text View").withPosition(3, 1).withSize(1, 1).getEntry();
+	private final GenericEntry sbRightInOnTgt = coralTab.addPersistent("Right On Tgt", false)
+			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
 
 	private final GenericEntry sbTxtTiltSP = coralTab.addPersistent("Tilt tSP", "")
 			.withWidget("Text View").withPosition(1, 2).withSize(1, 1).getEntry();
@@ -87,13 +92,16 @@ public class Coral extends SubsystemBase {
 			.withWidget("Text View").withPosition(2, 2).withSize(1, 1).getEntry();
 	private final GenericEntry sbTiltPos = coralTab.addPersistent("Tilt Pos", 0)
 			.withWidget("Text View").withPosition(3, 2).withSize(1, 1).getEntry();
-	private final GenericEntry sbSide = coralTab.addPersistent("Side", "")
-			.withWidget("Text View").withPosition(5, 0).withSize(1, 1).getEntry();
+	private final GenericEntry sbTiltOnTgt = coralTab.addPersistent("Tilt On Tgt", false)
+			.withWidget("Boolean Box").withPosition(4, 2).withSize(1, 1).getEntry();
 
 	private final GenericEntry sbLeftLimit = coralTab.addPersistent("Left Limit", false)
-			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
+			.withWidget("Boolean Box").withPosition(6, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbRightLimit = coralTab.addPersistent("Right Limit", false)
-			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
+			.withWidget("Boolean Box").withPosition(6, 1).withSize(1, 1).getEntry();
+
+	private final GenericEntry sbSide = coralTab.addPersistent("Side", "")
+			.withWidget("Text View").withPosition(6, 2).withSize(1, 1).getEntry();
 
 	// Creates a new Coral.
 	public Coral(Ladder ladder) {
@@ -183,6 +191,10 @@ public class Coral extends SubsystemBase {
 		sbDblTiltSP.setDouble(getTiltSP().getValue());
 		sbTiltPos.setDouble(getTiltPos());
 
+		sbLeftInOnTgt.setBoolean(onLeftIntakeTarget());
+		sbRightInOnTgt.setBoolean(onRightIntakeTarget());
+		sbTiltOnTgt.setBoolean(onTiltTarget());
+
 		if (leftCoral) {
 			sbSide.setString("Left");
 		} else {
@@ -258,6 +270,18 @@ public class Coral extends SubsystemBase {
 
 	public void toggleSide() {
 		leftCoral = !leftCoral;
+	}
+
+	public boolean onTiltTarget() {
+		return Math.abs(getTiltPos() - getTiltSP().getValue()) < Constants.Coral.kTiltTollerance;
+	}
+
+	public boolean onLeftIntakeTarget() {
+		return Math.abs(getLeftIntakeVel() - getLeftIntakeSP()) < Constants.Coral.kIntakeTollerance;
+	}
+
+	public boolean onRightIntakeTarget() {
+		return Math.abs(getRightIntakeVel() - getRightIntakeSP()) < Constants.Coral.kIntakeTollerance;
 	}
 
 	public void doAction() {

@@ -77,8 +77,12 @@ public class Ladder extends SubsystemBase {
 	private final GenericEntry sbLadderPos = ladderTab.addPersistent("Ladder Pos", 0)
 			.withWidget("Text View").withPosition(3, 0)
 			.withSize(1, 1).getEntry();
-	private final GenericEntry sbLimit = ladderTab.addPersistent("Ladder Limit", false)
+	private final GenericEntry sbOnTgt = ladderTab.addPersistent("On Tgt", false)
 			.withWidget("Boolean Box").withPosition(4, 0)
+			.withSize(1, 1).getEntry();
+
+	private final GenericEntry sbLimit = ladderTab.addPersistent("Ladder Limit", false)
+			.withWidget("Boolean Box").withPosition(6, 0)
 			.withSize(1, 1).getEntry();
 
 	// Creates a new Ladder.
@@ -145,6 +149,9 @@ public class Ladder extends SubsystemBase {
 		sbTxtSP.setString(getLadderSP().toString());
 		sbDblSP.setDouble(getLadderSP().getValue());
 		sbLadderPos.setDouble(getLeftPos());
+
+		sbOnTgt.setBoolean(onTarget());
+
 		sbLimit.setBoolean(isLimit());
 
 		if (firstPeriod || zeroingLadder) {
@@ -195,9 +202,9 @@ public class Ladder extends SubsystemBase {
 		return setLadderPosCmd(getLadderSP());
 	}
 
-	// public boolean isLeftOnTarget() {
-	// return leftController.atSetpoint();
-	// }
+	public boolean onTarget() {
+		return Math.abs(getLeftPos() - getLadderSP().getValue()) < Constants.Ladder.kTollerance;
+	}
 
 	public double getLeftPos() {
 		return leftEncoder.getPosition();

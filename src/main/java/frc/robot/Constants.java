@@ -174,6 +174,9 @@ public final class Constants {
 
 	public static final class Coral {
 
+		public static final double kTiltTollerance = 0.25; // degrees
+		public static final double kIntakeTollerance = 25.0; // RPMs
+		
 		// define coral velocities
 		public static final double STOP = 0.0;
 		public static final double INTAKE = 1.0;
@@ -228,6 +231,9 @@ public final class Constants {
 
 	public static final class Algae {
 
+		public static final double kTiltTollerance = 0.25;	// degrees
+		public static final double kIntakeTollerance = 25.0;	// RPMs
+
 		// define algae velocities
 		public static final double STOP = 0.0;
 		public static final double INTAKE = 1.0;
@@ -280,6 +286,8 @@ public final class Constants {
 		// define ladder zeroing speeds
 		public static final double DOWN = -0.10;
 		public static final double STOP = 0.0;
+
+		public static final double kTollerance = 0.25;	// Inches
 
 		// The MAXSwerve module can be configured with one of three pinion gears: 12T,
 		// 13T, or 14T.
@@ -337,6 +345,8 @@ public final class Constants {
 	}
 
 	public static final class Climber {
+
+		public static final double kTollerance = 0.25;	// degrees
 
 		// Invert the right encoder, since the output shaft rotates in the opposite
 		// direction of
