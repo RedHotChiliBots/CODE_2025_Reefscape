@@ -182,18 +182,6 @@ public final class Constants {
 		public static final double INTAKE = 1.0;
 		public static final double EJECT = -1.0;
 
-		// The MAXSwerve module can be configured with one of three pinion gears: 12T,
-		// 13T, or 14T.
-		// This changes the drive speed of the module (a pinion gear with more teeth
-		// will result in a
-		// robot that drives faster).
-		public static final int kLeftMotorPinionTeeth = 14;
-
-		// Invert the right encoder, since the output shaft rotates in the opposite
-		// direction of
-		// the steering motor in the MAXSwerve Module.
-		public static final boolean kRightEncoderInverted = false;
-
 		public static final boolean kRightMotorInverted = false;
 		public static final boolean kLeftMotorInverted = true;
 		public static final boolean kTiltMotorInverted = false;
@@ -244,11 +232,6 @@ public final class Constants {
 		public static final double STOP = 0.0;
 		public static final double INTAKE = 1.0;
 		public static final double EJECT = -1.0;
-
-		// Invert the right encoder, since the output shaft rotates in the opvelite
-		// direction of
-		// the steering motor in the MAXSwerve Module.
-		public static final boolean kRightEncoderInverted = false;
 
 		public static final boolean kRightMotorInverted = false;
 		public static final boolean kLeftMotorInverted = true;
@@ -301,18 +284,6 @@ public final class Constants {
 
 		public static final double kTollerance = 0.25; // Inches
 
-		// The MAXSwerve module can be configured with one of three pinion gears: 12T,
-		// 13T, or 14T.
-		// This changes the drive speed of the module (a pinion gear with more teeth
-		// will result in a
-		// robot that drives faster).
-		public static final int kLeftMotorPinionTeeth = 14;
-
-		// Invert the right encoder, since the output shaft rotates in the opposite
-		// direction of
-		// the steering motor in the MAXSwerve Module.
-		public static final boolean kRightEncoderInverted = true;
-
 		public static final boolean kRightMotorInverted = false;
 		public static final boolean kLeftMotorInverted = false;
 
@@ -347,11 +318,6 @@ public final class Constants {
 
 		public static final double kTollerance = 0.25; // degrees
 
-		// Invert the right encoder, since the output shaft rotates in the opposite
-		// direction of
-		// the steering motor in the MAXSwerve Module.
-		public static final boolean kRightEncoderInverted = false;
-
 		public static final boolean kRightMotorInverted = false;
 		public static final boolean kLeftMotorInverted = true;
 
@@ -377,5 +343,4 @@ public final class Constants {
 		public static final int kLeftCurrentLimit = 20; // amps
 		public static final int kRightCurrentLimit = 20; // amps
 	}
-
 }
