@@ -30,12 +30,10 @@ public class Ladder extends SubsystemBase {
 	private final SparkMaxConfig rightConfig = new SparkMaxConfig();
 
 	private SparkClosedLoopController leftController = leftLadder.getClosedLoopController();
-	private SparkClosedLoopController rightController = rightLadder.getClosedLoopController();
 
 	private RelativeEncoder leftEncoder = leftLadder.getEncoder();
-	private RelativeEncoder rightEncoder = rightLadder.getEncoder();
 
-	private SparkLimitSwitch isLimitSwitch = leftLadder.getForwardLimitSwitch(); // leftLadder.getReverseLimitSwitch();
+	private SparkLimitSwitch limitSwitch = leftLadder.getForwardLimitSwitch(); // leftLadder.getReverseLimitSwitch();
 
 	// define ladder positions
 	public enum LadderSP {
@@ -61,7 +59,7 @@ public class Ladder extends SubsystemBase {
 		}
 	}
 
-	private LadderSP ladderSP = LadderSP.STOW;
+	private LadderSP ladderSP = LadderSP.START;
 
 	private boolean firstPeriod = true;
 	private boolean zeroingLadder = false;
@@ -84,6 +82,12 @@ public class Ladder extends SubsystemBase {
 	private final GenericEntry sbLimit = ladderTab.addPersistent("Ladder Limit", false)
 			.withWidget("Boolean Box").withPosition(6, 0)
 			.withSize(1, 1).getEntry();
+	private final GenericEntry sbFirst = ladderTab.addPersistent("First", false)
+			.withWidget("Boolean Box").withPosition(6, 1)
+			.withSize(1, 1).getEntry();
+	private final GenericEntry sbZeroing = ladderTab.addPersistent("Zeroing", false)
+			.withWidget("Boolean Box").withPosition(6, 2)
+			.withSize(1, 1).getEntry();
 
 	// Creates a new Ladder.
 	public Ladder() {
@@ -99,11 +103,15 @@ public class Ladder extends SubsystemBase {
 				.velocityConversionFactor(Constants.Ladder.kLiftVelocityFactor);
 		leftConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.p(Constants.Ladder.kLeftPosP)
-				.i(Constants.Ladder.kLeftPosI)
-				.d(Constants.Ladder.kLeftPosD)
-				.outputRange(Constants.Ladder.kLeftPosMinOutput, Constants.Ladder.kLeftPosMaxOutput)
+				.p(Constants.Ladder.kPosP)
+				.i(Constants.Ladder.kPosI)
+				.d(Constants.Ladder.kPosD)
+				.outputRange(Constants.Ladder.kPosMinOutput, Constants.Ladder.kPosMaxOutput)
 				.positionWrappingEnabled(Constants.Ladder.kLeftEncodeWrapping);
+		leftConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Ladder.kMaxVel)
+				.maxAcceleration(Constants.Ladder.kMaxAccel)
+				.allowedClosedLoopError(Constants.Ladder.kAllowedErr);
 
 		leftLadder.configure(leftConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -114,25 +122,6 @@ public class Ladder extends SubsystemBase {
 				.inverted(Constants.Ladder.kRightMotorInverted)
 				.idleMode(Constants.Ladder.kRightIdleMode)
 				.smartCurrentLimit(Constants.Ladder.kRightCurrentLimit);
-		// rightConfig.encoder
-		// .positionConversionFactor(Constants.Ladder.kRightEncoderPositionFactor)
-		// .velocityConversionFactor(Constants.Ladder.kRightEncoderVelocityFactor);
-		// rightConfig.closedLoop
-		// .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-		// .p(Constants.Climber.kRightPosP)
-		// .i(Constants.Climber.kRightPosI)
-		// .d(Constants.Climber.kRightPosD)
-		// .outputRange(Constants.Climber.kRightPosMinOutput,
-		// Constants.Climber.kRightPosMaxOutput)
-
-		// .p(Constants.Climber.kRightVelP, ClosedLoopSlot.kSlot1)
-		// .i(Constants.Climber.kRightVelI, ClosedLoopSlot.kSlot1)
-		// .d(Constants.Climber.kRightVelD, ClosedLoopSlot.kSlot1)
-		// .velocityFF(Constants.Climber.kRightVelFF, ClosedLoopSlot.kSlot1)
-		// .outputRange(Constants.Climber.kRightVelMinOutput,
-		// Constants.Climber.kRightVelMaxOutput,
-		// ClosedLoopSlot.kSlot1)
-		// .positionWrappingEnabled(Constants.Ladder.kRightEncodeWrapping);
 
 		rightLadder.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -153,6 +142,8 @@ public class Ladder extends SubsystemBase {
 		sbOnTgt.setBoolean(onTarget());
 
 		sbLimit.setBoolean(isLimit());
+		sbFirst.setBoolean(firstPeriod);
+		sbZeroing.setBoolean(zeroingLadder);
 
 		if (firstPeriod || zeroingLadder) {
 			zeroLadder();
@@ -168,7 +159,7 @@ public class Ladder extends SubsystemBase {
 
 		if (isLimit()) {
 			leftLadder.set(Constants.Ladder.STOP);
-			leftEncoder.setPosition(LadderSP.START.getValue());
+			// leftEncoder.setPosition(LadderSP.START.getValue());
 			setLadderPos(LadderSP.STOW);
 			zeroingLadder = false;
 		}
@@ -210,25 +201,14 @@ public class Ladder extends SubsystemBase {
 		return leftEncoder.getPosition();
 	}
 
-	public double getRightPos() {
-		return rightEncoder.getPosition();
-	}
-
 	public void setLadderPos(LadderSP pos) {
 		setLadderSP(pos);
 		leftController.setReference(pos.getValue(),
 				SparkBase.ControlType.kMAXMotionPositionControl);
-		rightController.setReference(pos.getValue(),
-				SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
 	public void setLadderPos() {
-		leftController.setReference(
-				getLadderSP().getValue(),
-				SparkBase.ControlType.kMAXMotionPositionControl);
-		rightController.setReference(
-				getLadderSP().getValue(),
-				SparkBase.ControlType.kMAXMotionPositionControl);
+		setLadderPos(getLadderSP());
 	}
 
 	public void setLadderSP(LadderSP sp) {
@@ -240,6 +220,6 @@ public class Ladder extends SubsystemBase {
 	}
 
 	public boolean isLimit() {
-		return isLimitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
+		return limitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
 	}
 }

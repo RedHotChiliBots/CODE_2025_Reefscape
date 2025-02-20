@@ -87,11 +87,15 @@ public class Climber extends SubsystemBase {
 				.velocityConversionFactor(Constants.Climber.kTiltVelocityFactor);
 		leftConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.p(Constants.Climber.kLeftPosP)
-				.i(Constants.Climber.kLeftPosI)
-				.d(Constants.Climber.kLeftPosD)
-				.outputRange(Constants.Climber.kLeftPosMinOutput, Constants.Climber.kLeftPosMaxOutput)
+				.p(Constants.Climber.kPosP)
+				.i(Constants.Climber.kPosI)
+				.d(Constants.Climber.kPosD)
+				.outputRange(Constants.Climber.kPosMinOutput, Constants.Climber.kPosMaxOutput)
 				.positionWrappingEnabled(Constants.Climber.kLeftEncodeWrapping);
+		leftConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Climber.kPosMaxVel)
+				.maxAcceleration(Constants.Climber.kPosMaxAccel)
+				.allowedClosedLoopError(Constants.Climber.kPosAllowedErr);
 
 		leftClimber.configure(leftConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

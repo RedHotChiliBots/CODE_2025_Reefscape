@@ -118,11 +118,16 @@ public class Coral extends SubsystemBase {
 				.velocityConversionFactor(Constants.Coral.kIntakeVelocityFactor);
 		leftIntakeConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.p(Constants.Coral.kIntakeP)
-				.i(Constants.Coral.kIntakeI)
-				.d(Constants.Coral.kIntakeD)
-				.outputRange(Constants.Coral.kIntakeMinOutput, Constants.Coral.kIntakeMaxOutput)
-				.positionWrappingEnabled(Constants.Coral.kLeftEncodeWrapping);
+				.p(Constants.Coral.kIntakeVelP)
+				.i(Constants.Coral.kIntakeVelI)
+				.d(Constants.Coral.kIntakeVelD)
+				.velocityFF(Constants.Coral.kIntakeVelFF)
+				.outputRange(Constants.Coral.kIntakeVelMinOutput, Constants.Coral.kIntakeVelMaxOutput)
+				.positionWrappingEnabled(Constants.Coral.kIntakeEncodeWrapping);
+		leftIntakeConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Coral.kIntakeVelMaxVel)
+				.maxAcceleration(Constants.Coral.kIntakeVelMaxAccel)
+				.allowedClosedLoopError(Constants.Coral.kIntakeVelAllowedErr);
 
 		leftIntake.configure(
 				leftIntakeConfig,
@@ -138,11 +143,16 @@ public class Coral extends SubsystemBase {
 				.velocityConversionFactor(Constants.Coral.kIntakeVelocityFactor);
 		rightIntakeConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.p(Constants.Coral.kIntakeP)
-				.i(Constants.Coral.kIntakeI)
-				.d(Constants.Coral.kIntakeD)
-				.outputRange(Constants.Coral.kIntakeMinOutput, Constants.Coral.kIntakeMaxOutput)
-				.positionWrappingEnabled(Constants.Coral.kLeftEncodeWrapping);
+				.p(Constants.Coral.kIntakeVelP)
+				.i(Constants.Coral.kIntakeVelI)
+				.d(Constants.Coral.kIntakeVelD)
+				.velocityFF(Constants.Coral.kIntakeVelFF)
+				.outputRange(Constants.Coral.kIntakeVelMinOutput, Constants.Coral.kIntakeVelMaxOutput)
+				.positionWrappingEnabled(Constants.Coral.kIntakeEncodeWrapping);
+		rightIntakeConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Coral.kIntakeVelMaxVel)
+				.maxAcceleration(Constants.Coral.kIntakeVelMaxAccel)
+				.allowedClosedLoopError(Constants.Coral.kIntakeVelAllowedErr);
 
 		rightIntake.configure(
 				rightIntakeConfig,
@@ -158,11 +168,15 @@ public class Coral extends SubsystemBase {
 				.velocityConversionFactor(Constants.Coral.kTiltVelocityFactor);
 		tiltConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.p(Constants.Coral.kTiltP)
-				.i(Constants.Coral.kTiltI)
-				.d(Constants.Coral.kTiltD)
-				.outputRange(Constants.Coral.kTiltMinOutput, Constants.Coral.kTiltMaxOutput)
+				.p(Constants.Coral.kTiltPosP)
+				.i(Constants.Coral.kTiltPosI)
+				.d(Constants.Coral.kTiltPosD)
+				.outputRange(Constants.Coral.kTiltPosMinOutput, Constants.Coral.kTiltPosMaxOutput)
 				.positionWrappingEnabled(Constants.Coral.kTiltEncodeWrapping);
+		tiltConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Coral.kTiltPosMaxVel)
+				.maxAcceleration(Constants.Coral.kTiltPosMaxAccel)
+				.allowedClosedLoopError(Constants.Coral.kTiltPosAllowedErr);
 
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -223,7 +237,7 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setTiltPos() {
-		tiltController.setReference(getTiltSP().getValue(), SparkBase.ControlType.kMAXMotionPositionControl);
+		setTiltSP(getTiltSP());
 	}
 
 	public void setLeftIntakeVel(double vel) {

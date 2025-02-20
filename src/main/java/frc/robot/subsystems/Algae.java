@@ -104,11 +104,16 @@ public class Algae extends SubsystemBase {
 				.velocityConversionFactor(Constants.Algae.kIntakeVelocityFactor);
 		leftConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.p(Constants.Algae.kIntakeP)
-				.i(Constants.Algae.kIntakeI)
-				.d(Constants.Algae.kIntakeD)
-				.outputRange(Constants.Algae.kIntakeMinOutput, Constants.Algae.kIntakeMaxOutput)
-				.positionWrappingEnabled(Constants.Algae.kLeftEncodeWrapping);
+				.p(Constants.Algae.kIntakeVelP)
+				.i(Constants.Algae.kIntakeVelI)
+				.d(Constants.Algae.kIntakeVelD)
+				.velocityFF(Constants.Algae.kIntakeVelFF)
+				.outputRange(Constants.Algae.kIntakeVelMinOutput, Constants.Algae.kIntakeVelMaxOutput)
+				.positionWrappingEnabled(Constants.Algae.kIntakeEncodeWrapping);
+		leftConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Algae.kIntakeVelMaxVel)
+				.maxAcceleration(Constants.Algae.kIntakeVelMaxAccel)
+				.allowedClosedLoopError(Constants.Algae.kIntakeVelAllowedErr);
 
 		leftIntake.configure(leftConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -119,18 +124,6 @@ public class Algae extends SubsystemBase {
 				.inverted(Constants.Algae.kRightMotorInverted)
 				.idleMode(Constants.Algae.kRightIdleMode)
 				.smartCurrentLimit(Constants.Algae.kRightCurrentLimit);
-		// rightConfig.encoder
-		// .positionConversionFactor(Constants.Algae.kRightEncoderPositionFactor)
-		// .velocityConversionFactor(Constants.Algae.kRightEncoderVelocityFactor);
-		// rightConfig.closedLoop
-		// .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-		// .pidf(Constants.Algae.kRightP,
-		// Constants.Algae.kRightI,
-		// Constants.Algae.kRightD,
-		// Constants.Algae.kRightFF)
-		// .outputRange(Constants.Algae.kRightMinOutput,
-		// Constants.Algae.kRightMaxOutput)
-		// .positionWrappingEnabled(Constants.Algae.kRightEncodeWrapping);
 
 		rightIntake.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -145,11 +138,15 @@ public class Algae extends SubsystemBase {
 				.velocityConversionFactor(Constants.Algae.kTiltVelocityFactor);
 		tiltConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.p(Constants.Algae.kTiltP)
-				.i(Constants.Algae.kTiltI)
-				.d(Constants.Algae.kTiltD)
-				.outputRange(Constants.Algae.kTiltMinOutput, Constants.Algae.kTiltMaxOutput)
-				.positionWrappingEnabled(Constants.Algae.kTiltEncodeWrapping);
+				.p(Constants.Algae.kTiltPosP)
+				.i(Constants.Algae.kTiltPosI)
+				.d(Constants.Algae.kTiltPosD)
+				.outputRange(Constants.Algae.kTiltPosMinOutput, Constants.Algae.kTiltPosMaxOutput)
+				.positionWrappingEnabled(Constants.Algae.kIntakeEncodeWrapping);
+		tiltConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Algae.kTiltPosMaxVel)
+				.maxAcceleration(Constants.Algae.kTiltPosMaxAccel)
+				.allowedClosedLoopError(Constants.Algae.kTiltPosAllowedErr);
 
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

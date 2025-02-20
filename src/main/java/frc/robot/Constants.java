@@ -176,7 +176,7 @@ public final class Constants {
 
 		public static final double kTiltTollerance = 0.25; // degrees
 		public static final double kIntakeTollerance = 25.0; // RPMs
-		
+
 		// define coral velocities
 		public static final double STOP = 0.0;
 		public static final double INTAKE = 1.0;
@@ -198,8 +198,7 @@ public final class Constants {
 		public static final boolean kLeftMotorInverted = true;
 		public static final boolean kTiltMotorInverted = false;
 
-		public static final boolean kLeftEncodeWrapping = false;
-		public static final boolean kRightEncodeWrapping = false;
+		public static final boolean kIntakeEncodeWrapping = false;
 		public static final boolean kTiltEncodeWrapping = false;
 
 		public static final double kIntakePositionFactor = GearBox.Ultra4 * GearBox.Ultra4 * GearBox.Ultra4; // radians
@@ -208,19 +207,26 @@ public final class Constants {
 		public static final double kTiltPositionFactor = GearBox.Ultra5 * GearBox.Ultra5; // radians
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // radians per second
 
-		public static final double kIntakeP = 0.04;
-		public static final double kIntakeI = 0;
-		public static final double kIntakeD = 0;
-//		public static final double kIntakeFF = 1 / kDriveWheelFreeSpeedRps;
-		public static final double kIntakeMinOutput = -1;
-		public static final double kIntakeMaxOutput = 1;
+		public static final double kIntakeVelP = 0.0001;
+		public static final double kIntakeVelI = 0;
+		public static final double kIntakeVelD = 0;
+		public static final double kIntakeVelFF = 1.0 / MotorConstants.k550FreeSpeedRpm;
+		public static final double kIntakeVelMinOutput = -1;
+		public static final double kIntakeVelMaxOutput = 1;
 
-		public static final double kTiltP = 1;
-		public static final double kTiltI = 0;
-		public static final double kTiltD = 0;
-//		public static final double kTiltFF = 0;
-		public static final double kTiltMinOutput = -1;
-		public static final double kTiltMaxOutput = 1;
+		public static final double kIntakeVelMaxVel = 10000.0;
+		public static final double kIntakeVelMaxAccel = 500.0;
+		public static final double kIntakeVelAllowedErr = 1.0;
+
+		public static final double kTiltPosP = 0.4;
+		public static final double kTiltPosI = 0.0;
+		public static final double kTiltPosD = 0.0;
+		public static final double kTiltPosMinOutput = -1.0;
+		public static final double kTiltPosMaxOutput = 1.0;
+
+		public static final double kTiltPosMaxVel = 300.0;
+		public static final double kTiltPosMaxAccel = 300.0;
+		public static final double kTiltPosAllowedErr = 1.0;
 
 		public static final IdleMode kIntakeIdleMode = IdleMode.kBrake;
 		public static final IdleMode kTiltIdleMode = IdleMode.kBrake;
@@ -231,8 +237,8 @@ public final class Constants {
 
 	public static final class Algae {
 
-		public static final double kTiltTollerance = 0.25;	// degrees
-		public static final double kIntakeTollerance = 25.0;	// RPMs
+		public static final double kTiltTollerance = 0.25; // degrees
+		public static final double kIntakeTollerance = 25.0; // RPMs
 
 		// define algae velocities
 		public static final double STOP = 0.0;
@@ -248,8 +254,7 @@ public final class Constants {
 		public static final boolean kLeftMotorInverted = true;
 		public static final boolean kTiltMotorInverted = false;
 
-		public static final boolean kLeftEncodeWrapping = false;
-		public static final boolean kRightEncodeWrapping = false;
+		public static final boolean kIntakeEncodeWrapping = false;
 		public static final boolean kTiltEncodeWrapping = false;
 
 		public static final double kIntakePositionFactor = GearBox.Ultra4 * GearBox.Ultra4 * GearBox.Ultra4; // radians
@@ -258,19 +263,26 @@ public final class Constants {
 		public static final double kTiltPositionFactor = GearBox.Ultra5 * GearBox.Ultra5; // radians
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // radians per second
 
-		public static final double kIntakeP = 0.04;
-		public static final double kIntakeI = 0;
-		public static final double kIntakeD = 0;
-		// public static final double kIntakeFF = 1 / kDriveWheelFreeSpeedRps;
-		public static final double kIntakeMinOutput = -1;
-		public static final double kIntakeMaxOutput = 1;
+		public static final double kIntakeVelP = 0.0001;
+		public static final double kIntakeVelI = 0;
+		public static final double kIntakeVelD = 0;
+		public static final double kIntakeVelFF = 1.0 / MotorConstants.k550FreeSpeedRpm;
+		public static final double kIntakeVelMinOutput = -1;
+		public static final double kIntakeVelMaxOutput = 1;
 
-		public static final double kTiltP = 1;
-		public static final double kTiltI = 0;
-		public static final double kTiltD = 0;
-		// public static final double kTiltFF = 0;
-		public static final double kTiltMinOutput = -1;
-		public static final double kTiltMaxOutput = 1;
+		public static final double kIntakeVelMaxVel = 10000.0;
+		public static final double kIntakeVelMaxAccel = 500.0;
+		public static final double kIntakeVelAllowedErr = 1.0;
+
+		public static final double kTiltPosP = 0.4;
+		public static final double kTiltPosI = 0.0;
+		public static final double kTiltPosD = 0.0;
+		public static final double kTiltPosMinOutput = -1.0;
+		public static final double kTiltPosMaxOutput = 1.0;
+
+		public static final double kTiltPosMaxVel = 300.0;
+		public static final double kTiltPosMaxAccel = 300.0;
+		public static final double kTiltPosAllowedErr = 1.0;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
 		public static final IdleMode kRightIdleMode = IdleMode.kBrake;
@@ -287,7 +299,7 @@ public final class Constants {
 		public static final double DOWN = -0.10;
 		public static final double STOP = 0.0;
 
-		public static final double kTollerance = 0.25;	// Inches
+		public static final double kTollerance = 0.25; // Inches
 
 		// The MAXSwerve module can be configured with one of three pinion gears: 12T,
 		// 13T, or 14T.
@@ -307,35 +319,22 @@ public final class Constants {
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;
 
-		// // Calculations required for left motor conversion factors and feed forward
-		// public static final double kLeftMotorFreeSpeedRps =
-		// MotorConstants.k550FreeSpeedRpm / 60;
-		// public static final double kWheelDiameterMeters =
-		// Units.feetToMeters(0.33333);// 0.0762;
-		// public static final double kWheelCircumferenceMeters = kWheelDiameterMeters *
-		// Math.PI;
-		// // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear,
-		// 15
-		// // teeth on the bevel pinion
-		// public static final double kLeftMotorReduction = (45.0 * 22) /
-		// (kLeftMotorPinionTeeth * 15);
-		// public static final double kDriveWheelFreeSpeedRps = (kLeftMotorFreeSpeedRps
-		// * kWheelCircumferenceMeters)
-		// / kLeftMotorReduction;
-
-		public static final double kLiftGearBox = GearBox.Max5 * GearBox.Max5; // to 1 ratio
-		public static final double kSprocketDia = 2.0; // inches
+		public static final double kLiftGearBox = GearBox.Max5; // to 1 ratio
+		public static final double kSprocketDia = 1.375; // inches
 		public static final double kStage3perStage1 = 3.0; // ratio
 
 		public static final double kLiftPostionFactor = ((Math.PI * kSprocketDia) / kLiftGearBox) * kStage3perStage1;
 		public static final double kLiftVelocityFactor = kLiftPostionFactor / 60.0;
 
-		public static final double kLeftPosP = 0.04;
-		public static final double kLeftPosI = 0;
-		public static final double kLeftPosD = 0;
-		// public static final double kLeftPosFF = 1 / kDriveWheelFreeSpeedRps;
-		public static final double kLeftPosMinOutput = -1;
-		public static final double kLeftPosMaxOutput = 1;
+		public static final double kPosP = 0.4;
+		public static final double kPosI = 0.0;
+		public static final double kPosD = 0.0;
+		public static final double kPosMinOutput = -1.0;
+		public static final double kPosMaxOutput = 1.0;
+
+		public static final double kMaxVel = 300.0;
+		public static final double kMaxAccel = 300.0;
+		public static final double kAllowedErr = 1.0;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
 		public static final IdleMode kRightIdleMode = IdleMode.kBrake;
@@ -346,7 +345,7 @@ public final class Constants {
 
 	public static final class Climber {
 
-		public static final double kTollerance = 0.25;	// degrees
+		public static final double kTollerance = 0.25; // degrees
 
 		// Invert the right encoder, since the output shaft rotates in the opposite
 		// direction of
@@ -361,13 +360,16 @@ public final class Constants {
 
 		public static final double kTiltPositionFactor = GearBox.Max9 * GearBox.Max5 * GearBox.Max5; // radians
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // radians per second
-	
-		public static final double kLeftPosP = 0.04;
-		public static final double kLeftPosI = 0;
-		public static final double kLeftPosD = 0;
-		// public static final double kLeftPosFF = 1 / kDriveWheelFreeSpeedRps;
-		public static final double kLeftPosMinOutput = -1;
-		public static final double kLeftPosMaxOutput = 1;
+
+		public static final double kPosP = 0.4;
+		public static final double kPosI = 0.0;
+		public static final double kPosD = 0.0;
+		public static final double kPosMinOutput = -1.0;
+		public static final double kPosMaxOutput = 1.0;
+
+		public static final double kPosMaxVel = 300.0;
+		public static final double kPosMaxAccel = 300.0;
+		public static final double kPosAllowedErr = 1.0;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
 		public static final IdleMode kRightIdleMode = IdleMode.kBrake;
