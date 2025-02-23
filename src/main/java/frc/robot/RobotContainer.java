@@ -24,15 +24,9 @@ import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
+import frc.robot.subsystems.Vision;
+
 import org.photonvision.PhotonCamera;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -50,10 +44,13 @@ public class RobotContainer {
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder);
 	private final Climber climber = new Climber();
-	private final PhotonCamera camera1;
-	private final PhotonCamera camera2;
-	private final PhotonCamera camera3;
-	private final PhotonCamera camera4;
+
+	private final PhotonCamera camera1 = null;
+	private final PhotonCamera camera2 = null;
+	private final PhotonCamera camera3 = null;
+	private final PhotonCamera camera4 = null;
+	private final Vision vision = new Vision(camera1, camera2, camera3, camera4);
+
 	// Replace with CommandPS4Controller or CommandJoystick if needed
 	private final CommandXboxController m_driverController = new CommandXboxController(
 			OIConstants.kDriverControllerPort);
@@ -78,10 +75,10 @@ public class RobotContainer {
 		compTab.add("Algae", algae);
 		compTab.add("Ladder", ladder);
 		compTab.add("Climber", climber);
-		camera1 = new PhotonCamera("OrangePiCamera1");
-		camera2 = new PhotonCamera("OrangePiCamera2");
-		camera3 = new PhotonCamera("OrangePiCamera3");
-		camera4 = new PhotonCamera("OrangePiCamera4");
+		// camera1 = new PhotonCamera("OrangePiCamera1");
+		// camera2 = new PhotonCamera("OrangePiCamera2");
+		// camera3 = new PhotonCamera("OrangePiCamera3");
+		// camera4 = new PhotonCamera("OrangePiCamera4");
 
 		// Configure the trigger bindings
 		configureBindings();
@@ -164,6 +161,8 @@ public class RobotContainer {
 
 		m_driverController.a().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.CLIMB), climber));
 
+		m_driverController.x().onTrue(new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.BARGE), algae));
+
 		new POVButton(m_operatorHID, 0).onTrue(new ParallelCommandGroup(
 				ladder.setLadderSPCmd(Ladder.LadderSP.BARGE),
 				coral.setTiltSPCmd(Coral.CoralSP.STOW),
@@ -218,6 +217,11 @@ public class RobotContainer {
 
 		m_operatorController.back().debounce(0.1, DebounceType.kRising)
 				.onTrue(algae.toggleExtractCmd());
+
+		m_operatorController.leftBumper()
+				.onTrue(coral.setLeftIntakeCmd(Constants.Coral.INTAKE));
+		m_operatorController.rightBumper()
+				.onTrue(coral.setLeftIntakeCmd(Constants.Coral.EJECT));
 	}
 
 	/**
