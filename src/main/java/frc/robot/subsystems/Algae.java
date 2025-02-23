@@ -45,11 +45,12 @@ public class Algae extends SubsystemBase {
 
 	public enum AlgaeSP {
 		STOW(90.0),
-		FLOOR(-45.0),
+		ZERO(0.0),
 		PROCESSOR(-10.0),
+		BARGE(-20.0),
 		L2(-35.0),
 		L3(-35.0),
-		BARGE(-20.0);
+		FLOOR(-45.0);
 
 		private final double sp;
 
@@ -62,7 +63,7 @@ public class Algae extends SubsystemBase {
 		}
 	}
 
-	private AlgaeSP tiltSP = AlgaeSP.STOW;
+	private AlgaeSP tiltSP = AlgaeSP.ZERO;
 	private double intakeSP = Constants.Algae.STOP;
 
 	private boolean extractAlgae = false;

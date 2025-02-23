@@ -37,15 +37,15 @@ public class Ladder extends SubsystemBase {
 
 	// define ladder positions
 	public enum LadderSP {
-		BARGE(8.0 + (5.0 / 12.0)),
-		L4(6.0 + (0.0 / 12.0)),
-		L3(3.0 + (11.625 / 12.0)),
-		L2(2.0 + (7.825 / 12.0)),
-		L1(1.0 + (6.0 / 12.0)),
-		STATION(3.0 + (1.5 / 12.0)),
-		PROCESSOR(0.0 + (7.0 / 12.0)),
-		FLOOR(0.5),
-		STOW(0.5),
+		BARGE((8.0 * 12.0) + 5.0),
+		L4(6.0 * 12.0),
+		L3((3.0 * 12.0) + 11.625),
+		L2((2.0 * 12.0) + 7.825),
+		L1((1.0 * 12.0) + 6.0),
+		STATION((3.0 * 12.0) + 1.5),
+		PROCESSOR(0.0 + 7.0),
+		FLOOR(0.5 * 12.0),
+		STOW(0.5 * 12.0),
 		START(0.0);
 
 		private final double sp;
@@ -126,7 +126,8 @@ public class Ladder extends SubsystemBase {
 		rightLadder.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		// Initialize intake start positions
+		// Initialize intake start positions	
+		leftEncoder.setPosition(ladderSP.getValue());
 		setLadderPos(ladderSP);
 
 		System.out.println("----- Ending Ladder Constructor -----");
@@ -159,7 +160,7 @@ public class Ladder extends SubsystemBase {
 
 		if (isLimit()) {
 			leftLadder.set(Constants.Ladder.STOP);
-			// leftEncoder.setPosition(LadderSP.START.getValue());
+			leftEncoder.setPosition(LadderSP.START.getValue());
 			setLadderPos(LadderSP.STOW);
 			zeroingLadder = false;
 		}

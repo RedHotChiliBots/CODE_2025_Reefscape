@@ -47,6 +47,7 @@ public class Coral extends SubsystemBase {
 	public enum CoralSP {
 		STOW(90.0), // degrees
 		STATION(55.0), // degrees
+		ZERO(0.0),
 		L1(0.0), // degrees
 		L2(-35.0), // degrees
 		L3(-35.0), // degrees
@@ -67,7 +68,7 @@ public class Coral extends SubsystemBase {
 
 	private double leftIntakeSP = Constants.Coral.STOP;
 	private double rightIntakeSP = Constants.Coral.STOP;
-	private CoralSP tiltSP = CoralSP.STOW;
+	private CoralSP tiltSP = CoralSP.ZERO;
 
 	private boolean leftCoral = true;
 

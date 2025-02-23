@@ -39,9 +39,10 @@ public class Climber extends SubsystemBase {
 	private SparkLimitSwitch isLimitSwitch = leftClimber.getForwardLimitSwitch(); // leftClimber.getReverseLimitSwitch();
 
 	public enum ClimberSP {
-		STOW(90.0), // degrees
-		READY(0.0), // degrees
-		CLIMB(-25.0); // degrees
+		STOW(90.0), // degrees - up and out of way
+		READY(23.0), // degrees - touch cage but don't climb
+		ZERO(0.0),	//degrees - for zeroing absolute encoder
+		CLIMB(-10.0); // degrees - full climb
 
 		private final double sp;
 
@@ -106,25 +107,6 @@ public class Climber extends SubsystemBase {
 				.inverted(Constants.Climber.kRightMotorInverted)
 				.idleMode(Constants.Climber.kRightIdleMode)
 				.smartCurrentLimit(Constants.Climber.kRightCurrentLimit);
-		// rightConfig.encoder
-		// .positionConversionFactor(Constants.Climber.kRightEncoderPositionFactor)
-		// .velocityConversionFactor(Constants.Climber.kRightEncoderVelocityFactor);
-		// rightConfig.closedLoop
-		// .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-		// .p(Constants.Climber.kRightPosP)
-		// .i(Constants.Climber.kRightPosI)
-		// .d(Constants.Climber.kRightPosD)
-		// .outputRange(Constants.Climber.kRightPosMinOutput,
-		// Constants.Climber.kRightPosMaxOutput)
-
-		// .p(Constants.Climber.kRightVelP, ClosedLoopSlot.kSlot1)
-		// .i(Constants.Climber.kRightVelI, ClosedLoopSlot.kSlot1)
-		// .d(Constants.Climber.kRightVelD, ClosedLoopSlot.kSlot1)
-		// .velocityFF(Constants.Climber.kRightVelFF, ClosedLoopSlot.kSlot1)
-		// .outputRange(Constants.Climber.kRightVelMinOutput,
-		// Constants.Climber.kRightVelMaxOutput,
-		// ClosedLoopSlot.kSlot1)
-		// .positionWrappingEnabled(Constants.Climber.kRightEncodeWrapping);
 
 		rightClimber.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
