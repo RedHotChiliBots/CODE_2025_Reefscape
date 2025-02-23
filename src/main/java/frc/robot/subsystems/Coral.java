@@ -47,6 +47,7 @@ public class Coral extends SubsystemBase {
 	public enum CoralSP {
 		STOW(90.0), // degrees
 		STATION(55.0), // degrees
+		ZERO(0.0),
 		L1(0.0), // degrees
 		L2(-35.0), // degrees
 		L3(-35.0), // degrees
@@ -67,7 +68,7 @@ public class Coral extends SubsystemBase {
 
 	private double leftIntakeSP = Constants.Coral.STOP;
 	private double rightIntakeSP = Constants.Coral.STOP;
-	private CoralSP tiltSP = CoralSP.STOW;
+	private CoralSP tiltSP = CoralSP.ZERO;
 
 	private boolean leftCoral = true;
 
@@ -76,10 +77,15 @@ public class Coral extends SubsystemBase {
 			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbLeftIntakeSP = coralTab.addPersistent("Left Intake SP", 0)
 			.withWidget("Text View").withPosition(3, 0).withSize(1, 1).getEntry();
+	private final GenericEntry sbLeftInOnTgt = coralTab.addPersistent("Left On Tgt", false)
+			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
+
 	private final GenericEntry sbRightIntakeVel = coralTab.addPersistent("Right Intake Vel", 0)
 			.withWidget("Text View").withPosition(2, 1).withSize(1, 1).getEntry();
 	private final GenericEntry sbRightIntakeSP = coralTab.addPersistent("Right Intake SP", 0)
 			.withWidget("Text View").withPosition(3, 1).withSize(1, 1).getEntry();
+	private final GenericEntry sbRightInOnTgt = coralTab.addPersistent("Right On Tgt", false)
+			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
 
 	private final GenericEntry sbTxtTiltSP = coralTab.addPersistent("Tilt tSP", "")
 			.withWidget("Text View").withPosition(1, 2).withSize(1, 1).getEntry();
@@ -87,13 +93,16 @@ public class Coral extends SubsystemBase {
 			.withWidget("Text View").withPosition(2, 2).withSize(1, 1).getEntry();
 	private final GenericEntry sbTiltPos = coralTab.addPersistent("Tilt Pos", 0)
 			.withWidget("Text View").withPosition(3, 2).withSize(1, 1).getEntry();
-	private final GenericEntry sbSide = coralTab.addPersistent("Side", "")
-			.withWidget("Text View").withPosition(5, 0).withSize(1, 1).getEntry();
+	private final GenericEntry sbTiltOnTgt = coralTab.addPersistent("Tilt On Tgt", false)
+			.withWidget("Boolean Box").withPosition(4, 2).withSize(1, 1).getEntry();
 
 	private final GenericEntry sbLeftLimit = coralTab.addPersistent("Left Limit", false)
-			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
+			.withWidget("Boolean Box").withPosition(6, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbRightLimit = coralTab.addPersistent("Right Limit", false)
-			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
+			.withWidget("Boolean Box").withPosition(6, 1).withSize(1, 1).getEntry();
+
+	private final GenericEntry sbSide = coralTab.addPersistent("Side", "")
+			.withWidget("Text View").withPosition(6, 2).withSize(1, 1).getEntry();
 
 	// Creates a new Coral.
 	public Coral(Ladder ladder) {
@@ -106,16 +115,20 @@ public class Coral extends SubsystemBase {
 				.idleMode(Constants.Coral.kIntakeIdleMode)
 				.smartCurrentLimit(Constants.Coral.kLeftCurrentLimit);
 		leftIntakeConfig.encoder
-				.positionConversionFactor(Constants.Coral.kIntakeEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Coral.kIntakeEncoderVelocityFactor);
+				.positionConversionFactor(Constants.Coral.kIntakePositionFactor)
+				.velocityConversionFactor(Constants.Coral.kIntakeVelocityFactor);
 		leftIntakeConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(Constants.Coral.kIntakeP,
-						Constants.Coral.kIntakeI,
-						Constants.Coral.kIntakeD,
-						Constants.Coral.kIntakeFF)
-				.outputRange(Constants.Coral.kIntakeMinOutput, Constants.Coral.kIntakeMaxOutput)
-				.positionWrappingEnabled(Constants.Coral.kLeftEncodeWrapping);
+				.p(Constants.Coral.kIntakeVelP)
+				.i(Constants.Coral.kIntakeVelI)
+				.d(Constants.Coral.kIntakeVelD)
+				.velocityFF(Constants.Coral.kIntakeVelFF)
+				.outputRange(Constants.Coral.kIntakeVelMinOutput, Constants.Coral.kIntakeVelMaxOutput)
+				.positionWrappingEnabled(Constants.Coral.kIntakeEncodeWrapping);
+		leftIntakeConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Coral.kIntakeVelMaxVel)
+				.maxAcceleration(Constants.Coral.kIntakeVelMaxAccel)
+				.allowedClosedLoopError(Constants.Coral.kIntakeVelAllowedErr);
 
 		leftIntake.configure(
 				leftIntakeConfig,
@@ -127,16 +140,20 @@ public class Coral extends SubsystemBase {
 				.idleMode(Constants.Coral.kIntakeIdleMode)
 				.smartCurrentLimit(Constants.Coral.kLeftCurrentLimit);
 		rightIntakeConfig.encoder
-				.positionConversionFactor(Constants.Coral.kIntakeEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Coral.kIntakeEncoderVelocityFactor);
+				.positionConversionFactor(Constants.Coral.kIntakePositionFactor)
+				.velocityConversionFactor(Constants.Coral.kIntakeVelocityFactor);
 		rightIntakeConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(Constants.Coral.kIntakeP,
-						Constants.Coral.kIntakeI,
-						Constants.Coral.kIntakeD,
-						Constants.Coral.kIntakeFF)
-				.outputRange(Constants.Coral.kIntakeMinOutput, Constants.Coral.kIntakeMaxOutput)
-				.positionWrappingEnabled(Constants.Coral.kLeftEncodeWrapping);
+				.p(Constants.Coral.kIntakeVelP)
+				.i(Constants.Coral.kIntakeVelI)
+				.d(Constants.Coral.kIntakeVelD)
+				.velocityFF(Constants.Coral.kIntakeVelFF)
+				.outputRange(Constants.Coral.kIntakeVelMinOutput, Constants.Coral.kIntakeVelMaxOutput)
+				.positionWrappingEnabled(Constants.Coral.kIntakeEncodeWrapping);
+		rightIntakeConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Coral.kIntakeVelMaxVel)
+				.maxAcceleration(Constants.Coral.kIntakeVelMaxAccel)
+				.allowedClosedLoopError(Constants.Coral.kIntakeVelAllowedErr);
 
 		rightIntake.configure(
 				rightIntakeConfig,
@@ -148,16 +165,19 @@ public class Coral extends SubsystemBase {
 				.idleMode(Constants.Coral.kTiltIdleMode)
 				.smartCurrentLimit(Constants.Coral.kTiltCurrentLimit);
 		tiltConfig.encoder
-				.positionConversionFactor(Constants.Coral.kTiltEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Coral.kTiltEncoderVelocityFactor);
+				.positionConversionFactor(Constants.Coral.kTiltPositionFactor)
+				.velocityConversionFactor(Constants.Coral.kTiltVelocityFactor);
 		tiltConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(Constants.Coral.kTiltP,
-						Constants.Coral.kTiltI,
-						Constants.Coral.kTiltD,
-						Constants.Coral.kTiltFF)
-				.outputRange(Constants.Coral.kTiltMinOutput, Constants.Coral.kTiltMaxOutput)
+				.p(Constants.Coral.kTiltPosP)
+				.i(Constants.Coral.kTiltPosI)
+				.d(Constants.Coral.kTiltPosD)
+				.outputRange(Constants.Coral.kTiltPosMinOutput, Constants.Coral.kTiltPosMaxOutput)
 				.positionWrappingEnabled(Constants.Coral.kTiltEncodeWrapping);
+		tiltConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Coral.kTiltPosMaxVel)
+				.maxAcceleration(Constants.Coral.kTiltPosMaxAccel)
+				.allowedClosedLoopError(Constants.Coral.kTiltPosAllowedErr);
 
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -185,6 +205,10 @@ public class Coral extends SubsystemBase {
 		sbTxtTiltSP.setString(getTiltSP().toString());
 		sbDblTiltSP.setDouble(getTiltSP().getValue());
 		sbTiltPos.setDouble(getTiltPos());
+
+		sbLeftInOnTgt.setBoolean(onLeftIntakeTarget());
+		sbRightInOnTgt.setBoolean(onRightIntakeTarget());
+		sbTiltOnTgt.setBoolean(onTiltTarget());
 
 		if (leftCoral) {
 			sbSide.setString("Left");
@@ -214,7 +238,7 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setTiltPos() {
-		tiltController.setReference(getTiltSP().getValue(), SparkBase.ControlType.kMAXMotionPositionControl);
+		setTiltSP(getTiltSP());
 	}
 
 	public void setLeftIntakeVel(double vel) {
@@ -261,6 +285,18 @@ public class Coral extends SubsystemBase {
 
 	public void toggleSide() {
 		leftCoral = !leftCoral;
+	}
+
+	public boolean onTiltTarget() {
+		return Math.abs(getTiltPos() - getTiltSP().getValue()) < Constants.Coral.kTiltTollerance;
+	}
+
+	public boolean onLeftIntakeTarget() {
+		return Math.abs(getLeftIntakeVel() - getLeftIntakeSP()) < Constants.Coral.kIntakeTollerance;
+	}
+
+	public boolean onRightIntakeTarget() {
+		return Math.abs(getRightIntakeVel() - getRightIntakeSP()) < Constants.Coral.kIntakeTollerance;
 	}
 
 	public void doAction() {
