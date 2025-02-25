@@ -326,6 +326,9 @@ public final class Constants {
 		public static final boolean kRightMotorInverted = false;
 		public static final boolean kLeftMotorInverted = true;
 
+		public static final boolean kRightEncoderInverted = false;
+		public static final boolean kLeftEncoderInverted = true;
+
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;
 

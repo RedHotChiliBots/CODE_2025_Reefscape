@@ -41,7 +41,7 @@ public class Climber extends SubsystemBase {
 	public enum ClimberSP {
 		STOW(90.0), // degrees - up and out of way
 		READY(23.0), // degrees - touch cage but don't climb
-		ZERO(0.0),	//degrees - for zeroing absolute encoder
+		ZERO(0.0), // degrees - for zeroing absolute encoder
 		CLIMB(-10.0); // degrees - full climb
 
 		private final double sp;
@@ -55,7 +55,7 @@ public class Climber extends SubsystemBase {
 		}
 	}
 
-	private ClimberSP climberSP = Climber.ClimberSP.STOW;
+	private ClimberSP climberSP = Climber.ClimberSP.ZERO;
 
 	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
 	private final GenericEntry sbTxtSP = climberTab.addPersistent("Climber tSP", "")
@@ -84,6 +84,7 @@ public class Climber extends SubsystemBase {
 				.idleMode(Constants.Climber.kLeftIdleMode)
 				.smartCurrentLimit(Constants.Climber.kLeftCurrentLimit);
 		leftConfig.encoder
+				.inverted(Constants.Climber.kLeftEncoderInverted)
 				.positionConversionFactor(Constants.Climber.kTiltPositionFactor)
 				.velocityConversionFactor(Constants.Climber.kTiltVelocityFactor);
 		leftConfig.closedLoop

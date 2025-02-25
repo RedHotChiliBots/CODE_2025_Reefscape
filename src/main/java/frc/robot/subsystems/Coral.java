@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -71,6 +72,12 @@ public class Coral extends SubsystemBase {
 	private CoralSP tiltSP = CoralSP.ZERO;
 
 	private boolean leftCoral = true;
+
+	private boolean leftIntakeActive = false;
+	private boolean rightIntakeActive = false;
+
+	private int leftIntakeCntr = 0;
+	private int rightIntakeCntr = 0;
 
 	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
 	private final GenericEntry sbLeftIntakeVel = coralTab.addPersistent("Left Intake Vel", 0)
@@ -218,6 +225,40 @@ public class Coral extends SubsystemBase {
 
 		sbLeftLimit.setBoolean(isLeftLimit());
 		sbRightLimit.setBoolean(isRightLimit());
+
+		if (leftIntakeActive) {
+			if ((getLeftIntakeSP() == Constants.Coral.INTAKE) &&
+					(getLeftIntakeVel() < 100)) {
+				setLeftIntakeVel(Constants.Coral.STOP);
+				leftIntakeActive = false;
+
+			} else if ((getLeftIntakeSP() == Constants.Coral.EJECT) &&
+					(leftIntakeCntr++ > 100)) {
+				setLeftIntakeVel(Constants.Coral.STOP);
+				leftIntakeActive = false;
+
+			} else {
+				DriverStation.reportWarning("Left Intake Active but not commanded.", false);
+				leftIntakeActive = false;
+			}
+		}
+
+		if (rightIntakeActive) {
+			if ((getRightIntakeSP() == Constants.Coral.INTAKE) &&
+					(getRightIntakeVel() < 100)) {
+				setRightIntakeVel(Constants.Coral.STOP);
+				rightIntakeActive = false;
+
+			} else if ((getRightIntakeSP() == Constants.Coral.EJECT) &&
+					(rightIntakeCntr++ > 100)) {
+				setRightIntakeVel(Constants.Coral.STOP);
+				rightIntakeActive = false;
+
+			} else {
+				DriverStation.reportWarning("Right Intake Active but not commanded.", false);
+				leftIntakeActive = false;
+			}
+		}
 	}
 
 	public double getLeftIntakeVel() {
@@ -242,11 +283,15 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setLeftIntakeVel(double vel) {
+		leftIntakeActive = true;
+		leftIntakeCntr = 0;
 		setLeftIntakeSP(vel);
 		leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 
 	public void setRightIntakeVel(double vel) {
+		rightIntakeActive = true;
+		rightIntakeCntr = 0;
 		setRightIntakeSP(vel);
 		rightIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}

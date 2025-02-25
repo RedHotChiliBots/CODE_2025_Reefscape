@@ -161,7 +161,7 @@ public class RobotContainer {
 
 		m_driverController.a().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.CLIMB), climber));
 
-		m_driverController.x().onTrue(new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.BARGE), algae));
+		m_driverController.x().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.ZERO), climber));
 
 		new POVButton(m_operatorHID, 0).onTrue(new ParallelCommandGroup(
 				ladder.setLadderSPCmd(Ladder.LadderSP.BARGE),

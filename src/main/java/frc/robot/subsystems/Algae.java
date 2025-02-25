@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -67,6 +68,10 @@ public class Algae extends SubsystemBase {
 	private double intakeSP = Constants.Algae.STOP;
 
 	private boolean extractAlgae = false;
+
+	private boolean intakeActive = false;
+
+	private int intakeCntr = 0;
 
 	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
 	private final GenericEntry sbIntakeVel = algaeTab.addPersistent("Intake Vel", 0)
@@ -175,6 +180,23 @@ public class Algae extends SubsystemBase {
 
 		sbLimit.setBoolean(isLimit());
 		sbExtract.setBoolean(getExtract());
+
+		if (intakeActive) {
+			if ((getIntakeSP() == Constants.Algae.INTAKE) &&
+					(isLimit())) {
+				setIntakeVel(Constants.Algae.STOP);
+				intakeActive = false;
+
+			} else if ((getIntakeSP() == Constants.Algae.EJECT) &&
+					(intakeCntr++ > 100)) {
+				setIntakeVel(Constants.Algae.STOP);
+				intakeActive = false;
+
+			} else {
+				DriverStation.reportWarning("Algae Intake Active but not commanded.", false);
+				intakeActive = false;
+			}
+		}
 	}
 
 	/**
@@ -248,12 +270,14 @@ public class Algae extends SubsystemBase {
 	}
 
 	public void setIntakeVel(double vel) {
+		intakeActive = true;
+		intakeCntr = 0;
 		setIntakeSP(vel);
 		intakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 
 	public void setIntakeVel() {
-		intakeController.setReference(getIntakeSP(), SparkBase.ControlType.kMAXMotionVelocityControl);
+		setIntakeVel(getIntakeSP());
 	}
 
 	public boolean onTiltTarget() {
