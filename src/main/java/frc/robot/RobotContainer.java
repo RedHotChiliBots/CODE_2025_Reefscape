@@ -39,18 +39,18 @@ import org.photonvision.PhotonCamera;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	private final Chassis chassis = new Chassis();
-	private final Ladder ladder = new Ladder();
-	private final Algae algae = new Algae(ladder);
-	private final Coral coral = new Coral(ladder);
-	private final Climber climber = new Climber();
-	private final Autos auton = new Autos(chassis,  ladder, algae, coral, climber);
-
 	private final PhotonCamera camera1 = null;
 	private final PhotonCamera camera2 = null;
 	private final PhotonCamera camera3 = null;
 	private final PhotonCamera camera4 = null;
 	private final Vision vision = new Vision(camera1, camera2, camera3, camera4);
+
+	private final Chassis chassis = new Chassis();
+	private final Ladder ladder = new Ladder();
+	private final Algae algae = new Algae(ladder);
+	private final Coral coral = new Coral(ladder);
+	private final Climber climber = new Climber();
+	private final Autos auton = new Autos(chassis, vision, ladder, algae, coral, climber);
 
 	// Replace with CommandPS4Controller or CommandJoystick if needed
 	private final CommandXboxController m_driverController = new CommandXboxController(

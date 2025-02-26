@@ -5,12 +5,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
+import frc.robot.subsystems.Vision;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -18,7 +18,7 @@ import frc.robot.subsystems.Ladder;
 public class AutonLeave extends SequentialCommandGroup {
   /** Creates a new AutonShootLeave. */
 
-  public AutonLeave(Chassis chassis, Ladder ladder, Algae algae, Coral coral, Climber climber) {
+  public AutonLeave(Chassis chassis, Vision vision, Ladder ladder, Algae algae, Coral coral, Climber climber) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(

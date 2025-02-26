@@ -10,12 +10,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
+import frc.robot.subsystems.Vision;
 
 public final class Autos {
   private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
@@ -28,7 +28,7 @@ public final class Autos {
   //   return Commands.sequence(new AutonLeave(chassis, ladder, algae, coral, climber));
   // }
 
-  public Autos(Chassis chassis, Ladder ladder, Algae algae, Coral coral, Climber climber) {
+  public Autos(Chassis chassis, Vision vision, Ladder ladder, Algae algae, Coral coral, Climber climber) {
 
     System.out.println("+++++ Starting Autos Constructor +++++");
 
@@ -36,7 +36,7 @@ public final class Autos {
     // Generate Auto commands
     // Note: Named commands used in Auto command must be defined
     // before defining the Auto command
-    AutonLeave autoLeave = new AutonLeave(chassis, ladder, algae, coral, climber);
+    AutonLeave autoLeave = new AutonLeave(chassis, vision, ladder, algae, coral, climber);
     // AutonShootStay autoShootStay = new AutonShootStay(chassis, intake, feeder,
     // shooter);
     // AutonSpeakerAmp autoSpeakerAmp = new AutonSpeakerAmp(chassis, this, vision,
@@ -55,7 +55,7 @@ public final class Autos {
     // Add Auton Command chooser to Shuffleboard
     compTab.add("Auton Command", chooser)
         .withWidget("ComboBox Chooser")
-        .withPosition(0, 10)
+        .withPosition(6, 1)
         .withSize(4, 1);
 
     System.out.println("----- Ending Autos Constructor -----");
