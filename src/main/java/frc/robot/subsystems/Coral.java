@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -12,12 +10,16 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 
 public class Coral extends SubsystemBase {
@@ -172,6 +174,9 @@ public class Coral extends SubsystemBase {
 				.idleMode(Constants.Coral.kTiltIdleMode)
 				.smartCurrentLimit(Constants.Coral.kTiltCurrentLimit);
 		tiltConfig.encoder
+//		tiltConfig.absoluteEncoder
+				//	.zeroOffset(Constants.Coral.kLeftZeroOffset)
+				// .zeroCentered(Constants.Coral.kLeftZeroCentered)
 				.positionConversionFactor(Constants.Coral.kTiltPositionFactor)
 				.velocityConversionFactor(Constants.Coral.kTiltVelocityFactor);
 		tiltConfig.closedLoop
@@ -256,10 +261,15 @@ public class Coral extends SubsystemBase {
 
 			} else {
 				DriverStation.reportWarning("Right Intake Active but not commanded.", false);
-				leftIntakeActive = false;
+				rightIntakeActive = false;
 			}
 		}
 	}
+
+	// public void moveTilt(double pos) {
+	// 	tiltController.setReference(getTiltPos() + pos,
+	// 			SparkBase.ControlType.kMAXMotionPositionControl);
+	// }
 
 	public double getLeftIntakeVel() {
 		return leftIntakeEncoder.getVelocity();

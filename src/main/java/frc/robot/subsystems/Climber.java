@@ -39,10 +39,10 @@ public class Climber extends SubsystemBase {
 	private SparkLimitSwitch isLimitSwitch = leftClimber.getForwardLimitSwitch(); // leftClimber.getReverseLimitSwitch();
 
 	public enum ClimberSP {
-		STOW(90.0), // degrees - up and out of way
-		READY(23.0), // degrees - touch cage but don't climb
-		ZERO(0.0), // degrees - for zeroing absolute encoder
-		CLIMB(-10.0); // degrees - full climb
+		STOW(102.0), // degrees - up and out of way
+		READY(35.0), // degrees - touch cage but don't climb
+		LEVEL(12.0), // degrees - for zeroing absolute encoder
+		CLIMB(0.0); // degrees - full climb
 
 		private final double sp;
 
@@ -55,7 +55,7 @@ public class Climber extends SubsystemBase {
 		}
 	}
 
-	private ClimberSP climberSP = Climber.ClimberSP.ZERO;
+	private ClimberSP climberSP = Climber.ClimberSP.LEVEL;
 
 	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
 	private final GenericEntry sbTxtSP = climberTab.addPersistent("Climber tSP", "")
@@ -83,7 +83,9 @@ public class Climber extends SubsystemBase {
 				.inverted(Constants.Climber.kLeftMotorInverted)
 				.idleMode(Constants.Climber.kLeftIdleMode)
 				.smartCurrentLimit(Constants.Climber.kLeftCurrentLimit);
-		leftConfig.encoder
+		leftConfig.absoluteEncoder
+				.zeroOffset(Constants.Climber.kLeftZeroOffset)
+//				.zeroCentered(Constants.Climber.kLeftZeroCentered)
 				.inverted(Constants.Climber.kLeftEncoderInverted)
 				.positionConversionFactor(Constants.Climber.kTiltPositionFactor)
 				.velocityConversionFactor(Constants.Climber.kTiltVelocityFactor);
@@ -92,8 +94,8 @@ public class Climber extends SubsystemBase {
 				.p(Constants.Climber.kPosP)
 				.i(Constants.Climber.kPosI)
 				.d(Constants.Climber.kPosD)
-				.outputRange(Constants.Climber.kPosMinOutput, Constants.Climber.kPosMaxOutput)
-				.positionWrappingEnabled(Constants.Climber.kLeftEncodeWrapping);
+				.outputRange(Constants.Climber.kPosMinOutput, Constants.Climber.kPosMaxOutput);
+		// .positionWrappingEnabled(Constants.Climber.kLeftEncodeWrapping);
 		leftConfig.closedLoop.maxMotion
 				.maxVelocity(Constants.Climber.kPosMaxVel)
 				.maxAcceleration(Constants.Climber.kPosMaxAccel)
@@ -108,6 +110,23 @@ public class Climber extends SubsystemBase {
 				.inverted(Constants.Climber.kRightMotorInverted)
 				.idleMode(Constants.Climber.kRightIdleMode)
 				.smartCurrentLimit(Constants.Climber.kRightCurrentLimit);
+		rightConfig.absoluteEncoder
+				.zeroOffset(Constants.Climber.kRightZeroOffset)
+//				.zeroCentered(Constants.Climber.kRightZeroCentered)
+				.inverted(Constants.Climber.kRightEncoderInverted)
+				.positionConversionFactor(Constants.Climber.kTiltPositionFactor)
+				.velocityConversionFactor(Constants.Climber.kTiltVelocityFactor);
+		rightConfig.closedLoop
+				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+				.p(Constants.Climber.kPosP)
+				.i(Constants.Climber.kPosI)
+				.d(Constants.Climber.kPosD)
+				.outputRange(Constants.Climber.kPosMinOutput, Constants.Climber.kPosMaxOutput);
+		// .positionWrappingEnabled(Constants.Climber.kRightEncodeWrapping);
+		rightConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Climber.kPosMaxVel)
+				.maxAcceleration(Constants.Climber.kPosMaxAccel)
+				.allowedClosedLoopError(Constants.Climber.kPosAllowedErr);
 
 		rightClimber.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -129,6 +148,10 @@ public class Climber extends SubsystemBase {
 
 		sbLimit.setBoolean(getLimitSwitch());
 	}
+
+	public void moveClimber(double pos) {
+		leftController.setReference(getClimberPos() + pos,
+				SparkBase.ControlType.kMAXMotionPositionControl);	}
 
 	public Command setClimberPosCmd(ClimberSP pos) {
 		// Inline construction of command goes here.

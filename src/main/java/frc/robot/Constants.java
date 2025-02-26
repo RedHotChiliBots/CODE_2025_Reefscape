@@ -187,9 +187,13 @@ public final class Constants {
 		public static final double INTAKE = 25000.0;
 		public static final double EJECT = -25000.0;
 
+		public static final double kLeftZeroOffset = 0.2086578;
+		public static final boolean kLeftZeroCentered = true;
+		public static final boolean kTiltMotorInverted = true;
+		public static final boolean kTiltEncoderInverted = true;
+
 		public static final boolean kRightMotorInverted = true;
 		public static final boolean kLeftMotorInverted = false;
-		public static final boolean kTiltMotorInverted = true;
 
 		public static final boolean kIntakeEncodeWrapping = false;
 		public static final boolean kTiltEncodeWrapping = false;
@@ -238,9 +242,13 @@ public final class Constants {
 		public static final double INTAKE = 25000.0;
 		public static final double EJECT = -25000.0;
 
+		public static final double kLeftZeroOffset = 0.2086578;
+		public static final boolean kLeftZeroCentered = true;
+		public static final boolean kTiltMotorInverted = true;
+		public static final boolean kTiltEncoderInverted = true;
+
 		public static final boolean kRightMotorInverted = false;
 		public static final boolean kLeftMotorInverted = false;
-		public static final boolean kTiltMotorInverted = true;
 
 		public static final boolean kIntakeEncodeWrapping = false;
 		public static final boolean kTiltEncodeWrapping = false;
@@ -323,16 +331,20 @@ public final class Constants {
 
 		public static final double kTollerance = 0.25; // degrees
 
-		public static final boolean kRightMotorInverted = false;
+		public static final double kLeftZeroOffset = 0.2086578;
+		public static final boolean kLeftZeroCentered = true;
 		public static final boolean kLeftMotorInverted = true;
-
-		public static final boolean kRightEncoderInverted = false;
 		public static final boolean kLeftEncoderInverted = true;
 
-		public static final boolean kLeftEncodeWrapping = false;
-		public static final boolean kRightEncodeWrapping = false;
+		public static final double kRightZeroOffset = 0.2086578;
+		public static final boolean kRightZeroCentered = true;
+		public static final boolean kRightMotorInverted = false;
+		public static final boolean kRightEncoderInverted = false;
 
-		public static final double kTiltPositionFactor = 1.0 / (GearBox.Max9 * GearBox.Max5 * GearBox.Max5) * 360.0; // degrees
+		// public static final boolean kLeftEncodeWrapping = false;
+		// public static final boolean kRightEncodeWrapping = false;
+
+		public static final double kTiltPositionFactor = 360;	// 1.0 / (GearBox.Max9 * GearBox.Max5 * GearBox.Max5) * 360.0; // degrees
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // degrees per second
 
 		public static final double kPosP = 0.0275;

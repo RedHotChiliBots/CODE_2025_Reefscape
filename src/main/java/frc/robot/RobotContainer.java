@@ -95,6 +95,30 @@ public class RobotContainer {
 								true),
 						chassis));
 
+		climber.setDefaultCommand(
+				// The left stick controls translation of the robot.
+				// Turning is controlled by the X axis of the right stick.
+				new RunCommand(
+						() -> climber.moveClimber(
+								-MathUtil.applyDeadband(m_operatorController.getRightY(), OIConstants.kDriveDeadband)),
+						climber));
+
+		// coral.setDefaultCommand(
+		// 		// The left stick controls translation of the robot.
+		// 		// Turning is controlled by the X axis of the right stick.
+		// 		new RunCommand(
+		// 				() -> coral.moveTilt(
+		// 						-MathUtil.applyDeadband(m_operatorController.getLeftX(), OIConstants.kDriveDeadband)),
+		// 				coral));
+
+		// algae.setDefaultCommand(
+		// 		// The left stick controls translation of the robot.
+		// 		// Turning is controlled by the X axis of the right stick.
+		// 		new RunCommand(
+		// 				() -> algae.moveTilt(
+		// 						-MathUtil.applyDeadband(m_operatorController.getRightX(), OIConstants.kDriveDeadband)),
+		// 				algae));
+
 		ShuffleboardLayout algaeCommands = Shuffleboard.getTab("Competition")
 				.getLayout("Algae Commands", BuiltInLayouts.kList)
 				.withSize(2, 5)
@@ -161,7 +185,7 @@ public class RobotContainer {
 
 		m_driverController.a().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.CLIMB), climber));
 
-		m_driverController.x().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.ZERO), climber));
+		m_driverController.x().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.LEVEL), climber));
 
 		new POVButton(m_operatorHID, 0).onTrue(new ParallelCommandGroup(
 				ladder.setLadderSPCmd(Ladder.LadderSP.BARGE),

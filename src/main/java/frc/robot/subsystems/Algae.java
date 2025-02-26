@@ -4,13 +4,14 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -140,6 +141,9 @@ public class Algae extends SubsystemBase {
 				.idleMode(Constants.Algae.kTiltIdleMode)
 				.smartCurrentLimit(Constants.Algae.kTiltCurrentLimit);
 		tiltConfig.encoder
+	// tiltConfig.absoluteEncoder
+				// .zeroOffset(Constants.Algae.kLeftZeroOffset)
+				// .zeroCentered(Constants.Algae.kLeftZeroCentered)
 				.positionConversionFactor(Constants.Algae.kTiltPositionFactor)
 				.velocityConversionFactor(Constants.Algae.kTiltVelocityFactor);
 		tiltConfig.closedLoop
@@ -198,6 +202,11 @@ public class Algae extends SubsystemBase {
 			}
 		}
 	}
+
+	// public void moveTilt(double pos) {
+	// 	tiltController.setReference(getTiltPos() + pos,
+	// 			SparkBase.ControlType.kMAXMotionPositionControl);
+	// }
 
 	/**
 	 * setTiltCmd - command factory method to update the Tilt pos
