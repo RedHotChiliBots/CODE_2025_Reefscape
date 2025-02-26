@@ -44,6 +44,7 @@ public class RobotContainer {
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder);
 	private final Climber climber = new Climber();
+	private final Autos auton = new Autos(chassis,  ladder, algae, coral, climber);
 
 	private final PhotonCamera camera1 = null;
 	private final PhotonCamera camera2 = null;
@@ -92,12 +93,11 @@ public class RobotContainer {
 								-MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDriveDeadband),
 								-MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDriveDeadband),
 								-MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
-								true),
+								false),
 						chassis));
 
 		climber.setDefaultCommand(
-				// The left stick controls translation of the robot.
-				// Turning is controlled by the X axis of the right stick.
+				// The right Y stick controls movement
 				new RunCommand(
 						() -> climber.moveClimber(
 								-MathUtil.applyDeadband(m_operatorController.getRightY(), OIConstants.kDriveDeadband)),
@@ -175,9 +175,6 @@ public class RobotContainer {
 	 * joysticks}.
 	 */
 	private void configureBindings() {
-		// m_driverController.b().whileTrue(chassis.exampleMethodCommand());
-		// new Trigger(m_exampleSubsystem::exampleCondition).onTrue(new
-		// ExampleCommand(m_exampleSubsystem));
 
 		m_driverController.y().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.STOW), climber));
 
@@ -254,7 +251,6 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		// An example command will be run in autonomous
-		return Autos.exampleAuto(chassis);
+		return auton.getChooser().getSelected();
 	}
 }
