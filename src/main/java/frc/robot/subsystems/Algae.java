@@ -45,11 +45,12 @@ public class Algae extends SubsystemBase {
 
 	public enum AlgaeSP {
 		STOW(90.0),
-		FLOOR(-45.0),
+		ZERO(0.0),
 		PROCESSOR(-10.0),
+		BARGE(-20.0),
 		L2(-35.0),
 		L3(-35.0),
-		BARGE(-20.0);
+		FLOOR(-45.0);
 
 		private final double sp;
 
@@ -62,7 +63,7 @@ public class Algae extends SubsystemBase {
 		}
 	}
 
-	private AlgaeSP tiltSP = AlgaeSP.STOW;
+	private AlgaeSP tiltSP = AlgaeSP.ZERO;
 	private double intakeSP = Constants.Algae.STOP;
 
 	private boolean extractAlgae = false;
@@ -72,6 +73,8 @@ public class Algae extends SubsystemBase {
 			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbIntakeSP = algaeTab.addPersistent("Intake SP", 0)
 			.withWidget("Text View").withPosition(3, 0).withSize(1, 1).getEntry();
+	private final GenericEntry sbIntakeOnTgt = algaeTab.addPersistent("Intake On Tgt", false)
+			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
 
 	private final GenericEntry sbTxtTiltSP = algaeTab.addPersistent("Tilt tSP", "")
 			.withWidget("Text View").withPosition(1, 1).withSize(1, 1).getEntry();
@@ -79,11 +82,13 @@ public class Algae extends SubsystemBase {
 			.withWidget("Text View").withPosition(2, 1).withSize(1, 1).getEntry();
 	private final GenericEntry sbTiltPos = algaeTab.addPersistent("Tilt Pos", 0)
 			.withWidget("Text View").withPosition(3, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbLimit = algaeTab.addPersistent("Limit", false)
-			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
-
-	private final GenericEntry sbExtract = algaeTab.addPersistent("Expel", false)
+	private final GenericEntry sbTiltOnTgt = algaeTab.addPersistent("Tilt On Tgt", false)
 			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
+
+	private final GenericEntry sbLimit = algaeTab.addPersistent("Limit", false)
+			.withWidget("Boolean Box").withPosition(6, 0).withSize(1, 1).getEntry();
+	private final GenericEntry sbExtract = algaeTab.addPersistent("Expel", false)
+			.withWidget("Boolean Box").withPosition(6, 1).withSize(1, 1).getEntry();
 
 	// Creates a new Algae.
 	public Algae(Ladder ladder) {
@@ -96,38 +101,30 @@ public class Algae extends SubsystemBase {
 				.idleMode(Constants.Algae.kLeftIdleMode)
 				.smartCurrentLimit(Constants.Algae.kLeftCurrentLimit);
 		leftConfig.encoder
-				.positionConversionFactor(Constants.Algae.kLeftEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Algae.kLeftEncoderVelocityFactor);
+				.positionConversionFactor(Constants.Algae.kIntakePositionFactor)
+				.velocityConversionFactor(Constants.Algae.kIntakeVelocityFactor);
 		leftConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(Constants.Algae.kLeftP,
-						Constants.Algae.kLeftI,
-						Constants.Algae.kLeftD,
-						Constants.Algae.kLeftFF)
-				.outputRange(Constants.Algae.kLeftMinOutput, Constants.Algae.kLeftMaxOutput)
-				.positionWrappingEnabled(Constants.Algae.kLeftEncodeWrapping);
+				.p(Constants.Algae.kIntakeVelP)
+				.i(Constants.Algae.kIntakeVelI)
+				.d(Constants.Algae.kIntakeVelD)
+				.velocityFF(Constants.Algae.kIntakeVelFF)
+				.outputRange(Constants.Algae.kIntakeVelMinOutput, Constants.Algae.kIntakeVelMaxOutput)
+				.positionWrappingEnabled(Constants.Algae.kIntakeEncodeWrapping);
+		leftConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Algae.kIntakeVelMaxVel)
+				.maxAcceleration(Constants.Algae.kIntakeVelMaxAccel)
+				.allowedClosedLoopError(Constants.Algae.kIntakeVelAllowedErr);
 
 		leftIntake.configure(leftConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 		// Configure Right Intake motor
 		rightConfig
-				.follow(leftIntake)
+				.follow(leftIntake, true)
 				.inverted(Constants.Algae.kRightMotorInverted)
 				.idleMode(Constants.Algae.kRightIdleMode)
 				.smartCurrentLimit(Constants.Algae.kRightCurrentLimit);
-		// rightConfig.encoder
-		// .positionConversionFactor(Constants.Algae.kRightEncoderPositionFactor)
-		// .velocityConversionFactor(Constants.Algae.kRightEncoderVelocityFactor);
-		// rightConfig.closedLoop
-		// .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-		// .pidf(Constants.Algae.kRightP,
-		// Constants.Algae.kRightI,
-		// Constants.Algae.kRightD,
-		// Constants.Algae.kRightFF)
-		// .outputRange(Constants.Algae.kRightMinOutput,
-		// Constants.Algae.kRightMaxOutput)
-		// .positionWrappingEnabled(Constants.Algae.kRightEncodeWrapping);
 
 		rightIntake.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -138,16 +135,19 @@ public class Algae extends SubsystemBase {
 				.idleMode(Constants.Algae.kTiltIdleMode)
 				.smartCurrentLimit(Constants.Algae.kTiltCurrentLimit);
 		tiltConfig.encoder
-				.positionConversionFactor(Constants.Algae.kTiltEncoderPositionFactor)
-				.velocityConversionFactor(Constants.Algae.kTiltEncoderVelocityFactor);
+				.positionConversionFactor(Constants.Algae.kTiltPositionFactor)
+				.velocityConversionFactor(Constants.Algae.kTiltVelocityFactor);
 		tiltConfig.closedLoop
 				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-				.pidf(Constants.Algae.kTiltP,
-						Constants.Algae.kTiltI,
-						Constants.Algae.kTiltD,
-						Constants.Algae.kTiltFF)
-				.outputRange(Constants.Algae.kTiltMinOutput, Constants.Algae.kTiltMaxOutput)
-				.positionWrappingEnabled(Constants.Algae.kTiltEncodeWrapping);
+				.p(Constants.Algae.kTiltPosP)
+				.i(Constants.Algae.kTiltPosI)
+				.d(Constants.Algae.kTiltPosD)
+				.outputRange(Constants.Algae.kTiltPosMinOutput, Constants.Algae.kTiltPosMaxOutput)
+				.positionWrappingEnabled(Constants.Algae.kIntakeEncodeWrapping);
+		tiltConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Algae.kTiltPosMaxVel)
+				.maxAcceleration(Constants.Algae.kTiltPosMaxAccel)
+				.allowedClosedLoopError(Constants.Algae.kTiltPosAllowedErr);
 
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -169,6 +169,10 @@ public class Algae extends SubsystemBase {
 		sbTiltPos.setDouble(getTiltPos());
 		sbTxtTiltSP.setString(getTiltSP().toString());
 		sbDblTiltSP.setDouble(getTiltSP().getValue());
+
+		sbTiltOnTgt.setBoolean(onTiltTarget());
+		sbIntakeOnTgt.setBoolean(onIntakeTarget());
+
 		sbLimit.setBoolean(isLimit());
 		sbExtract.setBoolean(getExtract());
 	}
@@ -250,6 +254,14 @@ public class Algae extends SubsystemBase {
 
 	public void setIntakeVel() {
 		intakeController.setReference(getIntakeSP(), SparkBase.ControlType.kMAXMotionVelocityControl);
+	}
+
+	public boolean onTiltTarget() {
+		return Math.abs(getTiltPos() - getTiltSP().getValue()) < Constants.Algae.kTiltTollerance;
+	}
+
+	public boolean onIntakeTarget() {
+		return Math.abs(getIntakeVel() - getIntakeSP()) < Constants.Algae.kIntakeTollerance;
 	}
 
 	public void setIntakeSP(double sp) {

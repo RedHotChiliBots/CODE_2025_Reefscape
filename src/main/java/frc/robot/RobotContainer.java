@@ -29,14 +29,6 @@ import frc.robot.subsystems.Vision;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -171,6 +163,8 @@ public class RobotContainer {
 
 		m_driverController.a().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.CLIMB), climber));
 
+		m_driverController.x().onTrue(new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.BARGE), algae));
+
 		new POVButton(m_operatorHID, 0).onTrue(new ParallelCommandGroup(
 				ladder.setLadderSPCmd(Ladder.LadderSP.BARGE),
 				coral.setTiltSPCmd(Coral.CoralSP.STOW),
@@ -225,6 +219,11 @@ public class RobotContainer {
 
 		m_operatorController.back().debounce(0.1, DebounceType.kRising)
 				.onTrue(algae.toggleExtractCmd());
+
+		m_operatorController.leftBumper()
+				.onTrue(coral.setLeftIntakeCmd(Constants.Coral.INTAKE));
+		m_operatorController.rightBumper()
+				.onTrue(coral.setLeftIntakeCmd(Constants.Coral.EJECT));
 	}
 
 	/**
