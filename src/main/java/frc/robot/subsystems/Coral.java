@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -173,20 +174,21 @@ public class Coral extends SubsystemBase {
 				.inverted(Constants.Coral.kTiltMotorInverted)
 				.idleMode(Constants.Coral.kTiltIdleMode)
 				.smartCurrentLimit(Constants.Coral.kTiltCurrentLimit);
-		tiltConfig.encoder
-//		tiltConfig.absoluteEncoder
-				//	.zeroOffset(Constants.Coral.kLeftZeroOffset)
-				// .zeroCentered(Constants.Coral.kLeftZeroCentered)
+		tiltConfig.absoluteEncoder
+				.zeroOffset(Constants.Coral.kTiltZeroOffset)
+				.zeroCentered(Constants.Coral.kTiltZeroCentered)
+				.inverted(Constants.Coral.kTiltEncoderInverted)
 				.positionConversionFactor(Constants.Coral.kTiltPositionFactor)
 				.velocityConversionFactor(Constants.Coral.kTiltVelocityFactor);
 		tiltConfig.closedLoop
-				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+				.feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
 				.p(Constants.Coral.kTiltPosP)
 				.i(Constants.Coral.kTiltPosI)
 				.d(Constants.Coral.kTiltPosD)
 				.outputRange(Constants.Coral.kTiltPosMinOutput, Constants.Coral.kTiltPosMaxOutput)
 				.positionWrappingEnabled(Constants.Coral.kTiltEncodeWrapping);
 		tiltConfig.closedLoop.maxMotion
+				.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
 				.maxVelocity(Constants.Coral.kTiltPosMaxVel)
 				.maxAcceleration(Constants.Coral.kTiltPosMaxAccel)
 				.allowedClosedLoopError(Constants.Coral.kTiltPosAllowedErr);

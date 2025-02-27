@@ -5,11 +5,13 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ChassisConstants;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
@@ -21,14 +23,14 @@ public final class Autos {
   private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
   // Define a chooser for autonomous commands
-  private final SendableChooser<Command> chooser;
+  private final SendableChooser<Command> chooser = new SendableChooser<>();
 
   /** Example static factory for an autonomous command. */
   // public static Command AutonLeave(Chassis chassis, Ladder ladder, Algae algae, Coral coral, Climber climber) {
   //   return Commands.sequence(new AutonLeave(chassis, ladder, algae, coral, climber));
   // }
 
-  public Autos(Chassis chassis, Vision vision, Ladder ladder, Algae algae, Coral coral, Climber climber) {
+  public Autos(Chassis chassis, Ladder ladder, Algae algae, Coral coral, Climber climber) {
 
     System.out.println("+++++ Starting Autos Constructor +++++");
 
@@ -36,7 +38,7 @@ public final class Autos {
     // Generate Auto commands
     // Note: Named commands used in Auto command must be defined
     // before defining the Auto command
-    AutonLeave autoLeave = new AutonLeave(chassis, vision, ladder, algae, coral, climber);
+    AutonLeave autoLeave = new AutonLeave(chassis, ladder, algae, coral, climber);
     // AutonShootStay autoShootStay = new AutonShootStay(chassis, intake, feeder,
     // shooter);
     // AutonSpeakerAmp autoSpeakerAmp = new AutonSpeakerAmp(chassis, this, vision,
@@ -44,7 +46,7 @@ public final class Autos {
 
     // ********************************************
     // Initialize auto command chooser with auton commands
-    chooser = AutoBuilder.buildAutoChooser();
+    //chooser = AutoBuilder.buildAutoChooser();
 
     chooser.setDefaultOption("Leave", autoLeave);
     // chooser.addOption("Shoot N Stay", autoShootStay);

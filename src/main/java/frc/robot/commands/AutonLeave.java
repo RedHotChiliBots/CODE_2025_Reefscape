@@ -18,7 +18,7 @@ import frc.robot.subsystems.Vision;
 public class AutonLeave extends SequentialCommandGroup {
   /** Creates a new AutonShootLeave. */
 
-  public AutonLeave(Chassis chassis, Vision vision, Ladder ladder, Algae algae, Coral coral, Climber climber) {
+  public AutonLeave(Chassis chassis, Ladder ladder, Algae algae, Coral coral, Climber climber) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(

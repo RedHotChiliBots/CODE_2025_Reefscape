@@ -39,18 +39,39 @@ import org.photonvision.PhotonCamera;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	private final PhotonCamera camera1 = null;
-	private final PhotonCamera camera2 = null;
-	private final PhotonCamera camera3 = null;
-	private final PhotonCamera camera4 = null;
-	private final Vision vision = new Vision(camera1, camera2, camera3, camera4);
+	// private final PhotonCamera camera1 = null;
+	// private final PhotonCamera camera2 = null;
+	// private final PhotonCamera camera3 = null;
+	// private final PhotonCamera camera4 = null;
+	// private final Vision vision = new Vision(camera1, camera2, camera3, camera4);
 
 	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder);
 	private final Climber climber = new Climber();
-	private final Autos auton = new Autos(chassis, vision, ladder, algae, coral, climber);
+	private final Autos auton = new Autos(chassis, ladder, algae, coral, climber);
+
+	RunCommand climberStow = new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.STOW), climber);
+	RunCommand climberReady = new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.READY), climber);
+	RunCommand climberZero = new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.ZERO), climber);
+	RunCommand climberClimb = new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.CLIMB), climber);
+
+	RunCommand algaeStow = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.STOW), algae);
+	RunCommand algaeZero = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.ZERO), algae);
+	RunCommand algaeBarge = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.BARGE), algae);
+	RunCommand algaeProcessor = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.PROCESSOR), algae);
+	RunCommand algaeFloor = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.FLOOR), algae);
+	RunCommand algaeL3 = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.L3), algae);
+	RunCommand algaeL2 = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.L2), algae);
+
+	RunCommand coralStow = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.STOW), coral);
+	RunCommand coralZero = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.ZERO), coral);
+	RunCommand coralStation = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.STATION), coral);
+	RunCommand coralL4 = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.L4), coral);
+	RunCommand coralL3 = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.L3), coral);
+	RunCommand coralL2 = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.L2), coral);
+	RunCommand coralL1 = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.L1), coral);
 
 	// Replace with CommandPS4Controller or CommandJoystick if needed
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -60,6 +81,7 @@ public class RobotContainer {
 	private final GenericHID m_operatorHID = new GenericHID(
 			OIConstants.kOperatorControllerPort);
 
+	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 	// private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
 	// private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
@@ -71,6 +93,29 @@ public class RobotContainer {
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
+
+		cmdTab.add("climberStow", climberStow);
+		cmdTab.add("climberReady", climberReady);
+		cmdTab.add("climberZero", climberZero);
+		cmdTab.add("climberClimb", climberClimb);
+
+		cmdTab.add("algaeStow", algaeStow);
+		cmdTab.add("algaeZero", algaeZero);
+		cmdTab.add("algaeBarge", algaeBarge);
+		cmdTab.add("algaeProcessor", algaeProcessor);
+		cmdTab.add("algaeFloor", algaeFloor);
+		cmdTab.add("algaeL3", algaeL3);
+		cmdTab.add("algaeL2", algaeL2);
+
+		cmdTab.add("coralStow", coralStow);
+		cmdTab.add("coralZero", coralZero);
+		cmdTab.add("coralStation", coralStation);
+		cmdTab.add("coralL4", coralL4);
+		cmdTab.add("coralL3", coralL3);
+		cmdTab.add("coralL2", coralL2);
+		cmdTab.add("coralL1", coralL1);
+
+
 		compTab.add("Chassis", chassis);
 		compTab.add("Coral", coral);
 		compTab.add("Algae", algae);
@@ -100,24 +145,27 @@ public class RobotContainer {
 				// The right Y stick controls movement
 				new RunCommand(
 						() -> climber.moveClimber(
-								-MathUtil.applyDeadband(m_operatorController.getRightY(), OIConstants.kDriveDeadband)),
+								-MathUtil.applyDeadband(m_operatorController.getRightY(), 0.10)),
+								//OIConstants.kDriveDeadband)),
 						climber));
 
 		// coral.setDefaultCommand(
-		// 		// The left stick controls translation of the robot.
-		// 		// Turning is controlled by the X axis of the right stick.
-		// 		new RunCommand(
-		// 				() -> coral.moveTilt(
-		// 						-MathUtil.applyDeadband(m_operatorController.getLeftX(), OIConstants.kDriveDeadband)),
-		// 				coral));
+		// // The left stick controls translation of the robot.
+		// // Turning is controlled by the X axis of the right stick.
+		// new RunCommand(
+		// () -> coral.moveTilt(
+		// -MathUtil.applyDeadband(m_operatorController.getLeftX(),
+		// OIConstants.kDriveDeadband)),
+		// coral));
 
 		// algae.setDefaultCommand(
-		// 		// The left stick controls translation of the robot.
-		// 		// Turning is controlled by the X axis of the right stick.
-		// 		new RunCommand(
-		// 				() -> algae.moveTilt(
-		// 						-MathUtil.applyDeadband(m_operatorController.getRightX(), OIConstants.kDriveDeadband)),
-		// 				algae));
+		// // The left stick controls translation of the robot.
+		// // Turning is controlled by the X axis of the right stick.
+		// new RunCommand(
+		// () -> algae.moveTilt(
+		// -MathUtil.applyDeadband(m_operatorController.getRightX(),
+		// OIConstants.kDriveDeadband)),
+		// algae));
 
 		ShuffleboardLayout algaeCommands = Shuffleboard.getTab("Competition")
 				.getLayout("Algae Commands", BuiltInLayouts.kList)
@@ -182,7 +230,7 @@ public class RobotContainer {
 
 		m_driverController.a().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.CLIMB), climber));
 
-		m_driverController.x().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.LEVEL), climber));
+		m_driverController.x().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.ZERO), climber));
 
 		new POVButton(m_operatorHID, 0).onTrue(new ParallelCommandGroup(
 				ladder.setLadderSPCmd(Ladder.LadderSP.BARGE),
@@ -239,9 +287,9 @@ public class RobotContainer {
 		m_operatorController.back().debounce(0.1, DebounceType.kRising)
 				.onTrue(algae.toggleExtractCmd());
 
-		m_operatorController.leftBumper()
+		m_driverController.leftBumper()
 				.onTrue(coral.setLeftIntakeCmd(Constants.Coral.INTAKE));
-		m_operatorController.rightBumper()
+		m_driverController.rightBumper()
 				.onTrue(coral.setLeftIntakeCmd(Constants.Coral.EJECT));
 	}
 

@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -140,20 +141,21 @@ public class Algae extends SubsystemBase {
 				.inverted(Constants.Algae.kTiltMotorInverted)
 				.idleMode(Constants.Algae.kTiltIdleMode)
 				.smartCurrentLimit(Constants.Algae.kTiltCurrentLimit);
-		tiltConfig.encoder
-	// tiltConfig.absoluteEncoder
-				// .zeroOffset(Constants.Algae.kLeftZeroOffset)
-				// .zeroCentered(Constants.Algae.kLeftZeroCentered)
+		tiltConfig.absoluteEncoder
+				.zeroOffset(Constants.Algae.kTiltZeroOffset)
+				.zeroCentered(Constants.Algae.kTiltZeroCentered)
+				.inverted(Constants.Algae.kTiltEncoderInverted)
 				.positionConversionFactor(Constants.Algae.kTiltPositionFactor)
 				.velocityConversionFactor(Constants.Algae.kTiltVelocityFactor);
 		tiltConfig.closedLoop
-				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+				.feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
 				.p(Constants.Algae.kTiltPosP)
 				.i(Constants.Algae.kTiltPosI)
 				.d(Constants.Algae.kTiltPosD)
 				.outputRange(Constants.Algae.kTiltPosMinOutput, Constants.Algae.kTiltPosMaxOutput)
 				.positionWrappingEnabled(Constants.Algae.kIntakeEncodeWrapping);
 		tiltConfig.closedLoop.maxMotion
+				.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
 				.maxVelocity(Constants.Algae.kTiltPosMaxVel)
 				.maxAcceleration(Constants.Algae.kTiltPosMaxAccel)
 				.allowedClosedLoopError(Constants.Algae.kTiltPosAllowedErr);
@@ -204,8 +206,8 @@ public class Algae extends SubsystemBase {
 	}
 
 	// public void moveTilt(double pos) {
-	// 	tiltController.setReference(getTiltPos() + pos,
-	// 			SparkBase.ControlType.kMAXMotionPositionControl);
+	// tiltController.setReference(getTiltPos() + pos,
+	// SparkBase.ControlType.kMAXMotionPositionControl);
 	// }
 
 	/**
