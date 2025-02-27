@@ -176,6 +176,7 @@ public class RobotContainer {
 		algaeCommands.add("Barge", algae.algaeBarge());
 		algaeCommands.add("L3", algae.algaeL3());
 		algaeCommands.add("L2", algae.algaeL2());
+		algaeCommands.add("Processor", algae.algaeProcessor());
 		algaeCommands.add("Floor", algae.algaeFloor());
 		algaeCommands.add("Stow", algae.algaeStow());
 		algaeCommands.add("Intake", algae.algaeIntake());

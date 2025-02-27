@@ -371,30 +371,34 @@ public class Algae extends SubsystemBase {
 	}
 
 	public Command algaeBarge() {
-		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.BARGE));
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.BARGE));
 	}
 
 	public Command algaeL3() {
-		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.L3));
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.L3));
 	}
 
 	public Command algaeL2() {
-		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.L2));
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.L2));
 	}
 
 	public Command algaeFloor() {
-		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.FLOOR));
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.FLOOR));
 	}
 
 	public Command algaeStow() {
-		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.STOW));
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.STOW));
+	}
+
+	public Command algaeProcessor() {
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.PROCESSOR));
 	}
 
 	public Command algaeIntake() {
-		return this.runOnce(() -> setIntakeSP(Constants.Algae.INTAKE));
+		return this.runOnce(() -> setIntakeVel(Constants.Algae.INTAKE));
 	}
 
 	public Command algaeEject() {
-		return this.runOnce(() -> setIntakeSP(Constants.Algae.EJECT));
+		return this.runOnce(() -> setIntakeVel(Constants.Algae.EJECT));
 	}
 }

@@ -245,7 +245,7 @@ public class Coral extends SubsystemBase {
 				leftIntakeActive = false;
 
 			} else {
-				DriverStation.reportWarning("Left Intake Active but not commanded.", false);
+				DriverStation.reportWarning("Coral Left Intake Active but not commanded.", false);
 				leftIntakeActive = false;
 			}
 		}
@@ -262,7 +262,7 @@ public class Coral extends SubsystemBase {
 				rightIntakeActive = false;
 
 			} else {
-				DriverStation.reportWarning("Right Intake Active but not commanded.", false);
+				DriverStation.reportWarning("Coral Right Intake Active but not commanded.", false);
 				rightIntakeActive = false;
 			}
 		}
@@ -439,44 +439,44 @@ public class Coral extends SubsystemBase {
 	}
 
 	public Command coralL4() {
-		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L4));
+		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L4));
 	}
 
 	public Command coralL3() {
-		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L3));
+		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L3));
 	}
 
 	public Command coralL2() {
-		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L2));
+		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L2));
 	}
 
 	public Command coralL1() {
-		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L1));
+		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L1));
 	}
 
 	public Command coralStation() {
-		return this.runOnce(() -> setTiltSP(
+		return this.runOnce(() -> setTiltPos(
 				Coral.CoralSP.STATION));
 	}
 
 	public Command coralStow() {
-		return this.runOnce(() -> setTiltSP(
+		return this.runOnce(() -> setTiltPos(
 				Coral.CoralSP.STOW));
 	}
 
 	public Command coralLeftIntake() {
-		return this.runOnce(() -> setLeftIntakeSP(Constants.Coral.INTAKE));
+		return this.runOnce(() -> setLeftIntakeVel(Constants.Coral.INTAKE));
 	}
 
 	public Command coralLeftEject() {
-		return this.runOnce(() -> setLeftIntakeSP(Constants.Coral.EJECT));
+		return this.runOnce(() -> setLeftIntakeVel(Constants.Coral.EJECT));
 	}
 
 	public Command coralRightIntake() {
-		return this.runOnce(() -> setRightIntakeSP(Constants.Coral.INTAKE));
+		return this.runOnce(() -> setRightIntakeVel(Constants.Coral.INTAKE));
 	}
 
 	public Command coralRightEject() {
-		return this.runOnce(() -> setRightIntakeSP(Constants.Coral.EJECT));
+		return this.runOnce(() -> setRightIntakeVel(Constants.Coral.EJECT));
 	}
 }
