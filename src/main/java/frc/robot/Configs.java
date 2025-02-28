@@ -30,8 +30,8 @@ public final class Configs {
 					.pid(0.04, 0, 0)
 					.velocityFF(drivingVelocityFeedForward)
 					.outputRange(-1, 1);
-			drivingConfig.signals
-					.appliedOutputPeriodMs(10);
+			// drivingConfig.signals
+			// 		.appliedOutputPeriodMs(10);
 					// .primaryEncoderVelocityPeriodMs(20)
 					// .primaryEncoderPositionPeriodMs(20)
 					// .analogVoltagePeriodMs(20)
@@ -61,8 +61,8 @@ public final class Configs {
 					// longer route.
 					.positionWrappingEnabled(true)
 					.positionWrappingInputRange(0.0, turningFactor);
-			turningConfig.signals
-					.appliedOutputPeriodMs(10);
+			// turningConfig.signals
+			// 		.appliedOutputPeriodMs(10);
 					// .primaryEncoderVelocityPeriodMs(20)
 					// .primaryEncoderPositionPeriodMs(20)
 					// .analogVoltagePeriodMs(20)

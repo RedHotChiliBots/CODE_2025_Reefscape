@@ -26,6 +26,8 @@ import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
 import frc.robot.subsystems.Vision;
 
+import java.util.Map;
+
 import org.photonvision.PhotonCamera;
 
 /**
@@ -115,7 +117,6 @@ public class RobotContainer {
 		cmdTab.add("coralL2", coralL2);
 		cmdTab.add("coralL1", coralL1);
 
-
 		compTab.add("Chassis", chassis);
 		compTab.add("Coral", coral);
 		compTab.add("Algae", algae);
@@ -141,13 +142,13 @@ public class RobotContainer {
 								false),
 						chassis));
 
-		climber.setDefaultCommand(
-				// The right Y stick controls movement
-				new RunCommand(
-						() -> climber.moveClimber(
-								-MathUtil.applyDeadband(m_operatorController.getRightY(), 0.10)),
-								//OIConstants.kDriveDeadband)),
-						climber));
+		// climber.setDefaultCommand(
+		// 		// The right Y stick controls movement
+		// 		new RunCommand(
+		// 				() -> climber.moveClimber(
+		// 						-MathUtil.applyDeadband(m_operatorController.getRightY(), 0.10)),
+		// 				// OIConstants.kDriveDeadband)),
+		// 				climber));
 
 		// coral.setDefaultCommand(
 		// // The left stick controls translation of the robot.
@@ -170,9 +171,8 @@ public class RobotContainer {
 		ShuffleboardLayout algaeCommands = Shuffleboard.getTab("Competition")
 				.getLayout("Algae Commands", BuiltInLayouts.kList)
 				.withSize(2, 5)
-				.withPosition(0, 1);
-		// .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for
-		// commands
+				.withPosition(0, 1)
+				.withProperties(Map.of("Label position", "TOP"));
 		algaeCommands.add("Barge", algae.algaeBarge());
 		algaeCommands.add("L3", algae.algaeL3());
 		algaeCommands.add("L2", algae.algaeL2());
@@ -183,11 +183,10 @@ public class RobotContainer {
 		algaeCommands.add("Eject", algae.algaeEject());
 
 		ShuffleboardLayout coralCommands = Shuffleboard.getTab("Competition")
-				.getLayout("Coral Commands", BuiltInLayouts.kList)
+				.getLayout("Coral", BuiltInLayouts.kList)
 				.withSize(2, 5)
-				.withPosition(2, 1);
-		// .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for
-		// commands
+				.withPosition(2, 1)
+				.withProperties(Map.of("Label position", "TOP"));
 		coralCommands.add("L4", coral.coralL4());
 		coralCommands.add("L3", coral.coralL3());
 		coralCommands.add("L2", coral.coralL2());
@@ -199,12 +198,19 @@ public class RobotContainer {
 		coralCommands.add("Right Intake", coral.coralRightIntake());
 		coralCommands.add("Right Eject", coral.coralRightEject());
 
-		ShuffleboardLayout climberCommands = Shuffleboard.getTab("Competition")
-				.getLayout("Climber Commands", BuiltInLayouts.kList)
+		ShuffleboardLayout toggleCommands = Shuffleboard.getTab("Competition")
+				.getLayout("Toggle", BuiltInLayouts.kList)
 				.withSize(2, 2)
-				.withPosition(4, 1);
-		// .withProperties(Map.of("Label position", "HIDDEN")); // hide labels for
-		// commands
+				.withPosition(4, 4)
+				.withProperties(Map.of("Label position", "TOP"));
+		toggleCommands.add("Extract", algae.toggleExtractCmd());
+		toggleCommands.add("Left-Right", coral.toggleSideCmd());
+
+		ShuffleboardLayout climberCommands = Shuffleboard.getTab("Competition")
+				.getLayout("Climber", BuiltInLayouts.kList)
+				.withSize(2, 2)
+				.withPosition(4, 1)
+				.withProperties(Map.of("Label position", "TOP"));
 		climberCommands.add("Climb", climber.climberClimb());
 		climberCommands.add("Ready", climber.climberReady());
 		climberCommands.add("Stow", climber.climberStow());
@@ -271,6 +277,11 @@ public class RobotContainer {
 		m_operatorController.x().onTrue(new ParallelCommandGroup(
 				ladder.setLadderSPCmd(Ladder.LadderSP.L1),
 				coral.setTiltSPCmd(Coral.CoralSP.L1),
+				algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
+
+		m_operatorController.leftStick().onTrue(new ParallelCommandGroup(
+				ladder.setLadderSPCmd(Ladder.LadderSP.STOW),
+				coral.setTiltSPCmd(Coral.CoralSP.STOW),
 				algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
 
 		m_operatorController.leftBumper().onTrue(new ParallelCommandGroup(

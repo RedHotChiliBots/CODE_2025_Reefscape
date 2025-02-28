@@ -26,8 +26,10 @@ public final class Autos {
   private final SendableChooser<Command> chooser = new SendableChooser<>();
 
   /** Example static factory for an autonomous command. */
-  // public static Command AutonLeave(Chassis chassis, Ladder ladder, Algae algae, Coral coral, Climber climber) {
-  //   return Commands.sequence(new AutonLeave(chassis, ladder, algae, coral, climber));
+  // public static Command AutonLeave(Chassis chassis, Ladder ladder, Algae algae,
+  // Coral coral, Climber climber) {
+  // return Commands.sequence(new AutonLeave(chassis, ladder, algae, coral,
+  // climber));
   // }
 
   public Autos(Chassis chassis, Ladder ladder, Algae algae, Coral coral, Climber climber) {
