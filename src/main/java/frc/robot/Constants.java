@@ -90,7 +90,7 @@ public final class Constants {
 				new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
 				new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
-		//	Angular offsets of the modules relative to the chassis in radians
+		// Angular offsets of the modules relative to the chassis in radians
 		public static final double kFrontLeftChassisAngularOffset = Math.PI / 2;
 		public static final double kFrontRightChassisAngularOffset = 0.0;
 		public static final double kBackLeftChassisAngularOffset = Math.PI;
@@ -187,9 +187,13 @@ public final class Constants {
 		public static final double INTAKE = 25000.0;
 		public static final double EJECT = -25000.0;
 
+		public static final double kTiltZeroOffset = 0.9522372;
+		public static final boolean kTiltZeroCentered = true;
+		public static final boolean kTiltMotorInverted = true;
+		public static final boolean kTiltEncoderInverted = false;
+
 		public static final boolean kRightMotorInverted = true;
 		public static final boolean kLeftMotorInverted = false;
-		public static final boolean kTiltMotorInverted = true;
 
 		public static final boolean kIntakeEncodeWrapping = false;
 		public static final boolean kTiltEncodeWrapping = false;
@@ -197,7 +201,8 @@ public final class Constants {
 		public static final double kIntakePositionFactor = 1.0 / (GearBox.Ultra5 * GearBox.Ultra5); // radians
 		public static final double kIntakeVelocityFactor = kIntakePositionFactor / 60.0; // radians per second
 
-		public static final double kTiltPositionFactor = 1.0 / (GearBox.Ultra4 * GearBox.Ultra4 * GearBox.Ultra4) * 360.0; // degrees
+		public static final double kTiltPositionFactor = 360; // 1.0 / (GearBox.Ultra4 * GearBox.Ultra4 * GearBox.Ultra4)
+																				// * 360.0; // degrees
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // degrees per second
 
 		public static final double kIntakeVelP = 0.0001;
@@ -211,8 +216,8 @@ public final class Constants {
 		public static final double kIntakeVelMaxAccel = 20000.0;
 		public static final double kIntakeVelAllowedErr = 1.0;
 
-		public static final double kTiltPosP = 0.0285;
-		public static final double kTiltPosI = 0.00001;
+		public static final double kTiltPosP = 0.002;
+		public static final double kTiltPosI = 0.000001;
 		public static final double kTiltPosD = 0.0;
 		public static final double kTiltPosMinOutput = -1.0;
 		public static final double kTiltPosMaxOutput = 1.0;
@@ -238,17 +243,22 @@ public final class Constants {
 		public static final double INTAKE = 25000.0;
 		public static final double EJECT = -25000.0;
 
-		public static final boolean kRightMotorInverted = false;
+		public static final double kTiltZeroOffset = 0.9844013;
+		public static final boolean kTiltZeroCentered = true;
+		public static final boolean kTiltMotorInverted = false;
+		public static final boolean kTiltEncoderInverted = false;
+
+		public static final boolean kRightMotorInverted = true;
 		public static final boolean kLeftMotorInverted = false;
-		public static final boolean kTiltMotorInverted = true;
 
 		public static final boolean kIntakeEncodeWrapping = false;
 		public static final boolean kTiltEncodeWrapping = false;
 
-		public static final double kIntakePositionFactor = 1.1 / (GearBox.Ultra5 * GearBox.Ultra5); // radians
+		public static final double kIntakePositionFactor = 1.0 / (GearBox.Ultra5 * GearBox.Ultra5); // radians
 		public static final double kIntakeVelocityFactor = kIntakePositionFactor / 60.0; // radians per second
 
-		public static final double kTiltPositionFactor = 1.0 / (GearBox.Ultra5 * GearBox.Ultra5) * 360.0; // degrees
+		public static final double kTiltPositionFactor = 360; // 1.0 / (GearBox.Ultra4 * GearBox.Ultra4 * GearBox.Ultra4)
+																				// * 360.0; // degrees
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // degrees per second
 
 		public static final double kIntakeVelP = 0.0001;
@@ -262,8 +272,8 @@ public final class Constants {
 		public static final double kIntakeVelMaxAccel = 20000.0;
 		public static final double kIntakeVelAllowedErr = 1.0;
 
-		public static final double kTiltPosP = 0.0285;
-		public static final double kTiltPosI = 0.00001;
+		public static final double kTiltPosP = 0.002;
+		public static final double kTiltPosI = 0.0000015;
 		public static final double kTiltPosD = 0.0;
 		public static final double kTiltPosMinOutput = -1.0;
 		public static final double kTiltPosMaxOutput = 1.0;
@@ -295,14 +305,15 @@ public final class Constants {
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;
 
-		public static final double kLiftGearBox = GearBox.Max5; // to 1 ratio
+		public static final double kLiftGearBox = GearBox.Max4 * GearBox.Max5; // to 1 ratio
 		public static final double kSprocketDia = 1.375; // inches
 		public static final double kStage3perStage1 = 3.0; // ratio
 
-		public static final double kLiftPostionFactor = (1.0 / kLiftGearBox) * (Math.PI * kSprocketDia); // * kStage3perStage1;
+		public static final double kLiftPostionFactor = (1.0 / kLiftGearBox) * (Math.PI * kSprocketDia)
+				* kStage3perStage1;
 		public static final double kLiftVelocityFactor = kLiftPostionFactor / 60.0;
 
-		public static final double kPosP = 0.0275;	
+		public static final double kPosP = 0.0275;
 		public static final double kPosI = 0.0;
 		public static final double kPosD = 0.0;
 		public static final double kPosMinOutput = -1.0;
@@ -323,16 +334,24 @@ public final class Constants {
 
 		public static final double kTollerance = 0.25; // degrees
 
-		public static final boolean kRightMotorInverted = false;
+		public static final double kLeftZeroOffset = 0.1550716;
+		public static final boolean kLeftZeroCentered = true;
 		public static final boolean kLeftMotorInverted = true;
+		public static final boolean kLeftEncoderInverted = true;
+
+		public static final double kRightZeroOffset = 0.8712338;
+		public static final boolean kRightZeroCentered = true;
+		public static final boolean kRightMotorInverted = true;
+		public static final boolean kRightEncoderInverted = true;
 
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;
 
-		public static final double kTiltPositionFactor = 1.0 / (GearBox.Max9 * GearBox.Max5 * GearBox.Max5) * 360.0; // degrees
+		public static final double kTiltPositionFactor = 360; // 1.0 / (GearBox.Max9 * GearBox.Max5 * GearBox.Max5) *
+																				// 360.0; // degrees
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // degrees per second
 
-		public static final double kPosP = 0.0275;
+		public static final double kPosP = 0.027;
 		public static final double kPosI = 0.0;
 		public static final double kPosD = 0.0;
 		public static final double kPosMinOutput = -1.0;

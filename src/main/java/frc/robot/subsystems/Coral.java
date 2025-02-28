@@ -2,9 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -12,11 +11,16 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 
 public class Coral extends SubsystemBase {
@@ -71,6 +75,12 @@ public class Coral extends SubsystemBase {
 	private CoralSP tiltSP = CoralSP.ZERO;
 
 	private boolean leftCoral = true;
+
+	private boolean leftIntakeActive = false;
+	private boolean rightIntakeActive = false;
+
+	private int leftIntakeCntr = 0;
+	private int rightIntakeCntr = 0;
 
 	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
 	private final GenericEntry sbLeftIntakeVel = coralTab.addPersistent("Left Intake Vel", 0)
@@ -164,17 +174,21 @@ public class Coral extends SubsystemBase {
 				.inverted(Constants.Coral.kTiltMotorInverted)
 				.idleMode(Constants.Coral.kTiltIdleMode)
 				.smartCurrentLimit(Constants.Coral.kTiltCurrentLimit);
-		tiltConfig.encoder
+		tiltConfig.absoluteEncoder
+				.zeroOffset(Constants.Coral.kTiltZeroOffset)
+				.zeroCentered(Constants.Coral.kTiltZeroCentered)
+				.inverted(Constants.Coral.kTiltEncoderInverted)
 				.positionConversionFactor(Constants.Coral.kTiltPositionFactor)
 				.velocityConversionFactor(Constants.Coral.kTiltVelocityFactor);
 		tiltConfig.closedLoop
-				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+				.feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
 				.p(Constants.Coral.kTiltPosP)
 				.i(Constants.Coral.kTiltPosI)
 				.d(Constants.Coral.kTiltPosD)
 				.outputRange(Constants.Coral.kTiltPosMinOutput, Constants.Coral.kTiltPosMaxOutput)
 				.positionWrappingEnabled(Constants.Coral.kTiltEncodeWrapping);
 		tiltConfig.closedLoop.maxMotion
+				.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
 				.maxVelocity(Constants.Coral.kTiltPosMaxVel)
 				.maxAcceleration(Constants.Coral.kTiltPosMaxAccel)
 				.allowedClosedLoopError(Constants.Coral.kTiltPosAllowedErr);
@@ -218,7 +232,46 @@ public class Coral extends SubsystemBase {
 
 		sbLeftLimit.setBoolean(isLeftLimit());
 		sbRightLimit.setBoolean(isRightLimit());
+
+		if (leftIntakeActive) {
+			if ((getLeftIntakeSP() == Constants.Coral.INTAKE) &&
+					(getLeftIntakeVel() < 100)) {
+				setLeftIntakeVel(Constants.Coral.STOP);
+				leftIntakeActive = false;
+
+			} else if ((getLeftIntakeSP() == Constants.Coral.EJECT) &&
+					(leftIntakeCntr++ > 100)) {
+				setLeftIntakeVel(Constants.Coral.STOP);
+				leftIntakeActive = false;
+
+			} else {
+				DriverStation.reportWarning("Coral Left Intake Active but not commanded.", false);
+				leftIntakeActive = false;
+			}
+		}
+
+		if (rightIntakeActive) {
+			if ((getRightIntakeSP() == Constants.Coral.INTAKE) &&
+					(getRightIntakeVel() < 100)) {
+				setRightIntakeVel(Constants.Coral.STOP);
+				rightIntakeActive = false;
+
+			} else if ((getRightIntakeSP() == Constants.Coral.EJECT) &&
+					(rightIntakeCntr++ > 100)) {
+				setRightIntakeVel(Constants.Coral.STOP);
+				rightIntakeActive = false;
+
+			} else {
+				DriverStation.reportWarning("Coral Right Intake Active but not commanded.", false);
+				rightIntakeActive = false;
+			}
+		}
 	}
+
+	// public void moveTilt(double pos) {
+	// 	tiltController.setReference(getTiltPos() + pos,
+	// 			SparkBase.ControlType.kMAXMotionPositionControl);
+	// }
 
 	public double getLeftIntakeVel() {
 		return leftIntakeEncoder.getVelocity();
@@ -242,11 +295,15 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setLeftIntakeVel(double vel) {
+		leftIntakeActive = true;
+		leftIntakeCntr = 0;
 		setLeftIntakeSP(vel);
 		leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 
 	public void setRightIntakeVel(double vel) {
+		rightIntakeActive = true;
+		rightIntakeCntr = 0;
 		setRightIntakeSP(vel);
 		rightIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
@@ -382,44 +439,44 @@ public class Coral extends SubsystemBase {
 	}
 
 	public Command coralL4() {
-		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L4));
+		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L4));
 	}
 
 	public Command coralL3() {
-		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L3));
+		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L3));
 	}
 
 	public Command coralL2() {
-		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L2));
+		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L2));
 	}
 
 	public Command coralL1() {
-		return this.runOnce(() -> setTiltSP(Coral.CoralSP.L1));
+		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L1));
 	}
 
 	public Command coralStation() {
-		return this.runOnce(() -> setTiltSP(
+		return this.runOnce(() -> setTiltPos(
 				Coral.CoralSP.STATION));
 	}
 
 	public Command coralStow() {
-		return this.runOnce(() -> setTiltSP(
+		return this.runOnce(() -> setTiltPos(
 				Coral.CoralSP.STOW));
 	}
 
 	public Command coralLeftIntake() {
-		return this.runOnce(() -> setLeftIntakeSP(Constants.Coral.INTAKE));
+		return this.runOnce(() -> setLeftIntakeVel(Constants.Coral.INTAKE));
 	}
 
 	public Command coralLeftEject() {
-		return this.runOnce(() -> setLeftIntakeSP(Constants.Coral.EJECT));
+		return this.runOnce(() -> setLeftIntakeVel(Constants.Coral.EJECT));
 	}
 
 	public Command coralRightIntake() {
-		return this.runOnce(() -> setRightIntakeSP(Constants.Coral.INTAKE));
+		return this.runOnce(() -> setRightIntakeVel(Constants.Coral.INTAKE));
 	}
 
 	public Command coralRightEject() {
-		return this.runOnce(() -> setRightIntakeSP(Constants.Coral.EJECT));
+		return this.runOnce(() -> setRightIntakeVel(Constants.Coral.EJECT));
 	}
 }

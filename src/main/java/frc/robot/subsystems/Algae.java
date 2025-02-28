@@ -2,17 +2,20 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase;
+
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -67,6 +70,10 @@ public class Algae extends SubsystemBase {
 	private double intakeSP = Constants.Algae.STOP;
 
 	private boolean extractAlgae = false;
+
+	private boolean intakeActive = false;
+
+	private int intakeCntr = 0;
 
 	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
 	private final GenericEntry sbIntakeVel = algaeTab.addPersistent("Intake Vel", 0)
@@ -134,17 +141,21 @@ public class Algae extends SubsystemBase {
 				.inverted(Constants.Algae.kTiltMotorInverted)
 				.idleMode(Constants.Algae.kTiltIdleMode)
 				.smartCurrentLimit(Constants.Algae.kTiltCurrentLimit);
-		tiltConfig.encoder
+		tiltConfig.absoluteEncoder
+				.zeroOffset(Constants.Algae.kTiltZeroOffset)
+				.zeroCentered(Constants.Algae.kTiltZeroCentered)
+				.inverted(Constants.Algae.kTiltEncoderInverted)
 				.positionConversionFactor(Constants.Algae.kTiltPositionFactor)
 				.velocityConversionFactor(Constants.Algae.kTiltVelocityFactor);
 		tiltConfig.closedLoop
-				.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+				.feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
 				.p(Constants.Algae.kTiltPosP)
 				.i(Constants.Algae.kTiltPosI)
 				.d(Constants.Algae.kTiltPosD)
 				.outputRange(Constants.Algae.kTiltPosMinOutput, Constants.Algae.kTiltPosMaxOutput)
 				.positionWrappingEnabled(Constants.Algae.kIntakeEncodeWrapping);
 		tiltConfig.closedLoop.maxMotion
+				.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
 				.maxVelocity(Constants.Algae.kTiltPosMaxVel)
 				.maxAcceleration(Constants.Algae.kTiltPosMaxAccel)
 				.allowedClosedLoopError(Constants.Algae.kTiltPosAllowedErr);
@@ -175,7 +186,29 @@ public class Algae extends SubsystemBase {
 
 		sbLimit.setBoolean(isLimit());
 		sbExtract.setBoolean(getExtract());
+
+		if (intakeActive) {
+			if ((getIntakeSP() == Constants.Algae.INTAKE) &&
+					(isLimit())) {
+				setIntakeVel(Constants.Algae.STOP);
+				intakeActive = false;
+
+			} else if ((getIntakeSP() == Constants.Algae.EJECT) &&
+					(intakeCntr++ > 100)) {
+				setIntakeVel(Constants.Algae.STOP);
+				intakeActive = false;
+
+			} else {
+				DriverStation.reportWarning("Algae Intake Active but not commanded.", false);
+				intakeActive = false;
+			}
+		}
 	}
+
+	// public void moveTilt(double pos) {
+	// tiltController.setReference(getTiltPos() + pos,
+	// SparkBase.ControlType.kMAXMotionPositionControl);
+	// }
 
 	/**
 	 * setTiltCmd - command factory method to update the Tilt pos
@@ -248,12 +281,14 @@ public class Algae extends SubsystemBase {
 	}
 
 	public void setIntakeVel(double vel) {
+		intakeActive = true;
+		intakeCntr = 0;
 		setIntakeSP(vel);
 		intakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 
 	public void setIntakeVel() {
-		intakeController.setReference(getIntakeSP(), SparkBase.ControlType.kMAXMotionVelocityControl);
+		setIntakeVel(getIntakeSP());
 	}
 
 	public boolean onTiltTarget() {
@@ -336,30 +371,34 @@ public class Algae extends SubsystemBase {
 	}
 
 	public Command algaeBarge() {
-		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.BARGE));
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.BARGE));
 	}
 
 	public Command algaeL3() {
-		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.L3));
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.L3));
 	}
 
 	public Command algaeL2() {
-		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.L2));
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.L2));
 	}
 
 	public Command algaeFloor() {
-		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.FLOOR));
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.FLOOR));
 	}
 
 	public Command algaeStow() {
-		return this.runOnce(() -> setTiltSP(Algae.AlgaeSP.STOW));
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.STOW));
+	}
+
+	public Command algaeProcessor() {
+		return this.runOnce(() -> setTiltPos(Algae.AlgaeSP.PROCESSOR));
 	}
 
 	public Command algaeIntake() {
-		return this.runOnce(() -> setIntakeSP(Constants.Algae.INTAKE));
+		return this.runOnce(() -> setIntakeVel(Constants.Algae.INTAKE));
 	}
 
 	public Command algaeEject() {
-		return this.runOnce(() -> setIntakeSP(Constants.Algae.EJECT));
+		return this.runOnce(() -> setIntakeVel(Constants.Algae.EJECT));
 	}
 }
