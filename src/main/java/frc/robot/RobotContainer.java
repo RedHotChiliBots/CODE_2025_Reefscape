@@ -26,6 +26,8 @@ import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
 import frc.robot.subsystems.Vision;
 
+import java.util.List;
+
 import org.photonvision.PhotonCamera;
 
 /**
@@ -44,13 +46,14 @@ public class RobotContainer {
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder);
 	private final Climber climber = new Climber();
+	private final PhotonCamera camera1 = new PhotonCamera("Camera1");
+    private final PhotonCamera camera2 = new PhotonCamera("Camera2");
+    private final PhotonCamera camera3 = new PhotonCamera("Camera3");
+    private final PhotonCamera camera4 = new PhotonCamera("Camera4");
+	private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3, camera4);
 
-	private final PhotonCamera camera1 = null;
-	private final PhotonCamera camera2 = null;
-	private final PhotonCamera camera3 = null;
-	private final PhotonCamera camera4 = null;
-	private final Vision vision = new Vision(camera1, camera2, camera3, camera4);
-
+	private final Vision vision = new Vision(cameras.get(0), cameras.get(1), cameras.get(2), cameras.get(3));
+	
 	// Replace with CommandPS4Controller or CommandJoystick if needed
 	private final CommandXboxController m_driverController = new CommandXboxController(
 			OIConstants.kDriverControllerPort);
@@ -75,10 +78,9 @@ public class RobotContainer {
 		compTab.add("Algae", algae);
 		compTab.add("Ladder", ladder);
 		compTab.add("Climber", climber);
-		// camera1 = new PhotonCamera("OrangePiCamera1");
-		// camera2 = new PhotonCamera("OrangePiCamera2");
-		// camera3 = new PhotonCamera("OrangePiCamera3");
-		// camera4 = new PhotonCamera("OrangePiCamera4");
+		for (PhotonCamera camera : cameras) {
+            camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web interface
+        }
 
 		// Configure the trigger bindings
 		configureBindings();
