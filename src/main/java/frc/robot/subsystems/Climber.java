@@ -43,7 +43,7 @@ public class Climber extends SubsystemBase {
 		STOW(90.0), // degrees - up and out of way
 		READY(23.0), // degrees - touch cage but don't climb
 		ZERO(0.0), // degrees - for zeroing absolute encoder
-		CLIMB(-11.0); // degrees - full climb
+		CLIMB(-14.0); // degrees - full climb
 
 		private final double sp;
 
@@ -56,7 +56,7 @@ public class Climber extends SubsystemBase {
 		}
 	}
 
-	private ClimberSP climberSP = Climber.ClimberSP.ZERO;
+	private ClimberSP climberSP = Climber.ClimberSP.STOW;
 
 	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
 	private final GenericEntry sbTxtSP = climberTab.addPersistent("Climber tSP", "")
@@ -135,7 +135,7 @@ public class Climber extends SubsystemBase {
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
 		// Initialize intake start positions
-		setClimberPos(climberSP);
+		setClimberSP(climberSP);
 
 		System.out.println("----- Ending Climber Constructor -----");
 	}
@@ -155,7 +155,7 @@ public class Climber extends SubsystemBase {
 	private double sp = getClimberPos();
 
 	public void moveClimber(double pos) {
-		sp = sp + (pos / 5);
+		sp = sp + (pos / 2.5);
 		leftController.setReference(sp,
 				SparkBase.ControlType.kMAXMotionPositionControl);
 	}

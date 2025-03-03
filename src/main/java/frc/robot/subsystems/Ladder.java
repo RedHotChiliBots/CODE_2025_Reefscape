@@ -37,15 +37,15 @@ public class Ladder extends SubsystemBase {
 
 	// define ladder positions
 	public enum LadderSP {
-		BARGE((8.0 * 12.0) + 5.0),
-		L4(6.0 * 12.0),
-		L3((3.0 * 12.0) + 11.625),
-		L2((2.0 * 12.0) + 7.825),
-		L1((1.0 * 12.0) + 6.0),
-		STATION((3.0 * 12.0) + 1.5),
-		PROCESSOR(0.0 + 7.0),
-		FLOOR(0.5 * 12.0),
-		STOW(0.5 * 12.0),
+		BARGE((-8.0 * 12.0) - 5.0),
+		L4(-6.0 * 12.0),
+		L3((-3.0 * 12.0) - 11.625),
+		L2((-2.0 * 12.0) - 7.825),
+		L1((-1.0 * 12.0) - 2.0),
+		STATION((-3.0 * 12.0) - 1.5),
+		PROCESSOR(0.0 - 7.0),
+		FLOOR(-0.5 * 12.0),
+		STOW(-0.5 * 12.0),
 		START(0.0);
 
 		private final double sp;
@@ -126,7 +126,7 @@ public class Ladder extends SubsystemBase {
 		rightLadder.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		// Initialize intake start positions	
+		// Initialize intake start positions
 		leftEncoder.setPosition(ladderSP.getValue());
 		setLadderPos(ladderSP);
 
@@ -146,9 +146,9 @@ public class Ladder extends SubsystemBase {
 		sbFirst.setBoolean(firstPeriod);
 		sbZeroing.setBoolean(zeroingLadder);
 
-		if (firstPeriod || zeroingLadder) {
-			zeroLadder();
-		}
+		// if (firstPeriod || zeroingLadder) {
+		// 	zeroLadder();
+		// }
 	}
 
 	private void zeroLadder() {
@@ -223,4 +223,41 @@ public class Ladder extends SubsystemBase {
 	public boolean isLimit() {
 		return limitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
 	}
+
+	public Command ladderBarge() {
+		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.BARGE));
+	}
+
+	public Command ladderL4() {
+		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L4));
+	}
+
+	public Command ladderL3() {
+		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L3));
+	}
+
+	public Command ladderL2() {
+		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L2));
+	}
+
+	public Command ladderL1() {
+		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L1));
+	}
+
+	public Command ladderStation() {
+		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.STATION));
+	}
+
+	public Command ladderProcessor() {
+		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.PROCESSOR));
+	}
+
+	public Command ladderFloor() {
+		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.FLOOR));
+	}
+
+	public Command ladderStow() {
+		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.STOW));
+	}
+
 }

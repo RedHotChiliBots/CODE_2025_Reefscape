@@ -70,6 +70,8 @@ public class Coral extends SubsystemBase {
 
 	private Ladder ladder = null;
 
+	private Algae algae = null;
+
 	private double leftIntakeSP = Constants.Coral.STOP;
 	private double rightIntakeSP = Constants.Coral.STOP;
 	private CoralSP tiltSP = CoralSP.ZERO;
@@ -115,9 +117,10 @@ public class Coral extends SubsystemBase {
 			.withWidget("Text View").withPosition(6, 2).withSize(1, 1).getEntry();
 
 	// Creates a new Coral.
-	public Coral(Ladder ladder) {
+	public Coral(Ladder ladder, Algae algae) {
 		System.out.println("+++++ Starting Coral Constructor +++++");
 		this.ladder = ladder;
+		this.algae = algae;
 
 		// Configure Left Intake motor
 		leftIntakeConfig
@@ -198,7 +201,9 @@ public class Coral extends SubsystemBase {
 
 		setLeftIntakeVel(leftIntakeSP);
 		setRightIntakeVel(rightIntakeSP);
-		setTiltPos(tiltSP);
+		// setTiltPos(tiltSP);
+
+		setTiltAfterAlgaePos(tiltSP);
 
 		System.out.println("----- Ending Coral Constructor -----");
 	}
@@ -288,6 +293,13 @@ public class Coral extends SubsystemBase {
 	public void setTiltPos(CoralSP pos) {
 		setTiltSP(pos);
 		tiltController.setReference(pos.getValue(), SparkBase.ControlType.kMAXMotionPositionControl);
+	}
+
+	public void setTiltAfterAlgaePos(CoralSP pos) {
+		if (algae.isLimit()) {
+			setTiltSP(pos);
+			tiltController.setReference(pos.getValue(), SparkBase.ControlType.kMAXMotionPositionControl);
+		}
 	}
 
 	public void setTiltPos() {

@@ -268,6 +268,16 @@ public class Chassis extends SubsystemBase {
 		};
 	}
 
+	public double spdMultiplier = 1.0;
+
+	public void setSpdHigh() {
+		spdMultiplier = 1.0;
+	}
+
+	public void setSpdLow() {
+		spdMultiplier = 0.5;
+	}
+
 	/**
 	 * Method to drive the robot using joystick info.
 	 *

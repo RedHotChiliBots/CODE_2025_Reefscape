@@ -7,6 +7,7 @@ package frc.robot.commands;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -19,11 +20,19 @@ import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
 import frc.robot.subsystems.Vision;
 
-public final class Autos {
+public class Autos {
   private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
   // Define a chooser for autonomous commands
   private final SendableChooser<Command> chooser = new SendableChooser<>();
+
+  Chassis chassis;
+  Ladder ladder;
+  Algae algae;
+  Coral coral;
+  Climber climber;
+
+  AutonLeave autoLeave;
 
   /** Example static factory for an autonomous command. */
   // public static Command AutonLeave(Chassis chassis, Ladder ladder, Algae algae,
@@ -36,11 +45,24 @@ public final class Autos {
 
     System.out.println("+++++ Starting Autos Constructor +++++");
 
+    this.chassis = chassis;
+    this.ladder = ladder;
+    this.algae = algae;
+    this.coral = coral;
+    this.climber = climber;
+
+    this.autoLeave = new AutonLeave(chassis, ladder, algae, coral, climber);
+
     // ********************************************
     // Generate Auto commands
     // Note: Named commands used in Auto command must be defined
     // before defining the Auto command
-    AutonLeave autoLeave = new AutonLeave(chassis, ladder, algae, coral, climber);
+
+    String temp = AutoBuilder.isConfigured() ? "IS" : "IS NOT";
+    DriverStation.reportWarning("AutoBuilder " + temp + " configured", false);
+    temp = AutoBuilder.isPathfindingConfigured() ? "IS" : "IS NOT";
+    DriverStation.reportWarning("AutoBuilder Pathfinding " + temp + " configured", false);
+
     // AutonShootStay autoShootStay = new AutonShootStay(chassis, intake, feeder,
     // shooter);
     // AutonSpeakerAmp autoSpeakerAmp = new AutonSpeakerAmp(chassis, this, vision,
@@ -51,16 +73,17 @@ public final class Autos {
     //chooser = AutoBuilder.buildAutoChooser();
 
     chooser.setDefaultOption("Leave", autoLeave);
+    chooser.addOption("Leave2", autoLeave);
     // chooser.addOption("Shoot N Stay", autoShootStay);
     // chooser.addOption("Speaker Amp", autoSpeakerAmp);
     // chooser.addOption("Auto ZigZag3Cmd", cmdAutoZigZag3m);
 
     // ********************************************
     // Add Auton Command chooser to Shuffleboard
-    compTab.add("Auton Command", chooser)
-        .withWidget("ComboBox Chooser")
-        .withPosition(6, 1)
-        .withSize(4, 1);
+    // compTab.add("Auton Command", chooser)
+    //     .withWidget("ComboBox Chooser")
+    //     .withPosition(8, 1)
+    //     .withSize(3, 1);
 
     System.out.println("----- Ending Autos Constructor -----");
   }

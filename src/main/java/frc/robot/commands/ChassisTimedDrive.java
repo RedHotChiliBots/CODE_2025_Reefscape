@@ -13,11 +13,13 @@ public class ChassisTimedDrive extends Command {
 
   private Chassis chassis = null;
   private double sec = 0.0;
+  private double vel = 0.0;
   private final Timer timer = new Timer();
 
-  public ChassisTimedDrive(Chassis chassis, double sec) {
+  public ChassisTimedDrive(Chassis chassis, double vel, double sec) {
     this.chassis = chassis;
     this.sec = sec;
+    this.vel = vel;
 
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(chassis);
@@ -33,7 +35,7 @@ public class ChassisTimedDrive extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    chassis.drive(0.5, 0.0, 0.0, false);
+    chassis.drive(vel, 0.0, 0.0, false);
   }
 
   // Called once the command ends or is interrupted.

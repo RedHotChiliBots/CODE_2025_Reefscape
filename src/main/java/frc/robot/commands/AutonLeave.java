@@ -22,6 +22,6 @@ public class AutonLeave extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        new ChassisTimedDrive(chassis, 1.0)); //2
+        new ChassisTimedDrive(chassis, 0.25, 1.0)); //2
   }
 }
