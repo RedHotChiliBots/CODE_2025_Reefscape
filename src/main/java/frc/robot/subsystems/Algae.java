@@ -19,7 +19,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 public class Algae extends SubsystemBase {
@@ -47,13 +50,13 @@ public class Algae extends SubsystemBase {
 	private Ladder ladder = null;
 
 	public enum AlgaeSP {
-		STOW(90.0),
+		STOW(109.0),
 		ZERO(0.0),
-		PROCESSOR(-10.0),
+		PROCESSOR(45.0),
 		BARGE(-20.0),
 		L2(-35.0),
 		L3(-35.0),
-		FLOOR(-45.0);
+		FLOOR(0.0);
 
 		private final double sp;
 
@@ -76,6 +79,7 @@ public class Algae extends SubsystemBase {
 	private int intakeCntr = 0;
 
 	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
+
 	private final GenericEntry sbIntakeVel = algaeTab.addPersistent("Intake Vel", 0)
 			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbIntakeSP = algaeTab.addPersistent("Intake SP", 0)
@@ -96,11 +100,19 @@ public class Algae extends SubsystemBase {
 			.withWidget("Boolean Box").withPosition(6, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbExtract = algaeTab.addPersistent("Expel", false)
 			.withWidget("Boolean Box").withPosition(6, 1).withSize(1, 1).getEntry();
+	private final GenericEntry sbEIntake = algaeTab.addPersistent("Intake", false)
+			.withWidget("Boolean Box").withPosition(6, 2).withSize(1, 1).getEntry();
+	private final GenericEntry sbEIntakeCtr = algaeTab.addPersistent("Intake Ctr", 0)
+			.withWidget("Text View").withPosition(7, 2).withSize(1, 1).getEntry();
+
+	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 
 	// Creates a new Algae.
 	public Algae(Ladder ladder) {
 		System.out.println("+++++ Starting Algae Constructor +++++");
 		this.ladder = ladder;
+
+		algaeTab.add("Algae", this);
 
 		// Configure Left Intake motor
 		leftConfig
@@ -163,6 +175,9 @@ public class Algae extends SubsystemBase {
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+		// algaeTab.add("Intake2", algaeIntake());
+		// algaeTab.add("Eject2", algaeEject());
+
 		setIntakeVel(intakeSP);
 		setTiltPos(tiltSP);
 
@@ -186,15 +201,17 @@ public class Algae extends SubsystemBase {
 
 		sbLimit.setBoolean(isLimit());
 		sbExtract.setBoolean(getExtract());
+		sbEIntake.setBoolean(intakeActive);
+		sbEIntakeCtr.setDouble(intakeCntr);
 
 		if (intakeActive) {
-			if ((getIntakeSP() == Constants.Algae.INTAKE) &&
+			if (((int) getIntakeSP() == (int) Constants.Algae.INTAKE) &&
 					(isLimit())) {
 				setIntakeVel(Constants.Algae.STOP);
 				intakeActive = false;
 
-			} else if ((getIntakeSP() == Constants.Algae.EJECT) &&
-					(intakeCntr++ > 100)) {
+			} else if (((int) getIntakeSP() == (int) Constants.Algae.EJECT) &&
+					(intakeCntr++ > 25)) {
 				setIntakeVel(Constants.Algae.STOP);
 				intakeActive = false;
 
@@ -204,6 +221,18 @@ public class Algae extends SubsystemBase {
 			}
 		}
 	}
+
+	public Command processor = new InstantCommand(() -> setTiltPos(AlgaeSP.PROCESSOR));
+	public Command floor = new InstantCommand(() -> setTiltPos(AlgaeSP.FLOOR));
+	public Command stow = new InstantCommand(() -> setTiltPos(AlgaeSP.STOW));
+
+	public Command intake = new InstantCommand(() -> setIntake())
+			.until(() -> isLimit())
+	//		.andThen(() -> setTiltPos(AlgaeSP.PROCESSOR))
+			.andThen(() -> setHold());
+	public Command eject = new InstantCommand(() -> setEject())
+			.andThen(new WaitCommand(0.5))
+			.andThen(() -> setStop());
 
 	// public void moveTilt(double pos) {
 	// tiltController.setReference(getTiltPos() + pos,
@@ -278,6 +307,26 @@ public class Algae extends SubsystemBase {
 	// Sets the position of the encoders
 	public void setTiltPos() {
 		setTiltPos(getTiltSP());
+	}
+
+	public void setIntake() {
+		setIntakeSP(Constants.Algae.INTAKE);
+		intakeController.setReference(Constants.Algae.INTAKE, SparkBase.ControlType.kMAXMotionVelocityControl);
+	}
+
+	public void setHold() {
+		setIntakeSP(Constants.Algae.HOLD);
+		intakeController.setReference(Constants.Algae.HOLD, SparkBase.ControlType.kMAXMotionVelocityControl);
+	}
+
+	public void setEject() {
+		setIntakeSP(Constants.Algae.EJECT);
+		intakeController.setReference(Constants.Algae.EJECT, SparkBase.ControlType.kMAXMotionVelocityControl);
+	}
+
+	public void setStop() {
+		setIntakeSP(Constants.Algae.STOP);
+		intakeController.setReference(Constants.Algae.STOP, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 
 	public void setIntakeVel(double vel) {

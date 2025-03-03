@@ -179,8 +179,8 @@ public final class Constants {
 
 	public static final class Coral {
 
-		public static final double kTiltTollerance = 0.25; // degrees
-		public static final double kIntakeTollerance = 25.0; // RPMs
+		public static final double kTiltTollerance = 0.5; // degrees
+		public static final double kIntakeTollerance = 10.0; // RPMs
 
 		// define coral velocities
 		public static final double STOP = 0.0;
@@ -235,12 +235,13 @@ public final class Constants {
 
 	public static final class Algae {
 
-		public static final double kTiltTollerance = 0.25; // degrees
-		public static final double kIntakeTollerance = 25.0; // RPMs
+		public static final double kTiltTollerance = 0.5; // degrees
+		public static final double kIntakeTollerance = 10.0; // RPMs
 
 		// define algae velocities
 		public static final double STOP = 0.0;
 		public static final double INTAKE = 25000.0;
+		public static final double HOLD = 5000.0;
 		public static final double EJECT = -25000.0;
 
 		public static final double kTiltZeroOffset = 0.9844013;
@@ -272,13 +273,13 @@ public final class Constants {
 		public static final double kIntakeVelMaxAccel = 20000.0;
 		public static final double kIntakeVelAllowedErr = 1.0;
 
-		public static final double kTiltPosP = 0.002;
-		public static final double kTiltPosI = 0.0000015;
-		public static final double kTiltPosD = 0.0;
+		public static final double kTiltPosP = 0.0025;
+		public static final double kTiltPosI = 0.0;//000002;
+		public static final double kTiltPosD = 0.00001;
 		public static final double kTiltPosMinOutput = -1.0;
 		public static final double kTiltPosMaxOutput = 1.0;
 
-		public static final double kTiltPosMaxVel = 10000.0;
+		public static final double kTiltPosMaxVel = 20000.0;
 		public static final double kTiltPosMaxAccel = 20000.0;
 		public static final double kTiltPosAllowedErr = 0.1;
 
@@ -294,13 +295,16 @@ public final class Constants {
 	public static final class Ladder {
 
 		// define ladder zeroing speeds
-		public static final double DOWN = -0.10;
+		public static final double DOWN = 0.10;
 		public static final double STOP = 0.0;
 
 		public static final double kTollerance = 0.25; // Inches
 
 		public static final boolean kRightMotorInverted = false;
-		public static final boolean kLeftMotorInverted = false;
+		public static final boolean kLeftMotorInverted = true;
+
+		public static final boolean kLeftEncoderInverted = true;
+		public static final boolean kRightEncodeIntered = false;
 
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;
@@ -309,7 +313,7 @@ public final class Constants {
 		public static final double kSprocketDia = 1.375; // inches
 		public static final double kStage3perStage1 = 3.0; // ratio
 
-		public static final double kLiftPostionFactor = (1.0 / kLiftGearBox) * (Math.PI * kSprocketDia)
+		public static final double kLiftPostionFactor = ((1.0 / kLiftGearBox) * (Math.PI * kSprocketDia))
 				* kStage3perStage1;
 		public static final double kLiftVelocityFactor = kLiftPostionFactor / 60.0;
 
@@ -319,7 +323,7 @@ public final class Constants {
 		public static final double kPosMinOutput = -1.0;
 		public static final double kPosMaxOutput = 1.0;
 
-		public static final double kMaxVel = 3000.0;
+		public static final double kMaxVel = 5000;	//3000.0;
 		public static final double kMaxAccel = 3000.0;
 		public static final double kAllowedErr = 0.1;
 
@@ -332,14 +336,14 @@ public final class Constants {
 
 	public static final class Climber {
 
-		public static final double kTollerance = 0.25; // degrees
+		public static final double kTollerance = 0.5; // degrees
 
-		public static final double kLeftZeroOffset = 0.1550716;
+		public static final double kLeftZeroOffset = 0.1667074;
 		public static final boolean kLeftZeroCentered = true;
 		public static final boolean kLeftMotorInverted = true;
 		public static final boolean kLeftEncoderInverted = true;
 
-		public static final double kRightZeroOffset = 0.8712338;
+		public static final double kRightZeroOffset = 0.8799260;
 		public static final boolean kRightZeroCentered = true;
 		public static final boolean kRightMotorInverted = true;
 		public static final boolean kRightEncoderInverted = true;
@@ -351,14 +355,14 @@ public final class Constants {
 																				// 360.0; // degrees
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // degrees per second
 
-		public static final double kPosP = 0.027;
+		public static final double kPosP = 0.025;
 		public static final double kPosI = 0.0;
 		public static final double kPosD = 0.0;
 		public static final double kPosMinOutput = -1.0;
 		public static final double kPosMaxOutput = 1.0;
 
-		public static final double kPosMaxVel = 5000.0;
-		public static final double kPosMaxAccel = 5000.0;
+		public static final double kPosMaxVel = 10000.0;	//5000.0
+		public static final double kPosMaxAccel = 10000.0;	//5000.0
 		public static final double kPosAllowedErr = 0.1;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
