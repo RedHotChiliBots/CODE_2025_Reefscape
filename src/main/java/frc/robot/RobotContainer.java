@@ -56,6 +56,8 @@ public class RobotContainer {
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder, algae);
 	private final Climber climber = new Climber();
+	private final Autos auton = new Autos(chassis, ladder, algae, coral, climber);
+
 	private final PhotonCamera camera1 = new PhotonCamera("Camera1");
 	private final PhotonCamera camera2 = new PhotonCamera("Camera2");
 	private final PhotonCamera camera3 = new PhotonCamera("Camera3");
@@ -64,8 +66,6 @@ public class RobotContainer {
 
 	// private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
 	// cameras.get(2), cameras.get(3));
-
-	private final Autos auton = new Autos(chassis, ladder, algae, coral, climber);
 
 	RunCommand climberStow = new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.STOW), climber);
 	RunCommand climberReady = new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.READY), climber);
@@ -90,7 +90,7 @@ public class RobotContainer {
 	RunCommand coralL2 = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.L2), coral);
 	RunCommand coralL1 = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.L1), coral);
 
-	// Replace with CommandPS4Controller or CommandJoystick if needed
+	// Define HIDs
 	private final CommandXboxController m_driverController = new CommandXboxController(
 			OIConstants.kDriverControllerPort);
 	private final CommandXboxController m_operatorController = new CommandXboxController(
@@ -100,49 +100,17 @@ public class RobotContainer {
 
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
+	private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
+	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
 	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
-	// private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
-	// private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
-	// private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
-	// private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
-	// private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
+	private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
+	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
 
-		algaeTab.add("Processor3", algae.processor);
-		algaeTab.add("Floor3", algae.floor);
-		algaeTab.add("Intake3", algae.intake);
-		algaeTab.add("Eject3", algae.eject);
-
-		cmdTab.add("climberStow", climberStow);
-		cmdTab.add("climberReady", climberReady);
-		cmdTab.add("climberZero", climberZero);
-		cmdTab.add("climberClimb", climberClimb);
-
-		cmdTab.add("algaeStow", algaeStow);
-		cmdTab.add("algaeZero", algaeZero);
-		cmdTab.add("algaeBarge", algaeBarge);
-		cmdTab.add("algaeProcessor", algaeProcessor);
-		cmdTab.add("algaeFloor", algaeFloor);
-		cmdTab.add("algaeL3", algaeL3);
-		cmdTab.add("algaeL2", algaeL2);
-
-		cmdTab.add("coralStow", coralStow);
-		cmdTab.add("coralZero", coralZero);
-		cmdTab.add("coralStation", coralStation);
-		cmdTab.add("coralL4", coralL4);
-		cmdTab.add("coralL3", coralL3);
-		cmdTab.add("coralL2", coralL2);
-		cmdTab.add("coralL1", coralL1);
-
-		compTab.add("Chassis", chassis);
-		compTab.add("Coral", coral);
-		compTab.add("Algae", algae);
-		compTab.add("Ladder", ladder);
-		compTab.add("Climber", climber);
 		for (PhotonCamera camera : cameras) {
 			camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web interface
 		}
@@ -191,23 +159,21 @@ public class RobotContainer {
 		// OIConstants.kDriveDeadband)),
 		// algae));
 
-		ShuffleboardLayout algaeCommands = Shuffleboard.getTab("Competition")
-				.getLayout("Algae Commands", BuiltInLayouts.kList)
-				.withSize(2, 5)
-				.withPosition(0, 1)
-				.withProperties(Map.of("Label position", "TOP"));
-		algaeCommands.add("Barge", algae.algaeBarge());
-		algaeCommands.add("L3", algae.algaeL3());
-		algaeCommands.add("L2", algae.algaeL2());
-		algaeCommands.add("Processor", algae.algaeProcessor());
-		algaeCommands.add("Floor", algae.algaeFloor());
-		algaeCommands.add("Stow", algae.algaeStow());
-		algaeCommands.add("Intake5", algae.intake);
-		algaeCommands.add("Eject5", algae.eject);
-		algaeCommands.add("Intake", algae.algaeIntake());
-		algaeCommands.add("Eject", algae.algaeEject());
+		// ShuffleboardLayout algaeCommands = cmdTab
+		// 		.getLayout("Algae Commands", BuiltInLayouts.kList)
+		// 		.withSize(2, 5)
+		// 		.withPosition(0, 1)
+		// 		.withProperties(Map.of("Label position", "TOP"));
+		// algaeCommands.add("Barge", algae.barge);
+		// algaeCommands.add("L3", algae.l3);
+		// algaeCommands.add("L2", algae.l2);
+		// algaeCommands.add("Processor", algae.processor);
+		// algaeCommands.add("Floor", algae.floor);
+		// algaeCommands.add("Stow", algae.stow);
+		// algaeCommands.add("Intake5", algae.intake);
+		// algaeCommands.add("Eject5", algae.eject);
 
-		ShuffleboardLayout coralCommands = Shuffleboard.getTab("Competition")
+		ShuffleboardLayout coralCommands = cmdTab
 				.getLayout("Coral", BuiltInLayouts.kList)
 				.withSize(2, 5)
 				.withPosition(2, 1)
@@ -223,15 +189,15 @@ public class RobotContainer {
 		coralCommands.add("Right Intake", coral.coralRightIntake());
 		coralCommands.add("Right Eject", coral.coralRightEject());
 
-		ShuffleboardLayout toggleCommands = Shuffleboard.getTab("Competition")
+		ShuffleboardLayout toggleCommands = cmdTab
 				.getLayout("Toggle", BuiltInLayouts.kList)
 				.withSize(2, 2)
 				.withPosition(4, 4)
 				.withProperties(Map.of("Label position", "TOP"));
-		toggleCommands.add("Extract", algae.toggleExtractCmd());
+		toggleCommands.add("Extract", algae.toggleExtract);
 		toggleCommands.add("Left-Right", coral.toggleSideCmd());
 
-		ShuffleboardLayout climberCommands = Shuffleboard.getTab("Competition")
+		ShuffleboardLayout climberCommands = cmdTab
 				.getLayout("Climber", BuiltInLayouts.kList)
 				.withSize(2, 2)
 				.withPosition(4, 1)
@@ -240,7 +206,7 @@ public class RobotContainer {
 		climberCommands.add("Ready", climber.climberReady());
 		climberCommands.add("Stow", climber.climberStow());
 
-		ShuffleboardLayout ladderCommands = Shuffleboard.getTab("Competition")
+		ShuffleboardLayout ladderCommands = cmdTab
 				.getLayout("Ladder", BuiltInLayouts.kList)
 				.withSize(2, 5)
 				.withPosition(6, 1)
@@ -271,20 +237,21 @@ public class RobotContainer {
 	 */
 	private void configureBindings() {
 
+		m_driverController.leftBumper()
+				.onFalse(new InstantCommand(() -> chassis.setSpdHigh()))
+				.onTrue(new InstantCommand(() -> chassis.setSpdLow()));
+
 		m_operatorController.y().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.STOW), climber));
-
 		m_operatorController.b().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.READY), climber));
-
 		m_operatorController.a().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.CLIMB), climber));
-
 		m_operatorController.x().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.ZERO), climber));
 
+		m_operatorController.start().onTrue(algae.intake);
+		m_operatorController.back().onTrue(algae.eject);
+
 		new POVButton(m_operatorHID, 0).onTrue(algae.stow);
-
 		new POVButton(m_operatorHID, 90).onTrue(algae.processor);
-
 		new POVButton(m_operatorHID, 270).onTrue(algae.processor);
-		
 		new POVButton(m_operatorHID, 180).onTrue(algae.floor);
 
 		
@@ -322,18 +289,11 @@ public class RobotContainer {
 		// 		coral.doActionCmd(),
 		// 		algae.doActionCmd()));
 
-		m_operatorController.start().onTrue(algae.intake);
-
-		m_operatorController.back().onTrue(algae.eject);
-
+	
 		// m_driverController.leftBumper()
 		// .onTrue(coral.setLeftIntakeCmd(Constants.Coral.INTAKE));
 		// m_driverController.rightBumper()
 		// .onTrue(coral.setLeftIntakeCmd(Constants.Coral.EJECT));
-
-		m_driverController.leftBumper()
-				.onFalse(new InstantCommand(() -> chassis.setSpdHigh()))
-				.onTrue(new InstantCommand(()-> chassis.setSpdLow()));
 	}
 
 	/**
@@ -342,7 +302,7 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		return new ChassisTimedDrive(chassis, 0.25, 1.0);
-		// return auton.getChooser().getSelected();
+	//	return new ChassisTimedDrive(chassis, 0.25, 1.0);
+		return auton.getChooser().getSelected();
 	}
 }
