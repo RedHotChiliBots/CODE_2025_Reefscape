@@ -154,11 +154,12 @@ public class RobotContainer {
 		m_driverController.leftBumper()
 				.onFalse(new InstantCommand(() -> chassis.setSpdHigh()))
 				.onTrue(new InstantCommand(() -> chassis.setSpdLow()));
+//		m_driverController.x().onTrue(chassis.setX);
 
-		m_operatorController.y().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.STOW), climber));
-		m_operatorController.b().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.READY), climber));
-		m_operatorController.a().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.CLIMB), climber));
-		m_operatorController.x().onTrue(new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.ZERO), climber));
+		m_operatorController.y().onTrue(climber.stow);
+		m_operatorController.b().onTrue(climber.ready);
+		m_operatorController.a().onTrue(climber.climb);
+		m_operatorController.x().onTrue(climber.zero);
 
 		m_operatorController.start().onTrue(algae.intake);
 		m_operatorController.back().onTrue(algae.eject);
@@ -167,47 +168,6 @@ public class RobotContainer {
 		new POVButton(m_operatorHID, 90).onTrue(algae.processor);
 		new POVButton(m_operatorHID, 270).onTrue(algae.processor);
 		new POVButton(m_operatorHID, 180).onTrue(algae.floor);
-
-		
-		// m_operatorController.y().onTrue(new ParallelCommandGroup(
-		// 		ladder.setLadderSPCmd(Ladder.LadderSP.L4),
-		// 		coral.setTiltSPCmd(Coral.CoralSP.L4),
-		// 		algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
-
-		// m_operatorController.b().onTrue(new ParallelCommandGroup(
-		// 		ladder.setLadderSPCmd(Ladder.LadderSP.L3),
-		// 		coral.setTiltSPCmd(Coral.CoralSP.L3),
-		// 		algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
-
-		// m_operatorController.a().onTrue(new ParallelCommandGroup(
-		// 		ladder.setLadderSPCmd(Ladder.LadderSP.L2),
-		// 		coral.setTiltSPCmd(Coral.CoralSP.L2),
-		// 		algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
-
-		// m_operatorController.x().onTrue(new ParallelCommandGroup(
-		// 		ladder.setLadderSPCmd(Ladder.LadderSP.L1),
-		// 		coral.setTiltSPCmd(Coral.CoralSP.L1),
-		// 		algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
-
-		// m_operatorController.leftStick().onTrue(new ParallelCommandGroup(
-		// 		ladder.setLadderSPCmd(Ladder.LadderSP.STOW),
-		// 		coral.setTiltSPCmd(Coral.CoralSP.STOW),
-		// 		algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
-
-		// m_operatorController.leftBumper().onTrue(new ParallelCommandGroup(
-		// 		ladder.setLadderPosCmd(),
-		// 		coral.setTiltPosCmd(),
-		// 		algae.setTiltPosCmd()));
-
-		// m_operatorController.rightBumper().onTrue(new ParallelCommandGroup(
-		// 		coral.doActionCmd(),
-		// 		algae.doActionCmd()));
-
-	
-		// m_driverController.leftBumper()
-		// .onTrue(coral.setLeftIntakeCmd(Constants.Coral.INTAKE));
-		// m_driverController.rightBumper()
-		// .onTrue(coral.setLeftIntakeCmd(Constants.Coral.EJECT));
 	}
 
 	/**

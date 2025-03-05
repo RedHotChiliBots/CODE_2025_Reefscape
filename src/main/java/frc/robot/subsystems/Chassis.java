@@ -40,6 +40,7 @@ import frc.robot.Constants.ChassisConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Chassis extends SubsystemBase {
@@ -226,6 +227,9 @@ public class Chassis extends SubsystemBase {
 		sbRotDegree.setDouble(getRotation2d().getDegrees());
 	}
 
+	public Command setX = new InstantCommand(() -> setX());
+
+
 	/**
 	 * Reset the estimated pose of the swerve drive on the field.
 	 *
@@ -343,12 +347,6 @@ public class Chassis extends SubsystemBase {
 		m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
 	}
 
-	public Command setXCmd() {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setX();
-		});
-	}
 
 	/**
 	 * Sets the swerve ModuleStates.
