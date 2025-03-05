@@ -4,6 +4,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import java.util.Map;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -13,10 +16,14 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 
 public class Climber extends SubsystemBase {
@@ -58,7 +65,12 @@ public class Climber extends SubsystemBase {
 
 	private ClimberSP climberSP = Climber.ClimberSP.STOW;
 
+	/**************************************************************
+	 * Initialize Shuffleboard entries
+	 **************************************************************/
 	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
+	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+
 	private final GenericEntry sbTxtSP = climberTab.addPersistent("Climber tSP", "")
 			.withWidget("Text View").withPosition(1, 0)
 			.withSize(1, 1).getEntry();
@@ -75,7 +87,15 @@ public class Climber extends SubsystemBase {
 			.withWidget("Boolean Box").withPosition(6, 0)
 			.withSize(1, 1).getEntry();
 
-	// Creates a new Climber.
+	ShuffleboardLayout climberCommands = cmdTab
+			.getLayout("Climber", BuiltInLayouts.kList)
+			.withSize(2, 2)
+			.withPosition(4, 1)
+			.withProperties(Map.of("Label position", "HIDE"));
+
+	/**************************************************************
+	 * Constructor
+	 **************************************************************/
 	public Climber() {
 		System.out.println("+++++ Starting Climber Constructor +++++");
 
@@ -134,12 +154,20 @@ public class Climber extends SubsystemBase {
 		rightClimber.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+		climberCommands.add("Climb", this.climb);
+		climberCommands.add("Ready", this.ready);
+		climberCommands.add("Zero", this.zero);
+		climberCommands.add("Stow", this.stow);
+
 		// Initialize intake start positions
 		setClimberSP(climberSP);
 
 		System.out.println("----- Ending Climber Constructor -----");
 	}
 
+	/**************************************************************
+	 * Periodic
+	 **************************************************************/
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
@@ -152,6 +180,18 @@ public class Climber extends SubsystemBase {
 		sbLimit.setBoolean(getLimitSwitch());
 	}
 
+	/**************************************************************
+	 * Commands
+	 **************************************************************/
+
+	public Command stow = new InstantCommand(() -> setClimberPos(ClimberSP.STOW));
+	public Command zero = new InstantCommand(() -> setClimberPos(ClimberSP.ZERO));
+	public Command ready = new InstantCommand(() -> setClimberPos(ClimberSP.READY));
+	public Command climb = new InstantCommand(() -> setClimberPos(ClimberSP.CLIMB));
+
+	 /**************************************************************
+	 * Methods
+	 **************************************************************/
 	private double sp = getClimberPos();
 
 	public void moveClimber(double pos) {
@@ -160,23 +200,23 @@ public class Climber extends SubsystemBase {
 				SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
-	public Command setClimberPosCmd(ClimberSP pos) {
-		// Inline construction of command goes here.
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(
-				() -> {
-					setClimberPos(pos);
-				});
-	}
+	// public Command setClimberPosCmd(ClimberSP pos) {
+	// 	// Inline construction of command goes here.
+	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
+	// 	return runOnce(
+	// 			() -> {
+	// 				setClimberPos(pos);
+	// 			});
+	// }
 
-	public Command setClimberPosCmd() {
-		// Inline construction of command goes here.
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(
-				() -> {
-					setClimberPosCmd(getClimberSP());
-				});
-	}
+	// public Command setClimberPosCmd() {
+	// 	// Inline construction of command goes here.
+	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
+	// 	return runOnce(
+	// 			() -> {
+	// 				setClimberPosCmd(getClimberSP());
+	// 			});
+	// }
 
 	public double getClimberPos() {
 		return leftEncoder.getPosition();
@@ -208,15 +248,15 @@ public class Climber extends SubsystemBase {
 		return isLimitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
 	}
 
-	public Command climberClimb() {
-		return this.runOnce(() -> setClimberPos(ClimberSP.CLIMB));
-	}
+	// public Command climberClimb() {
+	// 	return this.runOnce(() -> setClimberPos(ClimberSP.CLIMB));
+	// }
 
-	public Command climberReady() {
-		return this.runOnce(() -> setClimberPos(ClimberSP.READY));
-	}
+	// public Command climberReady() {
+	// 	return this.runOnce(() -> setClimberPos(ClimberSP.READY));
+	// }
 
-	public Command climberStow() {
-		return this.runOnce(() -> setClimberPos(ClimberSP.STOW));
-	}
+	// public Command climberStow() {
+	// 	return this.runOnce(() -> setClimberPos(ClimberSP.STOW));
+	// }
 }

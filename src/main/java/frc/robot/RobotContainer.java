@@ -5,23 +5,19 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ChassisTimedDrive;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
@@ -100,12 +96,7 @@ public class RobotContainer {
 
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
-	private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
-	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
-	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
-	private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
-	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
-
+	
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
@@ -159,67 +150,13 @@ public class RobotContainer {
 		// OIConstants.kDriveDeadband)),
 		// algae));
 
-		// ShuffleboardLayout algaeCommands = cmdTab
-		// 		.getLayout("Algae Commands", BuiltInLayouts.kList)
-		// 		.withSize(2, 5)
-		// 		.withPosition(0, 1)
-		// 		.withProperties(Map.of("Label position", "TOP"));
-		// algaeCommands.add("Barge", algae.barge);
-		// algaeCommands.add("L3", algae.l3);
-		// algaeCommands.add("L2", algae.l2);
-		// algaeCommands.add("Processor", algae.processor);
-		// algaeCommands.add("Floor", algae.floor);
-		// algaeCommands.add("Stow", algae.stow);
-		// algaeCommands.add("Intake5", algae.intake);
-		// algaeCommands.add("Eject5", algae.eject);
-
-		ShuffleboardLayout coralCommands = cmdTab
-				.getLayout("Coral", BuiltInLayouts.kList)
-				.withSize(2, 5)
-				.withPosition(2, 1)
-				.withProperties(Map.of("Label position", "TOP"));
-		coralCommands.add("L4", coral.coralL4());
-		coralCommands.add("L3", coral.coralL3());
-		coralCommands.add("L2", coral.coralL2());
-		coralCommands.add("L1", coral.coralL1());
-		coralCommands.add("Station", coral.coralStation());
-		coralCommands.add("Stow", coral.coralStow());
-		coralCommands.add("Left Intake", coral.coralLeftIntake());
-		coralCommands.add("Left Eject", coral.coralLeftEject());
-		coralCommands.add("Right Intake", coral.coralRightIntake());
-		coralCommands.add("Right Eject", coral.coralRightEject());
-
 		ShuffleboardLayout toggleCommands = cmdTab
 				.getLayout("Toggle", BuiltInLayouts.kList)
 				.withSize(2, 2)
 				.withPosition(4, 4)
-				.withProperties(Map.of("Label position", "TOP"));
+				.withProperties(Map.of("Label position", "HIDE"));
 		toggleCommands.add("Extract", algae.toggleExtract);
-		toggleCommands.add("Left-Right", coral.toggleSideCmd());
-
-		ShuffleboardLayout climberCommands = cmdTab
-				.getLayout("Climber", BuiltInLayouts.kList)
-				.withSize(2, 2)
-				.withPosition(4, 1)
-				.withProperties(Map.of("Label position", "TOP"));
-		climberCommands.add("Climb", climber.climberClimb());
-		climberCommands.add("Ready", climber.climberReady());
-		climberCommands.add("Stow", climber.climberStow());
-
-		ShuffleboardLayout ladderCommands = cmdTab
-				.getLayout("Ladder", BuiltInLayouts.kList)
-				.withSize(2, 5)
-				.withPosition(6, 1)
-				.withProperties(Map.of("Label position", "TOP"));
-		ladderCommands.add("Barge", ladder.ladderBarge());
-		ladderCommands.add("L4", ladder.ladderL4());
-		ladderCommands.add("L3", ladder.ladderL3());
-		ladderCommands.add("L2", ladder.ladderL2());
-		ladderCommands.add("L1", ladder.ladderL1());
-		ladderCommands.add("Station", ladder.ladderStation());
-		ladderCommands.add("Processor", ladder.ladderProcessor());
-		ladderCommands.add("Floor", ladder.ladderFloor());
-		ladderCommands.add("Stow", ladder.ladderStow());
+		toggleCommands.add("Left-Right", coral.toggleSide);
 	}
 
 	/**

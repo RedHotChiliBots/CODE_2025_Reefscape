@@ -119,7 +119,7 @@ public class Algae extends SubsystemBase {
 				.getLayout("Algae Commands", BuiltInLayouts.kList)
 				.withSize(2, 5)
 				.withPosition(0, 1)
-				.withProperties(Map.of("Label position", "TOP"));
+				.withProperties(Map.of("Label position", "HIDE"));
 
 	/**************************************************************
 	 * Constructor
@@ -256,6 +256,7 @@ public class Algae extends SubsystemBase {
 	public Command l2 = new InstantCommand(() -> setTiltPos(AlgaeSP.L2));
 	public Command processor = new InstantCommand(() -> setTiltPos(AlgaeSP.PROCESSOR));
 	public Command floor = new InstantCommand(() -> setTiltPos(AlgaeSP.FLOOR));
+	public Command zero = new InstantCommand(() -> setTiltPos(AlgaeSP.ZERO));
 	public Command stow = new InstantCommand(() -> setTiltPos(AlgaeSP.STOW));
 
 	public Command toggleExtract = new InstantCommand(() -> toggleExtract());
