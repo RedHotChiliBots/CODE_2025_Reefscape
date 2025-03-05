@@ -124,7 +124,7 @@ public class Coral extends SubsystemBase {
 			.getLayout("Coral", BuiltInLayouts.kList)
 			.withSize(2, 5)
 			.withPosition(2, 1)
-			.withProperties(Map.of("Label position", "HIDE"));
+			.withProperties(Map.of("Label position", "Hidden"));
 
 	/**************************************************************
 	 * Constructor
@@ -136,6 +136,7 @@ public class Coral extends SubsystemBase {
 		this.algae = algae;
 
 		cmdTab.add("Coral", this)
+				.withWidget("Subsystem")
 				.withPosition(9, 3)
 				.withSize(2, 1);
 
@@ -222,8 +223,6 @@ public class Coral extends SubsystemBase {
 		coralCommands.add("L1", this.l1);
 		coralCommands.add("Station", this.station);
 		coralCommands.add("Stow", this.stow);
-
-		coralCommands.add("Toggle Side", this.toggleSide);
 
 		coralCommands.add("Intake", this.intake);
 		coralCommands.add("Eject", this.eject);

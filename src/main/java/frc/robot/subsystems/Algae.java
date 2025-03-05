@@ -111,7 +111,7 @@ public class Algae extends SubsystemBase {
 				.getLayout("Algae", BuiltInLayouts.kList)
 				.withSize(2, 5)
 				.withPosition(0, 1)
-				.withProperties(Map.of("Label position", "HIDE"));
+				.withProperties(Map.of("Label position", "Hidden"));
 
 	/**************************************************************
 	 * Constructor
@@ -122,6 +122,7 @@ public class Algae extends SubsystemBase {
 		this.ladder = ladder;
 
 		cmdTab.add("Algae", this)
+				.withWidget("Subsystem")
 				.withPosition(9, 2)
 				.withSize(2, 1);
 

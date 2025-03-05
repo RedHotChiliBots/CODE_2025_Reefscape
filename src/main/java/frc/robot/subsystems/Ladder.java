@@ -76,6 +76,7 @@ public class Ladder extends SubsystemBase {
 	 **************************************************************/
 	private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
 	private final GenericEntry sbTxtSP = ladderTab.addPersistent("Ladder tSP", "")
 			.withWidget("Text View").withPosition(1, 0)
@@ -104,7 +105,13 @@ public class Ladder extends SubsystemBase {
 			.getLayout("Ladder", BuiltInLayouts.kList)
 			.withSize(2, 5)
 			.withPosition(6, 1)
-			.withProperties(Map.of("Label position", "HIDE"));
+			.withProperties(Map.of("Label position", "Hidden"));
+
+	ShuffleboardLayout ladderData = compTab
+			.getLayout("Ladder", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(4, 1)
+			.withProperties(Map.of("Label position", "Hidden"));
 
 	/**************************************************************
 	 * Constructor
@@ -113,6 +120,7 @@ public class Ladder extends SubsystemBase {
 		System.out.println("+++++ Starting Ladder Constructor +++++");
 
 		cmdTab.add("Ladder", this)
+				.withWidget("Subsystem")
 				.withPosition(9, 5)
 				.withSize(2, 1);
 
@@ -158,6 +166,11 @@ public class Ladder extends SubsystemBase {
 		ladderCommands.add("Processor", this.processor);
 		ladderCommands.add("Floor", this.floor);
 		ladderCommands.add("Stow", this.stow);
+
+		ladderData.add("Txt SP", this.ladderSP.toString());
+		ladderData.add("Dbl SP", this.ladderSP.getValue());
+		ladderData.add("Position", this.getLeftPos());
+		ladderData.add("On Target", this.onTarget());	
 
 		// Initialize intake start positions
 		leftEncoder.setPosition(ladderSP.getValue());

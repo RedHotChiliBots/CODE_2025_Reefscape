@@ -88,7 +88,7 @@ public class Climber extends SubsystemBase {
 			.getLayout("Climber", BuiltInLayouts.kList)
 			.withSize(2, 2)
 			.withPosition(4, 1)
-			.withProperties(Map.of("Label position", "HIDE"));
+			.withProperties(Map.of("Label position", "Hidden"));
 
 	/**************************************************************
 	 * Constructor
@@ -97,6 +97,7 @@ public class Climber extends SubsystemBase {
 		System.out.println("+++++ Starting Climber Constructor +++++");
 
 		cmdTab.add("Climber", this)
+				.withWidget("Subsystem")
 				.withPosition(9, 4)
 				.withSize(2, 1);
 

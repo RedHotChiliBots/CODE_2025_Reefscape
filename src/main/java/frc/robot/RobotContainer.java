@@ -63,29 +63,6 @@ public class RobotContainer {
 	// private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
 	// cameras.get(2), cameras.get(3));
 
-	RunCommand climberStow = new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.STOW), climber);
-	RunCommand climberReady = new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.READY), climber);
-	RunCommand climberZero = new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.ZERO), climber);
-	RunCommand climberClimb = new RunCommand(() -> climber.setClimberPos(Climber.ClimberSP.CLIMB), climber);
-
-	RunCommand algaeStow = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.STOW), algae);
-	RunCommand algaeZero = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.ZERO), algae);
-	RunCommand algaeBarge = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.BARGE), algae);
-	RunCommand algaeProcessor = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.PROCESSOR), algae);
-	RunCommand algaeFloor = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.FLOOR), algae);
-	RunCommand algaeL3 = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.L3), algae);
-	RunCommand algaeL2 = new RunCommand(() -> algae.setTiltPos(Algae.AlgaeSP.L2), algae);
-	RunCommand intake = new RunCommand(() -> algae.setIntakeVel(Constants.Algae.INTAKE), algae);
-	RunCommand eject = new RunCommand(() -> algae.setIntakeVel(Constants.Algae.INTAKE), algae);
-
-	RunCommand coralStow = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.STOW), coral);
-	RunCommand coralZero = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.ZERO), coral);
-	RunCommand coralStation = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.STATION), coral);
-	RunCommand coralL4 = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.L4), coral);
-	RunCommand coralL3 = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.L3), coral);
-	RunCommand coralL2 = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.L2), coral);
-	RunCommand coralL1 = new RunCommand(() -> coral.setTiltPos(Coral.CoralSP.L1), coral);
-
 	// Define HIDs
 	private final CommandXboxController m_driverController = new CommandXboxController(
 			OIConstants.kDriverControllerPort);
@@ -154,9 +131,9 @@ public class RobotContainer {
 				.getLayout("Toggle", BuiltInLayouts.kList)
 				.withSize(2, 2)
 				.withPosition(4, 4)
-				.withProperties(Map.of("Label position", "HIDE"));
-		toggleCommands.add("Extract", algae.toggleExtract);
-		toggleCommands.add("Left-Right", coral.toggleSide);
+				.withProperties(Map.of("Label position", "Hidden"));
+		toggleCommands.add("Algae Extract", algae.toggleExtract);
+		toggleCommands.add("Coral Left-Right", coral.toggleSide);
 	}
 
 	/**
