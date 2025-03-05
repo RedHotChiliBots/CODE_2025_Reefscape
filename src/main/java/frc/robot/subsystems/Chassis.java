@@ -34,7 +34,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANId;
 import frc.robot.Constants.ChassisConstants;
 import frc.robot.Constants.DriveConstants;
@@ -206,8 +205,6 @@ public class Chassis extends SubsystemBase {
 		pitchOffset = -getRawPitch();
 		rollOffset = -getRawRoll();
 
-		SmartDashboard.putData(this);
-
 		System.out.println("----- Ending Chassis Constructor -----");
 	}
 
@@ -241,9 +238,6 @@ public class Chassis extends SubsystemBase {
 		sbRotDegree.setDouble(getRotation2d().getDegrees());
 	}
 
-	public Command setX = new InstantCommand(() -> setX());
-
-
 	/**************************************************************
 	 * Commands
 	 **************************************************************/
@@ -251,8 +245,9 @@ public class Chassis extends SubsystemBase {
 
 	/**************************************************************
 	 * Methods
-	 **************************************************************
-	 * /**
+	 **************************************************************/
+
+	/**
 	 * Reset the estimated pose of the swerve drive on the field.
 	 *
 	 * @param pose         New robot pose.
