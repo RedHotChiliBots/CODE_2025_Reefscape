@@ -40,6 +40,7 @@ import frc.robot.Constants.ChassisConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Chassis extends SubsystemBase {
@@ -82,8 +83,9 @@ public class Chassis extends SubsystemBase {
 	SwerveDrivePoseEstimator poseEstimator = null;
 	SwerveDriveOdometry m_odometry = null;
 
-	// ==============================================================
-	// Define Shuffleboard data - Chassis Tab
+	/**************************************************************
+	 * Initialize Shuffleboard entries
+	 **************************************************************/
 	private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
@@ -115,18 +117,26 @@ public class Chassis extends SubsystemBase {
 	private final StructPublisher<Pose2d> currPose = NetworkTableInstance.getDefault()
 			.getStructTopic("CurrPose", Pose2d.struct).publish();
 
-	ShuffleboardLayout chassisData = compTab
+	private final ShuffleboardLayout chassisCommands = cmdTab
 			.getLayout("Ladder", BuiltInLayouts.kList)
 			.withSize(2, 5)
 			.withPosition(6, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
+
+	private final ShuffleboardLayout chassisData = compTab
+			.getLayout("Ladder", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(6, 1)
+			.withProperties(Map.of("Label position", "Top"));
 
 	private double pitchOffset = 0.0;
 	private double rollOffset = 0.0;
 
 	// private Vision vision = null;
 
-	/** Creates a new DriveSubsystem. */
+	/**************************************************************
+	 * Constructor
+	 **************************************************************/
 	public Chassis() {
 		System.out.println("+++++ Starting Chassis Constructor +++++");
 
@@ -186,6 +196,8 @@ public class Chassis extends SubsystemBase {
 
 		setChannelOff();
 
+		chassisCommands.add("setX", this.setX);
+
 		chassisData.add("Heading", this.getHeading());
 		// chassisData.add("Dbl SP", this.ladderSP.getValue());
 		// chassisData.add("Position", this.getLeftPos());
@@ -199,6 +211,9 @@ public class Chassis extends SubsystemBase {
 		System.out.println("----- Ending Chassis Constructor -----");
 	}
 
+	/**************************************************************
+	 * Periodic
+	 **************************************************************/
 	@Override
 	public void periodic() {
 		// Update the odometry in the periodic block
@@ -226,7 +241,15 @@ public class Chassis extends SubsystemBase {
 		sbRotDegree.setDouble(getRotation2d().getDegrees());
 	}
 
-	/**
+	/**************************************************************
+	 * Commands
+	 **************************************************************/
+	public Command setX = new InstantCommand(() -> setX());
+
+	/**************************************************************
+	 * Methods
+	 **************************************************************
+	 * /**
 	 * Reset the estimated pose of the swerve drive on the field.
 	 *
 	 * @param pose         New robot pose.
@@ -341,13 +364,6 @@ public class Chassis extends SubsystemBase {
 		m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
 		m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
 		m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-	}
-
-	public Command setXCmd() {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setX();
-		});
 	}
 
 	/**

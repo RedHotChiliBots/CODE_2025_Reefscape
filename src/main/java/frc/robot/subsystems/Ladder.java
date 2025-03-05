@@ -101,17 +101,17 @@ public class Ladder extends SubsystemBase {
 			.withWidget("Boolean Box").withPosition(6, 2)
 			.withSize(1, 1).getEntry();
 
-	ShuffleboardLayout ladderCommands = cmdTab
+	private final ShuffleboardLayout ladderCommands = cmdTab
 			.getLayout("Ladder", BuiltInLayouts.kList)
 			.withSize(2, 5)
 			.withPosition(6, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
-	ShuffleboardLayout ladderData = compTab
+	private final ShuffleboardLayout ladderData = compTab
 			.getLayout("Ladder", BuiltInLayouts.kList)
 			.withSize(2, 5)
 			.withPosition(4, 1)
-			.withProperties(Map.of("Label position", "Hidden"));
+			.withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************
 	 * Constructor

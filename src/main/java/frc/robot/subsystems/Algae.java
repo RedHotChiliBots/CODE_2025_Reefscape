@@ -107,7 +107,7 @@ public class Algae extends SubsystemBase {
 			.withWidget("Boolean Box").withPosition(6, 1).withSize(1, 1).getEntry();
 
 
-	ShuffleboardLayout algaeCommands = cmdTab
+	private final ShuffleboardLayout algaeCommands = cmdTab
 				.getLayout("Algae", BuiltInLayouts.kList)
 				.withSize(2, 5)
 				.withPosition(0, 1)

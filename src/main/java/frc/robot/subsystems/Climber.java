@@ -84,7 +84,7 @@ public class Climber extends SubsystemBase {
 			.withWidget("Boolean Box").withPosition(6, 0)
 			.withSize(1, 1).getEntry();
 
-	ShuffleboardLayout climberCommands = cmdTab
+	private final ShuffleboardLayout climberCommands = cmdTab
 			.getLayout("Climber", BuiltInLayouts.kList)
 			.withSize(2, 2)
 			.withPosition(4, 1)

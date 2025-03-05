@@ -120,7 +120,7 @@ public class Coral extends SubsystemBase {
 	private final GenericEntry sbSide = coralTab.addPersistent("Side", "")
 			.withWidget("Text View").withPosition(6, 2).withSize(1, 1).getEntry();
 
-	ShuffleboardLayout coralCommands = cmdTab
+	private final ShuffleboardLayout coralCommands = cmdTab
 			.getLayout("Coral", BuiltInLayouts.kList)
 			.withSize(2, 5)
 			.withPosition(2, 1)
