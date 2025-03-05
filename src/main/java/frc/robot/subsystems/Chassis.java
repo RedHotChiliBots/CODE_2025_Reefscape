@@ -241,6 +241,9 @@ public class Chassis extends SubsystemBase {
 		sbRotDegree.setDouble(getRotation2d().getDegrees());
 	}
 
+	public Command setX = new InstantCommand(() -> setX());
+
+
 	/**************************************************************
 	 * Commands
 	 **************************************************************/
@@ -364,6 +367,13 @@ public class Chassis extends SubsystemBase {
 		m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
 		m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
 		m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+	}
+
+	public Command setXCmd() {
+		// Subsystem::RunOnce implicitly requires `this` subsystem.
+		return runOnce(() -> {
+			setX();
+		});
 	}
 
 	/**
