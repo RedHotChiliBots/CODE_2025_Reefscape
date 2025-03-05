@@ -82,11 +82,6 @@ public class Coral extends SubsystemBase {
 
 	private boolean leftCoral = true;
 
-	// private boolean leftIntakeActive = false;
-	// private boolean rightIntakeActive = false;
-
-	// private int leftIntakeCntr = 0;
-	// private int rightIntakeCntr = 0;
 
 	/**************************************************************
 	 * Initialize Shuffleboard entries
@@ -139,6 +134,10 @@ public class Coral extends SubsystemBase {
 
 		this.ladder = ladder;
 		this.algae = algae;
+
+		cmdTab.add("Coral", this)
+				.withPosition(9, 3)
+				.withSize(2, 1);
 
 		// Configure Left Intake motor
 		leftIntakeConfig
@@ -231,7 +230,7 @@ public class Coral extends SubsystemBase {
 
 		setLeftIntakeVel(intakeSP);
 		setRightIntakeVel(intakeSP);
-		//setTiltPos(tiltSP);
+		setTiltPos(tiltSP);
 
 		setTiltAfterAlgaePos(tiltSP);
 
@@ -244,11 +243,6 @@ public class Coral extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-
-		// setTiltSP(sbTiltSP.getDouble(0.0));
-		// setLeftIntakeSP(sbLeftIntakeSP.getDouble(0.0));
-		// setRightIntakeSP(sbRightIntakeSP.getDouble(0.0));
-
 		sbLeftIntakeVel.setDouble(getLeftIntakeVel());
 		sbLeftIntakeSP.setDouble(getLeftIntakeSP());
 		sbRightIntakeVel.setDouble(getRightIntakeVel());
@@ -270,42 +264,6 @@ public class Coral extends SubsystemBase {
 
 		sbLeftLimit.setBoolean(isLeftLimit());
 		sbRightLimit.setBoolean(isRightLimit());
-
-		// if (leftIntakeActive) {
-		// if ((getLeftIntakeSP() == Constants.Coral.INTAKE) &&
-		// (getLeftIntakeVel() < 100)) {
-		// setLeftIntakeVel(Constants.Coral.STOP);
-		// leftIntakeActive = false;
-
-		// } else if ((getLeftIntakeSP() == Constants.Coral.EJECT) &&
-		// (leftIntakeCntr++ > 100)) {
-		// setLeftIntakeVel(Constants.Coral.STOP);
-		// leftIntakeActive = false;
-
-		// } else {
-		// DriverStation.reportWarning("Coral Left Intake Active but not commanded.",
-		// false);
-		// leftIntakeActive = false;
-		// }
-		// }
-
-		// if (rightIntakeActive) {
-		// if ((getRightIntakeSP() == Constants.Coral.INTAKE) &&
-		// (getRightIntakeVel() < 100)) {
-		// setRightIntakeVel(Constants.Coral.STOP);
-		// rightIntakeActive = false;
-
-		// } else if ((getRightIntakeSP() == Constants.Coral.EJECT) &&
-		// (rightIntakeCntr++ > 100)) {
-		// setRightIntakeVel(Constants.Coral.STOP);
-		// rightIntakeActive = false;
-
-		// } else {
-		// DriverStation.reportWarning("Coral Right Intake Active but not commanded.",
-		// false);
-		// rightIntakeActive = false;
-		// }
-		// }
 	}
 
 	/**************************************************************
@@ -379,8 +337,6 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setIntakeVel(double vel) {
-		// leftIntakeActive = true;
-		// leftIntakeCntr = 0;
 		setIntakeSP(vel);
 		if (leftCoral) {
 			leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
@@ -394,15 +350,11 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setLeftIntakeVel(double vel) {
-		// leftIntakeActive = true;
-		// leftIntakeCntr = 0;
 		setLeftIntakeSP(vel);
 		leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 
 	public void setRightIntakeVel(double vel) {
-		// rightIntakeActive = true;
-		// rightIntakeCntr = 0;
 		setRightIntakeSP(vel);
 		rightIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
@@ -485,105 +437,4 @@ public class Coral extends SubsystemBase {
 
 		setIntakeVel(vel);
 	}
-
-	// public Command doActionCmd() {
-	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
-	// 	return runOnce(() -> {
-	// 		doAction();
-	// 	});
-	// }
-
-	// public Command toggleSideCmd() {
-	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
-	// 	return runOnce(() -> {
-	// 		toggleSide();
-	// 	});
-	// }
-
-	// /**
-	//  * setTiltCmd - command factory method to update the Tilt pos
-	//  * 
-	//  * @return a command
-	//  */
-	// public Command setLeftIntakeCmd(double vel) {
-	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
-	// 	return runOnce(() -> {
-	// 		setLeftIntakeVel(vel);
-	// 	});
-	// }
-
-	// public Command setRightIntakeCmd(double vel) {
-	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
-	// 	return runOnce(() -> {
-	// 		setRightIntakeVel(vel);
-	// 	});
-	// }
-
-	// public Command setRightIntakeCmd() {
-	// 	return setLeftIntakeCmd(getLeftIntakeSP());
-	// }
-
-	// public Command setTiltSPCmd(CoralSP sp) {
-	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
-	// 	return runOnce(() -> {
-	// 		setTiltSP(sp);
-	// 	});
-	// }
-
-	// public Command setTiltSPCmd() {
-	// 	return setTiltSPCmd(getTiltSP());
-	// }
-
-	// public Command setTiltPosCmd(CoralSP pos) {
-	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
-	// 	return runOnce(() -> {
-	// 		setTiltPos(pos);
-	// 	});
-	// }
-
-	// public Command setTiltPosCmd() {
-	// 	return setTiltPosCmd(getTiltSP());
-	// }
-
-	// public Command coralL4() {
-	// 	return this.runOnce(() -> setTiltPos(Coral.CoralSP.L4));
-	// }
-
-	// public Command coralL3() {
-	// 	return this.runOnce(() -> setTiltPos(Coral.CoralSP.L3));
-	// }
-
-	// public Command coralL2() {
-	// 	return this.runOnce(() -> setTiltPos(Coral.CoralSP.L2));
-	// }
-
-	// public Command coralL1() {
-	// 	return this.runOnce(() -> setTiltPos(Coral.CoralSP.L1));
-	// }
-
-	// public Command coralStation() {
-	// 	return this.runOnce(() -> setTiltPos(
-	// 			Coral.CoralSP.STATION));
-	// }
-
-	// public Command coralStow() {
-	// 	return this.runOnce(() -> setTiltPos(
-	// 			Coral.CoralSP.STOW));
-	// }
-
-	// public Command coralLeftIntake() {
-	// 	return this.runOnce(() -> setLeftIntakeVel(Constants.Coral.INTAKE));
-	// }
-
-	// public Command coralLeftEject() {
-	// 	return this.runOnce(() -> setLeftIntakeVel(Constants.Coral.EJECT));
-	// }
-
-	// public Command coralRightIntake() {
-	// 	return this.runOnce(() -> setRightIntakeVel(Constants.Coral.INTAKE));
-	// }
-
-	// public Command coralRightEject() {
-	// 	return this.runOnce(() -> setRightIntakeVel(Constants.Coral.EJECT));
-	// }
 }

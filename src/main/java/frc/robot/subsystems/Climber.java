@@ -38,13 +38,10 @@ public class Climber extends SubsystemBase {
 	private final SparkMaxConfig rightConfig = new SparkMaxConfig();
 
 	private SparkClosedLoopController leftController = leftClimber.getClosedLoopController();
-	// private SparkClosedLoopController rightController =
-	// rightClimber.getClosedLoopController();
 
 	private AbsoluteEncoder leftEncoder = leftClimber.getAbsoluteEncoder();
-	// private AbsoluteEncoder rightEncoder = rightClimber.getAbsoluteEncoder();
 
-	private SparkLimitSwitch isLimitSwitch = leftClimber.getForwardLimitSwitch(); // leftClimber.getReverseLimitSwitch();
+	private SparkLimitSwitch isLimitSwitch = leftClimber.getForwardLimitSwitch();
 
 	public enum ClimberSP {
 		STOW(90.0), // degrees - up and out of way
@@ -98,6 +95,10 @@ public class Climber extends SubsystemBase {
 	 **************************************************************/
 	public Climber() {
 		System.out.println("+++++ Starting Climber Constructor +++++");
+
+		cmdTab.add("Climber", this)
+				.withPosition(9, 4)
+				.withSize(2, 1);
 
 		// Configure Left Intake motor
 		leftConfig
@@ -189,7 +190,7 @@ public class Climber extends SubsystemBase {
 	public Command ready = new InstantCommand(() -> setClimberPos(ClimberSP.READY));
 	public Command climb = new InstantCommand(() -> setClimberPos(ClimberSP.CLIMB));
 
-	 /**************************************************************
+	/**************************************************************
 	 * Methods
 	 **************************************************************/
 	private double sp = getClimberPos();
@@ -199,24 +200,6 @@ public class Climber extends SubsystemBase {
 		leftController.setReference(sp,
 				SparkBase.ControlType.kMAXMotionPositionControl);
 	}
-
-	// public Command setClimberPosCmd(ClimberSP pos) {
-	// 	// Inline construction of command goes here.
-	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
-	// 	return runOnce(
-	// 			() -> {
-	// 				setClimberPos(pos);
-	// 			});
-	// }
-
-	// public Command setClimberPosCmd() {
-	// 	// Inline construction of command goes here.
-	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
-	// 	return runOnce(
-	// 			() -> {
-	// 				setClimberPosCmd(getClimberSP());
-	// 			});
-	// }
 
 	public double getClimberPos() {
 		return leftEncoder.getPosition();
@@ -245,18 +228,6 @@ public class Climber extends SubsystemBase {
 	}
 
 	public boolean getLimitSwitch() {
-		return isLimitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
+		return isLimitSwitch.isPressed();
 	}
-
-	// public Command climberClimb() {
-	// 	return this.runOnce(() -> setClimberPos(ClimberSP.CLIMB));
-	// }
-
-	// public Command climberReady() {
-	// 	return this.runOnce(() -> setClimberPos(ClimberSP.READY));
-	// }
-
-	// public Command climberStow() {
-	// 	return this.runOnce(() -> setClimberPos(ClimberSP.STOW));
-	// }
 }

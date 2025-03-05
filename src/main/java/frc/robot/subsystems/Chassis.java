@@ -81,6 +81,8 @@ public class Chassis extends SubsystemBase {
 	// ==============================================================
 	// Define Shuffleboard data - Chassis Tab
 	private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
+	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+
 	private final GenericEntry sbAngle = chassisTab.addPersistent("Angle", 0)
 			.withWidget("Text View").withPosition(3, 0).withSize(2, 1).getEntry();
 	private final GenericEntry sbFusedHeading = chassisTab.addPersistent("FusedHeading", 0)
@@ -116,6 +118,10 @@ public class Chassis extends SubsystemBase {
 	/** Creates a new DriveSubsystem. */
 	public Chassis() {
 		System.out.println("+++++ Starting Chassis Constructor +++++");
+
+		cmdTab.add("Chassis", this)
+				.withPosition(9, 1)
+				.withSize(2, 1);
 
 		// Usage reporting for MAXSwerve template
 		HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);

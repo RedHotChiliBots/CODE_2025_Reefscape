@@ -40,7 +40,7 @@ public class Ladder extends SubsystemBase {
 
 	private RelativeEncoder leftEncoder = leftLadder.getEncoder();
 
-	private SparkLimitSwitch limitSwitch = leftLadder.getForwardLimitSwitch(); // leftLadder.getReverseLimitSwitch();
+	private SparkLimitSwitch limitSwitch = leftLadder.getForwardLimitSwitch();
 
 	// define ladder positions
 	public enum LadderSP {
@@ -111,6 +111,10 @@ public class Ladder extends SubsystemBase {
 	 **************************************************************/
 	public Ladder() {
 		System.out.println("+++++ Starting Ladder Constructor +++++");
+
+		cmdTab.add("Ladder", this)
+				.withPosition(9, 5)
+				.withSize(2, 1);
 
 		// Configure Left Intake motor
 		leftConfig
@@ -215,34 +219,6 @@ public class Ladder extends SubsystemBase {
 		}
 	}
 
-	// /**
-	//  * setTiltCmd - command factory method to update the Tilt pos
-	//  * 
-	//  * @return a command
-	//  */
-	// public Command setLadderSPCmd(LadderSP sp) {
-	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
-	// 	return runOnce(() -> {
-	// 		setLadderSP(sp);
-	// 	});
-	// }
-
-	// /**
-	//  * setTiltCmd - command factory method to update the Tilt pos
-	//  * 
-	//  * @return a command
-	//  */
-	// public Command setLadderPosCmd(LadderSP pos) {
-	// 	// Subsystem::RunOnce implicitly requires `this` subsystem.
-	// 	return runOnce(() -> {
-	// 		setLadderPos(pos);
-	// 	});
-	// }
-
-	// public Command setLadderPosCmd() {
-	// 	return setLadderPosCmd(getLadderSP());
-	// }
-
 	public boolean onTarget() {
 		return Math.abs(getLeftPos() - getLadderSP().getValue()) < Constants.Ladder.kTollerance;
 	}
@@ -270,43 +246,6 @@ public class Ladder extends SubsystemBase {
 	}
 
 	public boolean isLimit() {
-		return limitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
+		return limitSwitch.isPressed();
 	}
-
-	// public Command ladderBarge() {
-	// 	return this.runOnce(() -> setLadderPos(Ladder.LadderSP.BARGE));
-	// }
-
-	// public Command ladderL4() {
-	// 	return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L4));
-	// }
-
-	// public Command ladderL3() {
-	// 	return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L3));
-	// }
-
-	// public Command ladderL2() {
-	// 	return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L2));
-	// }
-
-	// public Command ladderL1() {
-	// 	return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L1));
-	// }
-
-	// public Command ladderStation() {
-	// 	return this.runOnce(() -> setLadderPos(Ladder.LadderSP.STATION));
-	// }
-
-	// public Command ladderProcessor() {
-	// 	return this.runOnce(() -> setLadderPos(Ladder.LadderSP.PROCESSOR));
-	// }
-
-	// public Command ladderFloor() {
-	// 	return this.runOnce(() -> setLadderPos(Ladder.LadderSP.FLOOR));
-	// }
-
-	// public Command ladderStow() {
-	// 	return this.runOnce(() -> setLadderPos(Ladder.LadderSP.STOW));
-	// }
-
 }

@@ -78,9 +78,6 @@ public class Algae extends SubsystemBase {
 
 	private boolean extractAlgae = false;
 
-	// private boolean intakeActive = false;
-
-	// private int intakeCntr = 0;
 
 	/**************************************************************
 	 * Initialize Shuffleboard entries
@@ -108,15 +105,10 @@ public class Algae extends SubsystemBase {
 			.withWidget("Boolean Box").withPosition(6, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbExtract = algaeTab.addPersistent("Expel", false)
 			.withWidget("Boolean Box").withPosition(6, 1).withSize(1, 1).getEntry();
-	// private final GenericEntry sbEIntake = algaeTab.addPersistent("Intake",
-	// false)
-	// .withWidget("Boolean Box").withPosition(6, 2).withSize(1, 1).getEntry();
-	// private final GenericEntry sbEIntakeCtr = algaeTab.addPersistent("Intake
-	// Ctr", 0)
-	// .withWidget("Text View").withPosition(7, 2).withSize(1, 1).getEntry();
+
 
 	ShuffleboardLayout algaeCommands = cmdTab
-				.getLayout("Algae Commands", BuiltInLayouts.kList)
+				.getLayout("Algae", BuiltInLayouts.kList)
 				.withSize(2, 5)
 				.withPosition(0, 1)
 				.withProperties(Map.of("Label position", "HIDE"));
@@ -129,7 +121,9 @@ public class Algae extends SubsystemBase {
 
 		this.ladder = ladder;
 
-		algaeTab.add("Algae", this);
+		cmdTab.add("Algae", this)
+				.withPosition(9, 2)
+				.withSize(2, 1);
 
 		// Configure Left Intake motor
 		leftConfig
@@ -212,9 +206,6 @@ public class Algae extends SubsystemBase {
 	 **************************************************************/
 	@Override
 	public void periodic() {
-		// This method will be called once per scheduler run SuffleBoard
-		// setTiltSP(sbTiltSP.getDouble(0.0));
-		// setIntakeSP(sbIntakeSP.getDouble(0.0));
 
 		sbIntakeVel.setDouble(getIntakeVel());
 		sbIntakeSP.setDouble(getIntakeSP());
@@ -227,25 +218,6 @@ public class Algae extends SubsystemBase {
 
 		sbLimit.setBoolean(isLimit());
 		sbExtract.setBoolean(getExtract());
-		// sbEIntake.setBoolean(intakeActive);
-		// sbEIntakeCtr.setDouble(intakeCntr);
-
-		// if (intakeActive) {
-		// if (((int) getIntakeSP() == (int) Constants.Algae.INTAKE) &&
-		// (isLimit())) {
-		// setIntakeVel(Constants.Algae.STOP);
-		// intakeActive = false;
-
-		// } else if (((int) getIntakeSP() == (int) Constants.Algae.EJECT) &&
-		// (intakeCntr++ > 25)) {
-		// setIntakeVel(Constants.Algae.STOP);
-		// intakeActive = false;
-
-		// } else {
-		// DriverStation.reportWarning("Algae Intake Active but not commanded.", false);
-		// intakeActive = false;
-		// }
-		// }
 	}
 
 	/**************************************************************
@@ -299,8 +271,6 @@ public class Algae extends SubsystemBase {
 	}
 
 	public void setIntakeVel(double vel) {
-		// intakeActive = true;
-		// intakeCntr = 0;
 		setIntakeSP(vel);
 		intakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
@@ -334,7 +304,7 @@ public class Algae extends SubsystemBase {
 	}
 
 	public boolean isLimit() {
-		return isLimitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
+		return isLimitSwitch.isPressed();
 	}
 
 	public void toggleExtract() {
