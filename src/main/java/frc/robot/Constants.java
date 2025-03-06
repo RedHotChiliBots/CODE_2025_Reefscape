@@ -246,8 +246,8 @@ public final class Constants {
 
 		public static final double kTiltZeroOffset = 0.9844013;
 		public static final boolean kTiltZeroCentered = true;
-		public static final boolean kTiltMotorInverted = false;
-		public static final boolean kTiltEncoderInverted = false;
+		public static final boolean kTiltMotorInverted = true;
+		public static final boolean kTiltEncoderInverted = true;
 
 		public static final boolean kRightMotorInverted = true;
 		public static final boolean kLeftMotorInverted = false;

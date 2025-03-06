@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -28,14 +30,16 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.CANId;
 import frc.robot.Constants.ChassisConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.utils.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Chassis extends SubsystemBase {
@@ -78,9 +82,13 @@ public class Chassis extends SubsystemBase {
 	SwerveDrivePoseEstimator poseEstimator = null;
 	SwerveDriveOdometry m_odometry = null;
 
-	// ==============================================================
-	// Define Shuffleboard data - Chassis Tab
+	/**************************************************************
+	 * Initialize Shuffleboard entries
+	 **************************************************************/
 	private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
+	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
+
 	private final GenericEntry sbAngle = chassisTab.addPersistent("Angle", 0)
 			.withWidget("Text View").withPosition(3, 0).withSize(2, 1).getEntry();
 	private final GenericEntry sbFusedHeading = chassisTab.addPersistent("FusedHeading", 0)
@@ -108,14 +116,33 @@ public class Chassis extends SubsystemBase {
 	private final StructPublisher<Pose2d> currPose = NetworkTableInstance.getDefault()
 			.getStructTopic("CurrPose", Pose2d.struct).publish();
 
+	private final ShuffleboardLayout chassisCommands = cmdTab
+			.getLayout("Chassis", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(6, 1)
+			.withProperties(Map.of("Label position", "Hidden"));
+
+	private final ShuffleboardLayout chassisData = compTab
+			.getLayout("Chassis", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(1, 1)
+			.withProperties(Map.of("Label position", "Top"));
+
 	private double pitchOffset = 0.0;
 	private double rollOffset = 0.0;
 
 	// private Vision vision = null;
 
-	/** Creates a new DriveSubsystem. */
+	/**************************************************************
+	 * Constructor
+	 **************************************************************/
 	public Chassis() {
 		System.out.println("+++++ Starting Chassis Constructor +++++");
+
+		cmdTab.add("Chassis", this)
+				.withWidget("Subsystem")
+				.withPosition(9, 1)
+				.withSize(2, 1);
 
 		// Usage reporting for MAXSwerve template
 		HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
@@ -168,14 +195,22 @@ public class Chassis extends SubsystemBase {
 
 		setChannelOff();
 
-		pitchOffset = -getRawPitch();
-		rollOffset =  -getRawRoll();
+		chassisCommands.add("setX", this.setX);
 
-		SmartDashboard.putData(this);
+		chassisData.add("Heading", this.getHeading());
+		// chassisData.add("Dbl SP", this.ladderSP.getValue());
+		// chassisData.add("Position", this.getLeftPos());
+		// chassisData.add("On Target", this.onTarget());
+
+		pitchOffset = -getRawPitch();
+		rollOffset = -getRawRoll();
 
 		System.out.println("----- Ending Chassis Constructor -----");
 	}
 
+	/**************************************************************
+	 * Periodic
+	 **************************************************************/
 	@Override
 	public void periodic() {
 		// Update the odometry in the periodic block
@@ -202,6 +237,15 @@ public class Chassis extends SubsystemBase {
 		sbCompassHeading.setDouble(getCompassHeading());
 		sbRotDegree.setDouble(getRotation2d().getDegrees());
 	}
+
+	/**************************************************************
+	 * Commands
+	 **************************************************************/
+	public Command setX = new InstantCommand(() -> setX());
+
+	/**************************************************************
+	 * Methods
+	 **************************************************************/
 
 	/**
 	 * Reset the estimated pose of the swerve drive on the field.
@@ -311,7 +355,8 @@ public class Chassis extends SubsystemBase {
 	/**
 	 * Sets the wheels into an X formation to prevent movement.
 	 */
-	// Flipped -45 for +45 and +45 for -45 for each wheel.  This fixed setX. But, still have rot issue in drive.
+	// Flipped -45 for +45 and +45 for -45 for each wheel. This fixed setX. But,
+	// still have rot issue in drive.
 	public void setX() {
 		m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
 		m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -319,7 +364,7 @@ public class Chassis extends SubsystemBase {
 		m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
 	}
 
-		public Command setXCmd() {
+	public Command setXCmd() {
 		// Subsystem::RunOnce implicitly requires `this` subsystem.
 		return runOnce(() -> {
 			setX();

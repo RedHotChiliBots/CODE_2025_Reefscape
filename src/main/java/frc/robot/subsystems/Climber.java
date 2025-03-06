@@ -4,6 +4,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import java.util.Map;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -13,10 +16,14 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 
 public class Climber extends SubsystemBase {
@@ -31,13 +38,10 @@ public class Climber extends SubsystemBase {
 	private final SparkMaxConfig rightConfig = new SparkMaxConfig();
 
 	private SparkClosedLoopController leftController = leftClimber.getClosedLoopController();
-	// private SparkClosedLoopController rightController =
-	// rightClimber.getClosedLoopController();
 
 	private AbsoluteEncoder leftEncoder = leftClimber.getAbsoluteEncoder();
-	// private AbsoluteEncoder rightEncoder = rightClimber.getAbsoluteEncoder();
 
-	private SparkLimitSwitch isLimitSwitch = leftClimber.getForwardLimitSwitch(); // leftClimber.getReverseLimitSwitch();
+	private SparkLimitSwitch isLimitSwitch = leftClimber.getForwardLimitSwitch();
 
 	public enum ClimberSP {
 		STOW(90.0), // degrees - up and out of way
@@ -58,7 +62,13 @@ public class Climber extends SubsystemBase {
 
 	private ClimberSP climberSP = Climber.ClimberSP.STOW;
 
+	/**************************************************************
+	 * Initialize Shuffleboard entries
+	 **************************************************************/
 	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
+	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
+
 	private final GenericEntry sbTxtSP = climberTab.addPersistent("Climber tSP", "")
 			.withWidget("Text View").withPosition(1, 0)
 			.withSize(1, 1).getEntry();
@@ -75,9 +85,28 @@ public class Climber extends SubsystemBase {
 			.withWidget("Boolean Box").withPosition(6, 0)
 			.withSize(1, 1).getEntry();
 
-	// Creates a new Climber.
+	private final ShuffleboardLayout climberCommands = cmdTab
+			.getLayout("Climber", BuiltInLayouts.kList)
+			.withSize(2, 2)
+			.withPosition(4, 1)
+			.withProperties(Map.of("Label position", "Hidden"));
+
+			private final ShuffleboardLayout climberData = compTab
+			.getLayout("Climber", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(5, 1)
+			.withProperties(Map.of("Label position", "Top"));
+
+	/**************************************************************
+	 * Constructor
+	 **************************************************************/
 	public Climber() {
 		System.out.println("+++++ Starting Climber Constructor +++++");
+
+		cmdTab.add("Climber", this)
+				.withWidget("Subsystem")
+				.withPosition(9, 4)
+				.withSize(2, 1);
 
 		// Configure Left Intake motor
 		leftConfig
@@ -134,12 +163,25 @@ public class Climber extends SubsystemBase {
 		rightClimber.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+		climberCommands.add("Climb", this.climb);
+		climberCommands.add("Ready", this.ready);
+		climberCommands.add("Zero", this.zero);
+		climberCommands.add("Stow", this.stow);
+
+		climberData.add("Txt SP", this.climberSP.toString());
+		climberData.add("Dbl SP", this.climberSP.getValue());
+		climberData.add("Position", this.getClimberPos());
+		climberData.add("On Target", this.onTarget());
+
 		// Initialize intake start positions
 		setClimberSP(climberSP);
 
 		System.out.println("----- Ending Climber Constructor -----");
 	}
 
+	/**************************************************************
+	 * Periodic
+	 **************************************************************/
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
@@ -152,30 +194,24 @@ public class Climber extends SubsystemBase {
 		sbLimit.setBoolean(getLimitSwitch());
 	}
 
+	/**************************************************************
+	 * Commands
+	 **************************************************************/
+
+	public Command stow = new InstantCommand(() -> setClimberPos(ClimberSP.STOW));
+	public Command zero = new InstantCommand(() -> setClimberPos(ClimberSP.ZERO));
+	public Command ready = new InstantCommand(() -> setClimberPos(ClimberSP.READY));
+	public Command climb = new InstantCommand(() -> setClimberPos(ClimberSP.CLIMB));
+
+	/**************************************************************
+	 * Methods
+	 **************************************************************/
 	private double sp = getClimberPos();
 
 	public void moveClimber(double pos) {
 		sp = sp + (pos / 2.5);
 		leftController.setReference(sp,
 				SparkBase.ControlType.kMAXMotionPositionControl);
-	}
-
-	public Command setClimberPosCmd(ClimberSP pos) {
-		// Inline construction of command goes here.
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(
-				() -> {
-					setClimberPos(pos);
-				});
-	}
-
-	public Command setClimberPosCmd() {
-		// Inline construction of command goes here.
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(
-				() -> {
-					setClimberPosCmd(getClimberSP());
-				});
 	}
 
 	public double getClimberPos() {
@@ -205,18 +241,6 @@ public class Climber extends SubsystemBase {
 	}
 
 	public boolean getLimitSwitch() {
-		return isLimitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
-	}
-
-	public Command climberClimb() {
-		return this.runOnce(() -> setClimberPos(ClimberSP.CLIMB));
-	}
-
-	public Command climberReady() {
-		return this.runOnce(() -> setClimberPos(ClimberSP.READY));
-	}
-
-	public Command climberStow() {
-		return this.runOnce(() -> setClimberPos(ClimberSP.STOW));
+		return isLimitSwitch.isPressed();
 	}
 }

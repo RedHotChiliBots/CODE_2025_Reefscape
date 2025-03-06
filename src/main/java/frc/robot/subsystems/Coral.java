@@ -11,16 +11,20 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import java.util.Map;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 public class Coral extends SubsystemBase {
@@ -45,8 +49,8 @@ public class Coral extends SubsystemBase {
 	private RelativeEncoder rightIntakeEncoder = rightIntake.getEncoder();
 	private AbsoluteEncoder tiltEncoder = tilt.getAbsoluteEncoder();
 
-	private SparkLimitSwitch leftLimitSwitch = leftIntake.getForwardLimitSwitch(); // leftIntake.getReverseLimitSwitch();
-	private SparkLimitSwitch rightLimitSwitch = rightIntake.getForwardLimitSwitch(); // rightIntake.getReverseLimitSwitch();
+	private SparkLimitSwitch leftLimitSwitch = leftIntake.getForwardLimitSwitch();
+	private SparkLimitSwitch rightLimitSwitch = rightIntake.getForwardLimitSwitch();
 
 	public enum CoralSP {
 		STOW(90.0), // degrees
@@ -69,22 +73,22 @@ public class Coral extends SubsystemBase {
 	}
 
 	private Ladder ladder = null;
-
 	private Algae algae = null;
 
+	private double intakeSP = Constants.Coral.STOP;
 	private double leftIntakeSP = Constants.Coral.STOP;
 	private double rightIntakeSP = Constants.Coral.STOP;
 	private CoralSP tiltSP = CoralSP.ZERO;
 
 	private boolean leftCoral = true;
 
-	private boolean leftIntakeActive = false;
-	private boolean rightIntakeActive = false;
-
-	private int leftIntakeCntr = 0;
-	private int rightIntakeCntr = 0;
-
+	/**************************************************************
+	 * Initialize Shuffleboard entries
+	 **************************************************************/
 	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
+	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
+
 	private final GenericEntry sbLeftIntakeVel = coralTab.addPersistent("Left Intake Vel", 0)
 			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
 	private final GenericEntry sbLeftIntakeSP = coralTab.addPersistent("Left Intake SP", 0)
@@ -116,11 +120,31 @@ public class Coral extends SubsystemBase {
 	private final GenericEntry sbSide = coralTab.addPersistent("Side", "")
 			.withWidget("Text View").withPosition(6, 2).withSize(1, 1).getEntry();
 
-	// Creates a new Coral.
+	private final ShuffleboardLayout coralCommands = cmdTab
+			.getLayout("Coral", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(2, 1)
+			.withProperties(Map.of("Label position", "Hidden"));
+
+	private final ShuffleboardLayout coralData = compTab
+			.getLayout("Coral", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(7, 1)
+			.withProperties(Map.of("Label position", "Top"));
+
+	/**************************************************************
+	 * Constructor
+	 **************************************************************/
 	public Coral(Ladder ladder, Algae algae) {
 		System.out.println("+++++ Starting Coral Constructor +++++");
+
 		this.ladder = ladder;
 		this.algae = algae;
+
+		cmdTab.add("Coral", this)
+				.withWidget("Subsystem")
+				.withPosition(9, 3)
+				.withSize(2, 1);
 
 		// Configure Left Intake motor
 		leftIntakeConfig
@@ -199,23 +223,40 @@ public class Coral extends SubsystemBase {
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		setLeftIntakeVel(leftIntakeSP);
-		setRightIntakeVel(rightIntakeSP);
-		// setTiltPos(tiltSP);
+		coralCommands.add("L4", this.l4);
+		coralCommands.add("L3", this.l3);
+		coralCommands.add("L2", this.l2);
+		coralCommands.add("L1", this.l1);
+		coralCommands.add("Station", this.station);
+		coralCommands.add("Stow", this.stow);
+
+		coralCommands.add("Intake", this.intake);
+		coralCommands.add("Eject", this.eject);
+
+		coralData.add("Txt SP", this.tiltSP.toString());
+		coralData.add("Pos SP", this.tiltSP.getValue());
+		coralData.add("Position", this.getTiltPos());
+		coralData.add("Tilt On Target", this.onTiltTarget());
+		coralData.add("Left", this.leftCoral);
+		coralData.add("Vel SP", this.intakeSP);
+		coralData.add("Velocity", this.getIntakeVel());
+		coralData.add("Intake On Target", this.onIntakeTarget());
+
+		setLeftIntakeVel(intakeSP);
+		setRightIntakeVel(intakeSP);
+		setTiltPos(tiltSP);
 
 		setTiltAfterAlgaePos(tiltSP);
 
 		System.out.println("----- Ending Coral Constructor -----");
 	}
 
+	/**************************************************************
+	 * Periodic
+	 **************************************************************/
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-
-		// setTiltSP(sbTiltSP.getDouble(0.0));
-		// setLeftIntakeSP(sbLeftIntakeSP.getDouble(0.0));
-		// setRightIntakeSP(sbRightIntakeSP.getDouble(0.0));
-
 		sbLeftIntakeVel.setDouble(getLeftIntakeVel());
 		sbLeftIntakeSP.setDouble(getLeftIntakeSP());
 		sbRightIntakeVel.setDouble(getRightIntakeVel());
@@ -237,46 +278,49 @@ public class Coral extends SubsystemBase {
 
 		sbLeftLimit.setBoolean(isLeftLimit());
 		sbRightLimit.setBoolean(isRightLimit());
+	}
 
-		if (leftIntakeActive) {
-			if ((getLeftIntakeSP() == Constants.Coral.INTAKE) &&
-					(getLeftIntakeVel() < 100)) {
-				setLeftIntakeVel(Constants.Coral.STOP);
-				leftIntakeActive = false;
+	/**************************************************************
+	 * Commands
+	 **************************************************************/
+	public Command l4 = new InstantCommand(() -> setTiltPos(CoralSP.L4));
+	public Command l3 = new InstantCommand(() -> setTiltPos(CoralSP.L3));
+	public Command l2 = new InstantCommand(() -> setTiltPos(CoralSP.L2));
+	public Command l1 = new InstantCommand(() -> setTiltPos(CoralSP.L1));
+	public Command station = new InstantCommand(() -> setTiltPos(CoralSP.STATION));
+	public Command zero = new InstantCommand(() -> setTiltPos(CoralSP.ZERO));
+	public Command stow = new InstantCommand(() -> setTiltPos(CoralSP.STOW));
 
-			} else if ((getLeftIntakeSP() == Constants.Coral.EJECT) &&
-					(leftIntakeCntr++ > 100)) {
-				setLeftIntakeVel(Constants.Coral.STOP);
-				leftIntakeActive = false;
+	public Command toggleSide = new InstantCommand(() -> toggleSide());
 
-			} else {
-				DriverStation.reportWarning("Coral Left Intake Active but not commanded.", false);
-				leftIntakeActive = false;
-			}
-		}
+	public Command intake = new InstantCommand(() -> setIntakeVel(Constants.Coral.INTAKE))
+			.andThen(new WaitCommand(0.25))
+			.until(() -> isLimit())
+			.andThen(() -> setIntakeVel(Constants.Coral.STOP));
+	public Command eject = new InstantCommand(() -> setIntakeVel(Constants.Coral.EJECT))
+			.andThen(new WaitCommand(0.5))
+			.andThen(() -> setIntakeVel(Constants.Coral.STOP));
 
-		if (rightIntakeActive) {
-			if ((getRightIntakeSP() == Constants.Coral.INTAKE) &&
-					(getRightIntakeVel() < 100)) {
-				setRightIntakeVel(Constants.Coral.STOP);
-				rightIntakeActive = false;
+	/**************************************************************
+	 * Methods
+	 **************************************************************/
 
-			} else if ((getRightIntakeSP() == Constants.Coral.EJECT) &&
-					(rightIntakeCntr++ > 100)) {
-				setRightIntakeVel(Constants.Coral.STOP);
-				rightIntakeActive = false;
+	// public void moveTilt(double pos) {
+	// tiltController.setReference(getTiltPos() + pos,
+	// SparkBase.ControlType.kMAXMotionPositionControl);
+	// }
 
-			} else {
-				DriverStation.reportWarning("Coral Right Intake Active but not commanded.", false);
-				rightIntakeActive = false;
-			}
+	public double getIntakeVel() {
+		if (leftCoral) {
+			return leftIntakeEncoder.getVelocity();
+		} else {
+			return rightIntakeEncoder.getVelocity();
 		}
 	}
 
-	// public void moveTilt(double pos) {
-	// 	tiltController.setReference(getTiltPos() + pos,
-	// 			SparkBase.ControlType.kMAXMotionPositionControl);
-	// }
+	public double getIntakeSP() {
+		return intakeSP;
+	}
 
 	public double getLeftIntakeVel() {
 		return leftIntakeEncoder.getVelocity();
@@ -306,18 +350,31 @@ public class Coral extends SubsystemBase {
 		setTiltSP(getTiltSP());
 	}
 
+	public void setIntakeVel(double vel) {
+		setIntakeSP(vel);
+		if (leftCoral) {
+			leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
+		} else {
+			rightIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
+		}
+	}
+
+	public void setIntakeVel() {
+		setIntakeVel(getIntakeSP());
+	}
+
 	public void setLeftIntakeVel(double vel) {
-		leftIntakeActive = true;
-		leftIntakeCntr = 0;
 		setLeftIntakeSP(vel);
 		leftIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 
 	public void setRightIntakeVel(double vel) {
-		rightIntakeActive = true;
-		rightIntakeCntr = 0;
 		setRightIntakeSP(vel);
 		rightIntakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
+	}
+
+	public void setIntakeSP(double sp) {
+		intakeSP = sp;
 	}
 
 	public void setLeftIntakeSP(double sp) {
@@ -344,6 +401,14 @@ public class Coral extends SubsystemBase {
 		return tiltSP;
 	}
 
+	public boolean isLimit() {
+		if (leftCoral) {
+			return getLeftIntakeVel() < 100;
+		} else {
+			return getRightIntakeVel() < 100;
+		}
+	}
+
 	public boolean isLeftLimit() {
 		return leftLimitSwitch.isPressed();
 	}
@@ -358,6 +423,14 @@ public class Coral extends SubsystemBase {
 
 	public boolean onTiltTarget() {
 		return Math.abs(getTiltPos() - getTiltSP().getValue()) < Constants.Coral.kTiltTollerance;
+	}
+
+	public boolean onIntakeTarget() {
+		if (leftCoral) {
+			return Math.abs(getLeftIntakeVel() - getLeftIntakeSP()) < Constants.Coral.kIntakeTollerance;
+		} else {
+			return Math.abs(getRightIntakeVel() - getRightIntakeSP()) < Constants.Coral.kIntakeTollerance;
+		}	
 	}
 
 	public boolean onLeftIntakeTarget() {
@@ -384,111 +457,6 @@ public class Coral extends SubsystemBase {
 			default:
 		}
 
-		if (leftCoral) {
-			setLeftIntakeVel(vel);
-		} else {
-			setRightIntakeVel(vel);
-		}
-	}
-
-	public Command doActionCmd() {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			doAction();
-		});
-	}
-
-	public Command toggleSideCmd() {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			toggleSide();
-		});
-	}
-
-	/**
-	 * setTiltCmd - command factory method to update the Tilt pos
-	 * 
-	 * @return a command
-	 */
-	public Command setLeftIntakeCmd(double vel) {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setLeftIntakeVel(vel);
-		});
-	}
-
-	public Command setRightIntakeCmd(double vel) {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setRightIntakeVel(vel);
-		});
-	}
-
-	public Command setRightIntakeCmd() {
-		return setLeftIntakeCmd(getLeftIntakeSP());
-	}
-
-	public Command setTiltSPCmd(CoralSP sp) {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setTiltSP(sp);
-		});
-	}
-
-	public Command setTiltSPCmd() {
-		return setTiltSPCmd(getTiltSP());
-	}
-
-	public Command setTiltPosCmd(CoralSP pos) {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setTiltPos(pos);
-		});
-	}
-
-	public Command setTiltPosCmd() {
-		return setTiltPosCmd(getTiltSP());
-	}
-
-	public Command coralL4() {
-		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L4));
-	}
-
-	public Command coralL3() {
-		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L3));
-	}
-
-	public Command coralL2() {
-		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L2));
-	}
-
-	public Command coralL1() {
-		return this.runOnce(() -> setTiltPos(Coral.CoralSP.L1));
-	}
-
-	public Command coralStation() {
-		return this.runOnce(() -> setTiltPos(
-				Coral.CoralSP.STATION));
-	}
-
-	public Command coralStow() {
-		return this.runOnce(() -> setTiltPos(
-				Coral.CoralSP.STOW));
-	}
-
-	public Command coralLeftIntake() {
-		return this.runOnce(() -> setLeftIntakeVel(Constants.Coral.INTAKE));
-	}
-
-	public Command coralLeftEject() {
-		return this.runOnce(() -> setLeftIntakeVel(Constants.Coral.EJECT));
-	}
-
-	public Command coralRightIntake() {
-		return this.runOnce(() -> setRightIntakeVel(Constants.Coral.INTAKE));
-	}
-
-	public Command coralRightEject() {
-		return this.runOnce(() -> setRightIntakeVel(Constants.Coral.EJECT));
+		setIntakeVel(vel);
 	}
 }
