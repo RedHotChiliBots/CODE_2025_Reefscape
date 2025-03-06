@@ -78,12 +78,12 @@ public class Algae extends SubsystemBase {
 
 	private boolean extractAlgae = false;
 
-
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
 	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
 	private final GenericEntry sbIntakeVel = algaeTab.addPersistent("Intake Vel", 0)
 			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
@@ -106,12 +106,17 @@ public class Algae extends SubsystemBase {
 	private final GenericEntry sbExtract = algaeTab.addPersistent("Expel", false)
 			.withWidget("Boolean Box").withPosition(6, 1).withSize(1, 1).getEntry();
 
-
 	private final ShuffleboardLayout algaeCommands = cmdTab
-				.getLayout("Algae", BuiltInLayouts.kList)
-				.withSize(2, 5)
-				.withPosition(0, 1)
-				.withProperties(Map.of("Label position", "Hidden"));
+			.getLayout("Algae", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(0, 1)
+			.withProperties(Map.of("Label position", "Hidden"));
+
+	private final ShuffleboardLayout algaeData = compTab
+			.getLayout("Algae", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(9, 1)
+			.withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************
 	 * Constructor
@@ -195,6 +200,15 @@ public class Algae extends SubsystemBase {
 		algaeCommands.add("Stow", this.stow);
 		algaeCommands.add("Intake", this.intake);
 		algaeCommands.add("Eject", this.eject);
+		
+		algaeData.add("Txt SP", this.tiltSP.toString());
+		algaeData.add("Dbl SP", this.tiltSP.getValue());
+		algaeData.add("Position", this.getTiltPos());
+		algaeData.add("On Target", this.onTiltTarget());
+		algaeData.add("Extract Algae", this.extractAlgae);
+		algaeData.add("Vel SP", this.intakeSP);
+		algaeData.add("Velocity", this.getIntakeVel());
+		algaeData.add("Intake On Target", this.onIntakeTarget());
 
 		setIntakeVel(intakeSP);
 		setTiltPos(tiltSP);

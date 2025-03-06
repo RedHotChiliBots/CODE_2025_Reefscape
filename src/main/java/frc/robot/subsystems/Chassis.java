@@ -117,15 +117,15 @@ public class Chassis extends SubsystemBase {
 			.getStructTopic("CurrPose", Pose2d.struct).publish();
 
 	private final ShuffleboardLayout chassisCommands = cmdTab
-			.getLayout("Ladder", BuiltInLayouts.kList)
+			.getLayout("Chassis", BuiltInLayouts.kList)
 			.withSize(2, 5)
 			.withPosition(6, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
 	private final ShuffleboardLayout chassisData = compTab
-			.getLayout("Ladder", BuiltInLayouts.kList)
+			.getLayout("Chassis", BuiltInLayouts.kList)
 			.withSize(2, 5)
-			.withPosition(6, 1)
+			.withPosition(1, 1)
 			.withProperties(Map.of("Label position", "Top"));
 
 	private double pitchOffset = 0.0;

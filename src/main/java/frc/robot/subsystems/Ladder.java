@@ -110,7 +110,7 @@ public class Ladder extends SubsystemBase {
 	private final ShuffleboardLayout ladderData = compTab
 			.getLayout("Ladder", BuiltInLayouts.kList)
 			.withSize(2, 5)
-			.withPosition(4, 1)
+			.withPosition(3, 1)
 			.withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************

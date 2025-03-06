@@ -67,6 +67,7 @@ public class Climber extends SubsystemBase {
 	 **************************************************************/
 	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
 	private final GenericEntry sbTxtSP = climberTab.addPersistent("Climber tSP", "")
 			.withWidget("Text View").withPosition(1, 0)
@@ -89,6 +90,12 @@ public class Climber extends SubsystemBase {
 			.withSize(2, 2)
 			.withPosition(4, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
+
+			private final ShuffleboardLayout climberData = compTab
+			.getLayout("Climber", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(5, 1)
+			.withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************
 	 * Constructor
@@ -160,6 +167,11 @@ public class Climber extends SubsystemBase {
 		climberCommands.add("Ready", this.ready);
 		climberCommands.add("Zero", this.zero);
 		climberCommands.add("Stow", this.stow);
+
+		climberData.add("Txt SP", this.climberSP.toString());
+		climberData.add("Dbl SP", this.climberSP.getValue());
+		climberData.add("Position", this.getClimberPos());
+		climberData.add("On Target", this.onTarget());
 
 		// Initialize intake start positions
 		setClimberSP(climberSP);

@@ -82,12 +82,12 @@ public class Coral extends SubsystemBase {
 
 	private boolean leftCoral = true;
 
-
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
 	private final ShuffleboardTab coralTab = Shuffleboard.getTab("Coral");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
 	private final GenericEntry sbLeftIntakeVel = coralTab.addPersistent("Left Intake Vel", 0)
 			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
@@ -125,6 +125,12 @@ public class Coral extends SubsystemBase {
 			.withSize(2, 5)
 			.withPosition(2, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
+
+	private final ShuffleboardLayout coralData = compTab
+			.getLayout("Coral", BuiltInLayouts.kList)
+			.withSize(2, 5)
+			.withPosition(7, 1)
+			.withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************
 	 * Constructor
@@ -226,6 +232,15 @@ public class Coral extends SubsystemBase {
 
 		coralCommands.add("Intake", this.intake);
 		coralCommands.add("Eject", this.eject);
+
+		coralData.add("Txt SP", this.tiltSP.toString());
+		coralData.add("Pos SP", this.tiltSP.getValue());
+		coralData.add("Position", this.getTiltPos());
+		coralData.add("Tilt On Target", this.onTiltTarget());
+		coralData.add("Left", this.leftCoral);
+		coralData.add("Vel SP", this.intakeSP);
+		coralData.add("Velocity", this.getIntakeVel());
+		coralData.add("Intake On Target", this.onIntakeTarget());
 
 		setLeftIntakeVel(intakeSP);
 		setRightIntakeVel(intakeSP);
@@ -408,6 +423,14 @@ public class Coral extends SubsystemBase {
 
 	public boolean onTiltTarget() {
 		return Math.abs(getTiltPos() - getTiltSP().getValue()) < Constants.Coral.kTiltTollerance;
+	}
+
+	public boolean onIntakeTarget() {
+		if (leftCoral) {
+			return Math.abs(getLeftIntakeVel() - getLeftIntakeSP()) < Constants.Coral.kIntakeTollerance;
+		} else {
+			return Math.abs(getRightIntakeVel() - getRightIntakeSP()) < Constants.Coral.kIntakeTollerance;
+		}	
 	}
 
 	public boolean onLeftIntakeTarget() {
