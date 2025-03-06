@@ -96,7 +96,7 @@ public class Vision extends SubsystemBase {
                 validPoses.add(pose.get());
             }
         }
-
+        
         // Average the poses if there are valid estimates
         if (!validPoses.isEmpty()) {
             Pose3d averagedPose = averagePoses(validPoses.toArray(new Pose3d[0]));
@@ -111,58 +111,89 @@ public class Vision extends SubsystemBase {
     }
 
     private Optional<Pose3d> processCamera(PhotonCamera camera, PhotonPoseEstimator poseEstimator, int cameraNumber) {
-        PhotonPipelineResult result = camera.getLatestResult();
+        List<PhotonPipelineResult> results = camera.getAllUnreadResults();
         int widgetIndex = cameraNumber - 1; // Convert cameraNumber (1-4) to index (0-3)
+
+        if (results.isEmpty()) {
+            // No new results; clear data and exit
+            String cameraKey = "Vision/Camera" + cameraNumber + "/";
+            Logger.recordOutput(cameraKey + "HasTargets", false);
+            clearShuffleboardData(widgetIndex);
+            return Optional.empty();
+        }
+
+        PhotonPipelineResult latestResult = getNewestResult(results);
     
-        if (result.hasTargets()) {
-            Optional<EstimatedRobotPose> estimatedPose = poseEstimator.update(result);
+        if (latestResult.hasTargets()) {
+            Optional<EstimatedRobotPose> estimatedPose = poseEstimator.update(latestResult);
             if (estimatedPose.isPresent()) {
                 Pose3d robotPose3d = estimatedPose.get().estimatedPose;
-    
-                // Logging
-                String cameraKey = "Vision/Camera" + cameraNumber + "/";
-                Logger.recordOutput(cameraKey + "HasTargets", true);
-                Logger.recordOutput(cameraKey + "NumTargets", result.getTargets().size());
-                Logger.recordOutput(cameraKey + "Pose/X", robotPose3d.getX());
-                Logger.recordOutput(cameraKey + "Pose/Y", robotPose3d.getY());
-                Logger.recordOutput(cameraKey + "Pose/Z", robotPose3d.getZ());
-                Logger.recordOutput(cameraKey + "Rotation", robotPose3d.getRotation().toString());
-    
-                // Update Shuffleboard
-                robotPoseXWidgets[widgetIndex].getEntry().setDouble(robotPose3d.getX());
-                robotPoseYWidgets[widgetIndex].getEntry().setDouble(robotPose3d.getY());
-                robotPoseZWidgets[widgetIndex].getEntry().setDouble(robotPose3d.getZ());
-                robotRotationWidgets[widgetIndex].getEntry().setString(robotPose3d.getRotation().toString());
-                numTargetsWidgets[widgetIndex].getEntry().setDouble(result.getTargets().size());
-    
+                logAndUpdateShuffleboard(cameraNumber, widgetIndex, robotPose3d, latestResult.getTargets().size());
                 return Optional.of(robotPose3d);
+
             } else {
                 // Pose estimation failed
                 String cameraKey = "Vision/Camera" + cameraNumber + "/";
-                Logger.recordOutput(cameraKey + "HasTargets", false);
                 Logger.recordOutput(cameraKey + "PoseEstimationFailed", true);
+                clearShuffleboardData(widgetIndex);
+                return Optional.empty();
     
-                // Clear Shuffleboard data
-                robotPoseXWidgets[widgetIndex].getEntry().setDouble(0.0);
-                robotPoseYWidgets[widgetIndex].getEntry().setDouble(0.0);
-                robotPoseZWidgets[widgetIndex].getEntry().setDouble(0.0);
-                robotRotationWidgets[widgetIndex].getEntry().setString("N/A");
-                numTargetsWidgets[widgetIndex].getEntry().setDouble(0);
             }
         } else {
             // No targets detected
             String cameraKey = "Vision/Camera" + cameraNumber + "/";
             Logger.recordOutput(cameraKey + "HasTargets", false);
+            clearShuffleboardData(widgetIndex);
     
-            // Clear Shuffleboard data
-            robotPoseXWidgets[widgetIndex].getEntry().setDouble(0.0);
-            robotPoseYWidgets[widgetIndex].getEntry().setDouble(0.0);
-            robotPoseZWidgets[widgetIndex].getEntry().setDouble(0.0);
-            robotRotationWidgets[widgetIndex].getEntry().setString("N/A");
-            numTargetsWidgets[widgetIndex].getEntry().setDouble(0);
+            // // Clear Shuffleboard data
+            // robotPoseXWidgets[widgetIndex].getEntry().setDouble(0.0);
+            // robotPoseYWidgets[widgetIndex].getEntry().setDouble(0.0);
+            // robotPoseZWidgets[widgetIndex].getEntry().setDouble(0.0);
+            // robotRotationWidgets[widgetIndex].getEntry().setString("N/A");
+            // numTargetsWidgets[widgetIndex].getEntry().setDouble(0);
         }
     
         return Optional.empty();
+    }
+
+    // Helper method to extract the latest result from a list
+    private PhotonPipelineResult getNewestResult(List<PhotonPipelineResult> results) {
+        PhotonPipelineResult latest = null;
+        double latestTimestamp = 0;
+        for (PhotonPipelineResult result : results) {
+            double timestamp = result.getTimestampSeconds();
+            if (timestamp > latestTimestamp) {
+                latestTimestamp = timestamp;
+                latest = result;
+            }
+        }
+        return latest;
+    }
+
+    // Helper method to log and update Shuffleboard
+    private void logAndUpdateShuffleboard(int cameraNumber, int widgetIndex, Pose3d pose, int numTargets) {
+        String cameraKey = "Vision/Camera" + cameraNumber + "/";
+        Logger.recordOutput(cameraKey + "HasTargets", true);
+        Logger.recordOutput(cameraKey + "NumTargets", numTargets);
+        Logger.recordOutput(cameraKey + "Pose/X", pose.getX());
+        Logger.recordOutput(cameraKey + "Pose/Y", pose.getY());
+        Logger.recordOutput(cameraKey + "Pose/Z", pose.getZ());
+        Logger.recordOutput(cameraKey + "Rotation", pose.getRotation().toString());
+    
+        robotPoseXWidgets[widgetIndex].getEntry().setDouble(pose.getX());
+        robotPoseYWidgets[widgetIndex].getEntry().setDouble(pose.getY());
+        robotPoseZWidgets[widgetIndex].getEntry().setDouble(pose.getZ());
+        robotRotationWidgets[widgetIndex].getEntry().setString(pose.getRotation().toString());
+        numTargetsWidgets[widgetIndex].getEntry().setDouble(numTargets);
+    }
+
+    // Helper method to clear Shuffleboard data
+    private void clearShuffleboardData(int widgetIndex) {
+        robotPoseXWidgets[widgetIndex].getEntry().setDouble(0.0);
+        robotPoseYWidgets[widgetIndex].getEntry().setDouble(0.0);
+        robotPoseZWidgets[widgetIndex].getEntry().setDouble(0.0);
+        robotRotationWidgets[widgetIndex].getEntry().setString("N/A");
+        numTargetsWidgets[widgetIndex].getEntry().setDouble(0);
     }
 
     private Pose3d averagePoses(Pose3d[] poses) {
@@ -195,5 +226,7 @@ public class Vision extends SubsystemBase {
             new Translation3d(avgX, avgY, avgZ),
             new Rotation3d(avgRoll, avgPitch, avgYaw)
         );
+
+        
     }
 }
