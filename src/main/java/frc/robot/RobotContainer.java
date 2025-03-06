@@ -101,13 +101,13 @@ public class RobotContainer {
 								true),
 						chassis));
 
-		climber.setDefaultCommand(
-				// The right Y stick controls movement
-				new RunCommand(
-						() -> climber.moveClimber(
-								-MathUtil.applyDeadband(m_operatorController.getRightY(), 0.10)),
-						// OIConstants.kDriveDeadband)),
-						climber));
+		// climber.setDefaultCommand(
+		// 		// The right Y stick controls movement
+		// 		new RunCommand(
+		// 				() -> climber.moveClimber(
+		// 						-MathUtil.applyDeadband(m_operatorController.getRightY(), 0.10)),
+		// 				// OIConstants.kDriveDeadband)),
+		// 				climber));
 
 		// coral.setDefaultCommand(
 		// // The left stick controls translation of the robot.
