@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -71,9 +72,12 @@ public class RobotContainer {
 	private final GenericHID m_operatorHID = new GenericHID(
 			OIConstants.kOperatorControllerPort);
 
+	//=====TESTING=====//
+	private final Command doL4 = new ParallelCommandGroup(ladder.l4, coral.l4, algae.stow);
+
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
-	
+
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
@@ -102,12 +106,12 @@ public class RobotContainer {
 						chassis));
 
 		// climber.setDefaultCommand(
-		// 		// The right Y stick controls movement
-		// 		new RunCommand(
-		// 				() -> climber.moveClimber(
-		// 						-MathUtil.applyDeadband(m_operatorController.getRightY(), 0.10)),
-		// 				// OIConstants.kDriveDeadband)),
-		// 				climber));
+		// // The right Y stick controls movement
+		// new RunCommand(
+		// () -> climber.moveClimber(
+		// -MathUtil.applyDeadband(m_operatorController.getRightY(), 0.10)),
+		// // OIConstants.kDriveDeadband)),
+		// climber));
 
 		// coral.setDefaultCommand(
 		// // The left stick controls translation of the robot.
@@ -154,7 +158,7 @@ public class RobotContainer {
 		m_driverController.leftBumper()
 				.onFalse(new InstantCommand(() -> chassis.setSpdHigh()))
 				.onTrue(new InstantCommand(() -> chassis.setSpdLow()));
-//		m_driverController.x().onTrue(chassis.setX);
+		// m_driverController.x().onTrue(chassis.setX);
 
 		m_operatorController.y().onTrue(climber.stow);
 		m_operatorController.b().onTrue(climber.ready);
@@ -168,6 +172,38 @@ public class RobotContainer {
 		new POVButton(m_operatorHID, 90).onTrue(algae.processor);
 		new POVButton(m_operatorHID, 270).onTrue(algae.processor);
 		new POVButton(m_operatorHID, 180).onTrue(algae.floor);
+
+		// =====TESTING=====//
+//		m_operatorController.y().onTrue(doL4);
+
+		// m_operatorController.b().onTrue(new ParallelCommandGroup(
+		// ladder.setLadderSPCmd(Ladder.LadderSP.L3),
+		// coral.setTiltSPCmd(Coral.CoralSP.L3),
+		// algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
+
+		// m_operatorController.a().onTrue(new ParallelCommandGroup(
+		// ladder.setLadderSPCmd(Ladder.LadderSP.L2),
+		// coral.setTiltSPCmd(Coral.CoralSP.L2),
+		// algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
+
+		// m_operatorController.x().onTrue(new ParallelCommandGroup(
+		// ladder.setLadderSPCmd(Ladder.LadderSP.L1),
+		// coral.setTiltSPCmd(Coral.CoralSP.L1),
+		// algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
+
+		// m_operatorController.leftStick().onTrue(new ParallelCommandGroup(
+		// ladder.setLadderSPCmd(Ladder.LadderSP.STOW),
+		// coral.setTiltSPCmd(Coral.CoralSP.STOW),
+		// algae.setTiltSPCmd(Algae.AlgaeSP.STOW)));
+
+		// m_operatorController.leftBumper().onTrue(new ParallelCommandGroup(
+		// ladder.setLadderPosCmd(),
+		// coral.setTiltPosCmd(),
+		// algae.setTiltPosCmd()));
+
+		// m_operatorController.rightBumper().onTrue(new ParallelCommandGroup(
+		// coral.doActionCmd(),
+		// algae.doActionCmd()));
 	}
 
 	/**
@@ -176,7 +212,7 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-	//	return new ChassisTimedDrive(chassis, 0.25, 1.0);
+		// return new ChassisTimedDrive(chassis, 0.25, 1.0);
 		return auton.getChooser().getSelected();
 	}
 }
