@@ -198,7 +198,7 @@ public final class Constants {
 		public static final boolean kIntakeEncodeWrapping = false;
 		public static final boolean kTiltEncodeWrapping = false;
 
-		public static final double kIntakePositionFactor = 1.0 / (GearBox.Ultra5 * GearBox.Ultra5); // radians
+		public static final double kIntakePositionFactor = 1.0 / (GearBox.Ultra4 * GearBox.Ultra4 * GearBox.Ultra4); // radians
 		public static final double kIntakeVelocityFactor = kIntakePositionFactor / 60.0; // radians per second
 
 		public static final double kTiltPositionFactor = 360; // 1.0 / (GearBox.Ultra4 * GearBox.Ultra4 * GearBox.Ultra4)
@@ -246,8 +246,8 @@ public final class Constants {
 
 		public static final double kTiltZeroOffset = 0.9844013;
 		public static final boolean kTiltZeroCentered = true;
-		public static final boolean kTiltMotorInverted = true;
-		public static final boolean kTiltEncoderInverted = true;
+		public static final boolean kTiltMotorInverted = false;
+		public static final boolean kTiltEncoderInverted = false;
 
 		public static final boolean kRightMotorInverted = true;
 		public static final boolean kLeftMotorInverted = false;
@@ -255,7 +255,7 @@ public final class Constants {
 		public static final boolean kIntakeEncodeWrapping = false;
 		public static final boolean kTiltEncodeWrapping = false;
 
-		public static final double kIntakePositionFactor = 1.0 / (GearBox.Ultra5 * GearBox.Ultra5); // radians
+		public static final double kIntakePositionFactor = 1.0 / (GearBox.Ultra4 * GearBox.Ultra4 * GearBox.Ultra4); // radians
 		public static final double kIntakeVelocityFactor = kIntakePositionFactor / 60.0; // radians per second
 
 		public static final double kTiltPositionFactor = 360; // 1.0 / (GearBox.Ultra4 * GearBox.Ultra4 * GearBox.Ultra4)
@@ -263,8 +263,8 @@ public final class Constants {
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // degrees per second
 
 		public static final double kIntakeVelP = 0.0001;
-		public static final double kIntakeVelI = 0;
-		public static final double kIntakeVelD = 0;
+		public static final double kIntakeVelI = 0.0;
+		public static final double kIntakeVelD = 0.0;
 		public static final double kIntakeVelFF = 1.0 / MotorConstants.k550FreeSpeedRpm;
 		public static final double kIntakeVelMinOutput = -1;
 		public static final double kIntakeVelMaxOutput = 1;
@@ -273,9 +273,13 @@ public final class Constants {
 		public static final double kIntakeVelMaxAccel = 20000.0;
 		public static final double kIntakeVelAllowedErr = 1.0;
 
-		public static final double kTiltPosP = 0.0025;
-		public static final double kTiltPosI = 0.0;//000002;
-		public static final double kTiltPosD = 0.00001;
+		public static final double kTiltPosP = 0.002;
+		public static final double kTiltPosI = 0.000001;
+		public static final double kTiltPosD = 0.0;
+
+		// public static final double kTiltPosP = 0.0025;
+		// public static final double kTiltPosI = 0.0;//000002;
+		// public static final double kTiltPosD = 0.00001;
 		public static final double kTiltPosMinOutput = -1.0;
 		public static final double kTiltPosMaxOutput = 1.0;
 
@@ -338,12 +342,12 @@ public final class Constants {
 
 		public static final double kTollerance = 0.5; // degrees
 
-		public static final double kLeftZeroOffset = 0.1667074;
+		public static final double kLeftZeroOffset = 0.0145794;
 		public static final boolean kLeftZeroCentered = true;
 		public static final boolean kLeftMotorInverted = true;
 		public static final boolean kLeftEncoderInverted = true;
 
-		public static final double kRightZeroOffset = 0.8799260;
+		public static final double kRightZeroOffset = 0.3814066;
 		public static final boolean kRightZeroCentered = true;
 		public static final boolean kRightMotorInverted = true;
 		public static final boolean kRightEncoderInverted = true;
@@ -355,6 +359,10 @@ public final class Constants {
 																				// 360.0; // degrees
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // degrees per second
 
+		public static final double kTiltPosP = 0.002;
+		public static final double kTiltPosI = 0.000001;
+		public static final double kTiltPosD = 0.0;
+		
 		public static final double kPosP = 0.025;
 		public static final double kPosI = 0.0;
 		public static final double kPosD = 0.0;

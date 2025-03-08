@@ -81,30 +81,34 @@ public class Algae extends SubsystemBase {
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
-	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
+	//private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
-	private final GenericEntry sbIntakeVel = algaeTab.addPersistent("Intake Vel", 0)
-			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
-	private final GenericEntry sbIntakeSP = algaeTab.addPersistent("Intake SP", 0)
-			.withWidget("Text View").withPosition(3, 0).withSize(1, 1).getEntry();
-	private final GenericEntry sbIntakeOnTgt = algaeTab.addPersistent("Intake On Tgt", false)
-			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
+	// private final GenericEntry sbTitle = compTab.addPersistent("ALGAE", "")
+	// .withWidget("Text View").withPosition(9, 1)
+	// .withSize(2, 1).getEntry();
 
-	private final GenericEntry sbTxtTiltSP = algaeTab.addPersistent("Tilt tSP", "")
-			.withWidget("Text View").withPosition(1, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbDblTiltSP = algaeTab.addPersistent("Tilt dSP", 0)
-			.withWidget("Text View").withPosition(2, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbTiltPos = algaeTab.addPersistent("Tilt Pos", 0)
-			.withWidget("Text View").withPosition(3, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbTiltOnTgt = algaeTab.addPersistent("Tilt On Tgt", false)
-			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
+	private final GenericEntry sbTiltOnTgt = compTab.addPersistent("Algae OnTgt", false)
+			.withWidget("Boolean Box").withPosition(9, 1).withSize(2, 1).getEntry();
+	private final GenericEntry sbTxtTiltSP = compTab.addPersistent("Algae SP", "")
+			.withWidget("Text View").withPosition(9, 2).withSize(2, 1).getEntry();
+	private final GenericEntry sbDblTiltSP = compTab.addPersistent("Algae SP (deg)", 0)
+			.withWidget("Text View").withPosition(9, 3).withSize(2, 1).getEntry();
+	private final GenericEntry sbTiltPos = compTab.addPersistent("Algae Pos (deg)", 0)
+			.withWidget("Text View").withPosition(9, 4).withSize(2, 1).getEntry();
 
-	private final GenericEntry sbLimit = algaeTab.addPersistent("Limit", false)
-			.withWidget("Boolean Box").withPosition(6, 0).withSize(1, 1).getEntry();
-	private final GenericEntry sbExtract = algaeTab.addPersistent("Expel", false)
-			.withWidget("Boolean Box").withPosition(6, 1).withSize(1, 1).getEntry();
+	private final GenericEntry sbIntakeOnTgt = compTab.addPersistent("Algae Intake OnTgt", false)
+			.withWidget("Boolean Box").withPosition(9, 6).withSize(2, 1).getEntry();
+	private final GenericEntry sbIntakeSP = compTab.addPersistent("Algae Intake SP", 0)
+			.withWidget("Text View").withPosition(9, 7).withSize(2, 1).getEntry();
+	private final GenericEntry sbIntakeVel = compTab.addPersistent("Algae Intake (vel))", 0)
+			.withWidget("Text View").withPosition(9, 8).withSize(2, 1).getEntry();
+
+	private final GenericEntry sbLimit = compTab.addPersistent("Limit", false)
+			.withWidget("Boolean Box").withPosition(9, 10).withSize(2, 1).getEntry();
+	private final GenericEntry sbExtract = compTab.addPersistent("Expel", false)
+			.withWidget("Boolean Box").withPosition(9, 11).withSize(2, 1).getEntry();
 
 	private final ShuffleboardLayout algaeCommands = cmdTab
 			.getLayout("Algae", BuiltInLayouts.kList)
@@ -112,11 +116,11 @@ public class Algae extends SubsystemBase {
 			.withPosition(0, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
-	private final ShuffleboardLayout algaeData = compTab
-			.getLayout("Algae", BuiltInLayouts.kList)
-			.withSize(2, 5)
-			.withPosition(9, 1)
-			.withProperties(Map.of("Label position", "Top"));
+	// private final ShuffleboardLayout algaeData = compTab
+	// .getLayout("Algae", BuiltInLayouts.kList)
+	// .withSize(2, 5)
+	// .withPosition(9, 1)
+	// .withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************
 	 * Constructor
@@ -200,15 +204,15 @@ public class Algae extends SubsystemBase {
 		algaeCommands.add("Stow", this.stow);
 		algaeCommands.add("Intake", this.intake);
 		algaeCommands.add("Eject", this.eject);
-		
-		algaeData.add("Txt SP", this.tiltSP.toString());
-		algaeData.add("Dbl SP", this.tiltSP.getValue());
-		algaeData.add("Position", this.getTiltPos());
-		algaeData.add("On Target", this.onTiltTarget());
-		algaeData.add("Extract Algae", this.extractAlgae);
-		algaeData.add("Vel SP", this.intakeSP);
-		algaeData.add("Velocity", this.getIntakeVel());
-		algaeData.add("Intake On Target", this.onIntakeTarget());
+
+		// algaeData.add("Txt SP", this.tiltSP.toString());
+		// algaeData.add("Dbl SP", this.tiltSP.getValue());
+		// algaeData.add("Position", this.getTiltPos());
+		// algaeData.add("On Target", this.onTiltTarget());
+		// algaeData.add("Extract Algae", this.extractAlgae);
+		// algaeData.add("Vel SP", this.intakeSP);
+		// algaeData.add("Velocity", this.getIntakeVel());
+		// algaeData.add("Intake On Target", this.onIntakeTarget());
 
 		setIntakeVel(intakeSP);
 		setTiltPos(tiltSP);
