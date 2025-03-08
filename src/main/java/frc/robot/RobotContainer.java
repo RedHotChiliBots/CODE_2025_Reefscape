@@ -45,13 +45,15 @@ import org.photonvision.PhotonCamera;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	// private final PhotonCamera camera1 = null;
-	// private final PhotonCamera camera2 = null;
-	// private final PhotonCamera camera3 = null;
-	// private final PhotonCamera camera4 = null;
-	// private final Vision vision = new Vision(camera1, camera2, camera3, camera4);
+	private final Vision vision = new Vision(
+        new PhotonCamera("Camera1"),
+        new PhotonCamera("Camera2"),
+        new PhotonCamera("Camera3"),
+        new PhotonCamera("Camera4")
 
-	private final Chassis chassis = new Chassis();
+    );
+
+	private final Chassis chassis = new Chassis(vision);
 	private final Ladder ladder = new Ladder();
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder, algae);
@@ -111,6 +113,8 @@ public class RobotContainer {
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
+
+		vision.setChassis(chassis);
 
 		algaeTab.add("Processor3", algae.processor);
 		algaeTab.add("Floor3", algae.floor);
