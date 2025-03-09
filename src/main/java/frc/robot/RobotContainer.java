@@ -108,6 +108,10 @@ public class RobotContainer {
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.FLOOR)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.FLOOR)));
+	private final Command goStow = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STOW)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
 
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
@@ -175,7 +179,7 @@ public class RobotContainer {
 
 		ShuffleboardLayout goCommands = cmdTab
 				.getLayout("Go To", BuiltInLayouts.kList)
-				.withSize(3, 11)
+				.withSize(3, 12)
 				.withPosition(17, 1)
 				.withProperties(Map.of("Label position",
 						"Hidden"));
@@ -194,6 +198,8 @@ public class RobotContainer {
 		goCommands.add("Processor", goProcessor)
 				.withProperties(Map.of("Show Widget Type", false));
 		goCommands.add("Floor", goFloor)
+				.withProperties(Map.of("Show Widget Type", false));
+		goCommands.add("Stow", goStow)
 				.withProperties(Map.of("Show Widget Type", false));
 	}
 
