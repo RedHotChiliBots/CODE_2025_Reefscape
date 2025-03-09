@@ -20,10 +20,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
 import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.Algae.AlgaeSP;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
+import frc.robot.subsystems.Coral.CoralSP;
 import frc.robot.subsystems.Ladder;
+import frc.robot.subsystems.Ladder.LadderSP;
 import frc.robot.subsystems.Vision;
 
 import java.util.List;
@@ -72,8 +75,39 @@ public class RobotContainer {
 	private final GenericHID m_operatorHID = new GenericHID(
 			OIConstants.kOperatorControllerPort);
 
-	//=====TESTING=====//
-	private final Command doL4 = new ParallelCommandGroup(ladder.l4, coral.l4, algae.stow);
+	// =====TESTING=====//
+	private final Command goBarge = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.BARGE)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.BARGE)));
+	private final Command goL4 = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L4)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L4)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
+	private final Command goL3 = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L3)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L3)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L3)));
+	private final Command goL2 = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L2)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L2)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L2)));
+	private final Command goL1 = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L1)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L1)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
+	private final Command goStation = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STATION)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STATION)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
+	private final Command goProcessor = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.PROCESSOR)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.PROCESSOR)));
+	private final Command goFloor = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.FLOOR)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.FLOOR)));
 
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
@@ -133,11 +167,34 @@ public class RobotContainer {
 
 		ShuffleboardLayout toggleCommands = cmdTab
 				.getLayout("Toggle", BuiltInLayouts.kList)
-				.withSize(2, 2)
-				.withPosition(4, 4)
+				.withSize(3, 4)
+				.withPosition(13, 7)
 				.withProperties(Map.of("Label position", "Hidden"));
 		toggleCommands.add("Algae Extract", algae.toggleExtract);
 		toggleCommands.add("Coral Left-Right", coral.toggleSide);
+
+		ShuffleboardLayout goCommands = cmdTab
+				.getLayout("Go To", BuiltInLayouts.kList)
+				.withSize(3, 11)
+				.withPosition(17, 1)
+				.withProperties(Map.of("Label position",
+						"Hidden"));
+		goCommands.add("Barge", goBarge)
+				.withProperties(Map.of("Show Widget Type", false));
+		goCommands.add("L4", goL4)
+				.withProperties(Map.of("Show Widget Type", false));
+		goCommands.add("L3", goL3)
+				.withProperties(Map.of("Show Widget Type", false));
+		goCommands.add("L2", goL2)
+				.withProperties(Map.of("Show Widget Type", false));
+		goCommands.add("L1", goL1)
+				.withProperties(Map.of("Show Widget Type", false));
+		goCommands.add("Station", goStation)
+				.withProperties(Map.of("Show Widget Type", false));
+		goCommands.add("Processor", goProcessor)
+				.withProperties(Map.of("Show Widget Type", false));
+		goCommands.add("Floor", goFloor)
+				.withProperties(Map.of("Show Widget Type", false));
 	}
 
 	/**
@@ -172,9 +229,6 @@ public class RobotContainer {
 		new POVButton(m_operatorHID, 90).onTrue(algae.processor);
 		new POVButton(m_operatorHID, 270).onTrue(algae.processor);
 		new POVButton(m_operatorHID, 180).onTrue(algae.floor);
-
-		// =====TESTING=====//
-//		m_operatorController.y().onTrue(doL4);
 
 		// m_operatorController.b().onTrue(new ParallelCommandGroup(
 		// ladder.setLadderSPCmd(Ladder.LadderSP.L3),

@@ -122,8 +122,8 @@ public class Coral extends SubsystemBase {
 
 	private final ShuffleboardLayout coralCommands = cmdTab
 			.getLayout("Coral", BuiltInLayouts.kList)
-			.withSize(2, 5)
-			.withPosition(2, 1)
+			.withSize(3, 12)
+			.withPosition(4, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
 	// private final ShuffleboardLayout coralData = compTab
@@ -141,10 +141,10 @@ public class Coral extends SubsystemBase {
 		this.ladder = ladder;
 		this.algae = algae;
 
-		cmdTab.add("Coral", this)
+		cmdTab.add("Coral Current", this)
 				.withWidget("Subsystem")
-				.withPosition(9, 3)
-				.withSize(2, 1);
+				.withPosition(22, 4)
+				.withSize(4, 2);
 
 		// Configure Left Intake motor
 		leftIntakeConfig

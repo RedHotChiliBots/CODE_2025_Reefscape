@@ -22,9 +22,9 @@ public class LibraryTest {
 	public void testMovingStop() {
 		double sp = 0.0;
 		double j = 5.0;
+		lib.isMoving(j, sp);
 		for (int i = 0; i < 10; i++) {
 			System.out.println("MovingStop - j/sp: " + j + "/" + sp);
-			lib.isMoving(j, sp);
 			assertFalse(lib.isMoving(j, sp));
 		}
 	}
@@ -32,9 +32,9 @@ public class LibraryTest {
 	@Test
 	public void testMovingUp() {
 		double sp = 10.0;
+		lib.isMoving(0, sp);
 		for (int i = 0; i < 10; i++) {
 			System.out.println("MovingUp - i/sp: " + i + "/" + sp);
-			// isMoving(i, sp);
 			assertTrue(lib.isMoving(i, sp));
 		}
 	}
@@ -43,10 +43,10 @@ public class LibraryTest {
 	public void testMovingDn() {
 		double sp = 0.0;
 		double j = 0;
+		lib.isMoving(j, sp);
 		for (int i = 0; i < 10; i++) {
 			j = 10.0 - i;
 			System.out.println("MovingDn - j/sp: " + j + "/" + sp);
-			// isMoving(j, sp);
 			assertTrue(lib.isMoving(j, sp));
 		}
 	}

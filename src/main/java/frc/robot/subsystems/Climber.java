@@ -103,8 +103,8 @@ public class Climber extends SubsystemBase {
 
 	private final ShuffleboardLayout climberCommands = cmdTab
 			.getLayout("Climber", BuiltInLayouts.kList)
-			.withSize(2, 2)
-			.withPosition(4, 1)
+			.withSize(3, 6)
+			.withPosition(13, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
 	// private final ShuffleboardLayout climberData = compTab
@@ -119,10 +119,10 @@ public class Climber extends SubsystemBase {
 	public Climber() {
 		System.out.println("+++++ Starting Climber Constructor +++++");
 
-		cmdTab.add("Climber", this)
+		cmdTab.add("Climber Current", this)
 				.withWidget("Subsystem")
-				.withPosition(9, 4)
-				.withSize(2, 1);
+				.withPosition(22, 10)
+				.withSize(4, 2);
 
 		// Configure Left Intake motor
 		leftConfig

@@ -112,7 +112,7 @@ public class Algae extends SubsystemBase {
 
 	private final ShuffleboardLayout algaeCommands = cmdTab
 			.getLayout("Algae", BuiltInLayouts.kList)
-			.withSize(2, 5)
+			.withSize(3, 12)
 			.withPosition(0, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
@@ -130,10 +130,10 @@ public class Algae extends SubsystemBase {
 
 		this.ladder = ladder;
 
-		cmdTab.add("Algae", this)
+		cmdTab.add("Algae Current", this)
 				.withWidget("Subsystem")
-				.withPosition(9, 2)
-				.withSize(2, 1);
+				.withPosition(22, 6)
+				.withSize(4, 2);
 
 		// Configure Left Intake motor
 		leftConfig

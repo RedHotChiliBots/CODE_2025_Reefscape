@@ -103,8 +103,8 @@ public class Ladder extends SubsystemBase {
 
 	private final ShuffleboardLayout ladderCommands = cmdTab
 			.getLayout("Ladder", BuiltInLayouts.kList)
-			.withSize(2, 5)
-			.withPosition(6, 1)
+			.withSize(3, 12)
+			.withPosition(9, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
 	// private final ShuffleboardLayout ladderData = compTab
@@ -119,10 +119,10 @@ public class Ladder extends SubsystemBase {
 	public Ladder() {
 		System.out.println("+++++ Starting Ladder Constructor +++++");
 
-		cmdTab.add("Ladder", this)
+		cmdTab.add("Ladder Current", this)
 				.withWidget("Subsystem")
-				.withPosition(9, 5)
-				.withSize(2, 1);
+				.withPosition(22, 8)
+				.withSize(4, 2);
 
 		// Configure Left Intake motor
 		leftConfig
