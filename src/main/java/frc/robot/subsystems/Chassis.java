@@ -195,7 +195,8 @@ public class Chassis extends SubsystemBase {
 
 		setChannelOff();
 
-		chassisCommands.add("setX", this.setX);
+		chassisCommands.add("setX", this.setX)
+				.withProperties(Map.of("show type", false));
 
 		chassisData.add("Heading", this.getHeading());
 		// chassisData.add("Dbl SP", this.ladderSP.getValue());

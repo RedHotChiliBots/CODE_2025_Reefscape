@@ -187,7 +187,7 @@ public final class Constants {
 		public static final double INTAKE = 25000.0;
 		public static final double EJECT = -25000.0;
 
-		public static final double kTiltZeroOffset = 0.9522372;
+		public static final double kTiltZeroOffset = 0.6301808;
 		public static final boolean kTiltZeroCentered = true;
 		public static final boolean kTiltMotorInverted = true;
 		public static final boolean kTiltEncoderInverted = false;
@@ -244,7 +244,7 @@ public final class Constants {
 		public static final double HOLD = 5000.0;
 		public static final double EJECT = -25000.0;
 
-		public static final double kTiltZeroOffset = 0.9844013;
+		public static final double kTiltZeroOffset = 0.7307724;
 		public static final boolean kTiltZeroCentered = true;
 		public static final boolean kTiltMotorInverted = false;
 		public static final boolean kTiltEncoderInverted = false;

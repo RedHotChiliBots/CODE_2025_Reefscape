@@ -19,11 +19,13 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.utils.Library;
 
 public class Ladder extends SubsystemBase {
 
@@ -71,6 +73,8 @@ public class Ladder extends SubsystemBase {
 	private boolean firstPeriod = true;
 	private boolean zeroingLadder = false;
 
+	private Library lib = new Library();
+
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
@@ -100,6 +104,13 @@ public class Ladder extends SubsystemBase {
 	private final GenericEntry sbZeroing = compTab.addPersistent("Zeroing", false)
 			.withWidget("Boolean Box").withPosition(13, 8)
 			.withSize(2, 1).getEntry();
+
+	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Ladder Moving", false)
+			.withWidget("Boolean Box")
+			.withPosition(13, 0)
+			.withProperties(Map.of("colorWhenTrue", "green"))
+			.withSize(2, 1);
+	private final GenericEntry sbMoving = sbMovingWidget.getEntry();
 
 	private final ShuffleboardLayout ladderCommands = cmdTab
 			.getLayout("Ladder", BuiltInLayouts.kList)
@@ -157,15 +168,24 @@ public class Ladder extends SubsystemBase {
 		rightLadder.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		ladderCommands.add("Barge", this.barge);
-		ladderCommands.add("L4", this.l4);
-		ladderCommands.add("L3", this.l3);
-		ladderCommands.add("L2", this.l2);
-		ladderCommands.add("L1", this.l1);
-		ladderCommands.add("Station", this.station);
-		ladderCommands.add("Processor", this.processor);
-		ladderCommands.add("Floor", this.floor);
-		ladderCommands.add("Stow", this.stow);
+		ladderCommands.add("Barge", this.barge)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L4", this.l4)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L3", this.l3)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L2", this.l2)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L1", this.l1)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Station", this.station)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Processor", this.processor)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Floor", this.floor)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Stow", this.stow)
+				.withProperties(Map.of("show type", false));
 
 		// ladderData.add("Txt SP", this.ladderSP.toString());
 		// ladderData.add("Dbl SP", this.ladderSP.getValue());
@@ -198,6 +218,20 @@ public class Ladder extends SubsystemBase {
 
 		if (firstPeriod || zeroingLadder) {
 			zeroLadder();
+		}
+
+		if (onTarget()) {
+			sbMovingWidget.withProperties(Map.of("colorWhenTrue", "blue"));
+			sbMoving.setBoolean(true);
+		} else {
+			if (lib.isMoving(getLeftPos(), getLadderSP().getValue())) {
+				sbMovingWidget.withProperties(Map.of("colorWhenFalse", "yellow"));
+				// sbMoving.setString(moving.toHexString());
+			} else {
+				sbMovingWidget.withProperties(Map.of("colorWhenFalse", "red"));
+				// sbMoving.setString(offTgt.toHexString());
+			}
+			sbMoving.setBoolean(false);
 		}
 	}
 

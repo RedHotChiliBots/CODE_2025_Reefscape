@@ -184,23 +184,23 @@ public class RobotContainer {
 				.withProperties(Map.of("Label position",
 						"Hidden"));
 		goCommands.add("Barge", goBarge)
-				.withProperties(Map.of("Show Widget Type", false));
+				.withProperties(Map.of("show type", false));
 		goCommands.add("L4", goL4)
-				.withProperties(Map.of("Show Widget Type", false));
+				.withProperties(Map.of("show type", false));
 		goCommands.add("L3", goL3)
-				.withProperties(Map.of("Show Widget Type", false));
+				.withProperties(Map.of("show type", false));
 		goCommands.add("L2", goL2)
-				.withProperties(Map.of("Show Widget Type", false));
+				.withProperties(Map.of("show type", false));
 		goCommands.add("L1", goL1)
-				.withProperties(Map.of("Show Widget Type", false));
+				.withProperties(Map.of("show type", false));
 		goCommands.add("Station", goStation)
-				.withProperties(Map.of("Show Widget Type", false));
+				.withProperties(Map.of("show type", false));
 		goCommands.add("Processor", goProcessor)
-				.withProperties(Map.of("Show Widget Type", false));
+				.withProperties(Map.of("show type", false));
 		goCommands.add("Floor", goFloor)
-				.withProperties(Map.of("Show Widget Type", false));
+				.withProperties(Map.of("show type", false));
 		goCommands.add("Stow", goStow)
-				.withProperties(Map.of("Show Widget Type", false));
+				.withProperties(Map.of("show type", false));
 	}
 
 	/**

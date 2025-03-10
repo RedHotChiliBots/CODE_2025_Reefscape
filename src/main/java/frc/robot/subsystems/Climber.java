@@ -89,7 +89,7 @@ public class Climber extends SubsystemBase {
 	private final GenericEntry sbLeftPos = compTab.addPersistent("Climber Pos", 0)
 			.withWidget("Text View").withPosition(7, 4)
 			.withSize(2, 1).getEntry();
-	private final SimpleWidget sbMovingWidget = compTab.addPersistent("OnTgt-Moving", false)
+	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Climb Moving", false)
 			.withWidget("Boolean Box")
 			.withPosition(7, 7)
 			.withProperties(Map.of("colorWhenTrue", "green"))
@@ -179,10 +179,14 @@ public class Climber extends SubsystemBase {
 		rightClimber.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		climberCommands.add("Climb", this.climb);
-		climberCommands.add("Ready", this.ready);
-		climberCommands.add("Zero", this.zero);
-		climberCommands.add("Stow", this.stow);
+		climberCommands.add("Climb", this.climb)
+				.withProperties(Map.of("show type", false));
+		climberCommands.add("Ready", this.ready)
+				.withProperties(Map.of("show type", false));
+		climberCommands.add("Zero", this.zero)
+				.withProperties(Map.of("show type", false));
+		climberCommands.add("Stow", this.stow)
+				.withProperties(Map.of("show type", false));
 
 		// climberData.add("Txt SP", this.climberSP.toString(),
 		// exampleColor.toHexString());

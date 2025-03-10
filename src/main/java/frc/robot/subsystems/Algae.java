@@ -22,12 +22,14 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import frc.robot.Constants;
+import frc.robot.utils.Library;
 
 public class Algae extends SubsystemBase {
 
@@ -78,10 +80,12 @@ public class Algae extends SubsystemBase {
 
 	private boolean extractAlgae = false;
 
+	private Library lib = new Library();
+
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
-	//private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
+	// private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
@@ -109,6 +113,13 @@ public class Algae extends SubsystemBase {
 			.withWidget("Boolean Box").withPosition(9, 10).withSize(2, 1).getEntry();
 	private final GenericEntry sbExtract = compTab.addPersistent("Expel", false)
 			.withWidget("Boolean Box").withPosition(9, 11).withSize(2, 1).getEntry();
+
+	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Algae Moving", false)
+			.withWidget("Boolean Box")
+			.withPosition(9, 0)
+			.withProperties(Map.of("colorWhenTrue", "green"))
+			.withSize(2, 1);
+	private final GenericEntry sbMoving = sbMovingWidget.getEntry();
 
 	private final ShuffleboardLayout algaeCommands = cmdTab
 			.getLayout("Algae", BuiltInLayouts.kList)
@@ -196,14 +207,22 @@ public class Algae extends SubsystemBase {
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		algaeCommands.add("Barge", this.barge);
-		algaeCommands.add("L3", this.l3);
-		algaeCommands.add("L2", this.l2);
-		algaeCommands.add("Processor", this.processor);
-		algaeCommands.add("Floor", this.floor);
-		algaeCommands.add("Stow", this.stow);
-		algaeCommands.add("Intake", this.intake);
-		algaeCommands.add("Eject", this.eject);
+		algaeCommands.add("Barge", this.barge)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("L3", this.l3)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("L2", this.l2)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Processor", this.processor)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Floor", this.floor)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Stow", this.stow)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Intake", this.intake)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Eject", this.eject)
+				.withProperties(Map.of("show type", false));
 
 		// algaeData.add("Txt SP", this.tiltSP.toString());
 		// algaeData.add("Dbl SP", this.tiltSP.getValue());
@@ -237,6 +256,20 @@ public class Algae extends SubsystemBase {
 
 		sbLimit.setBoolean(isLimit());
 		sbExtract.setBoolean(getExtract());
+
+		if (onTiltTarget()) {
+			sbMovingWidget.withProperties(Map.of("colorWhenTrue", "blue"));
+			sbMoving.setBoolean(true);
+		} else {
+			if (lib.isMoving(getTiltPos(), getTiltSP().getValue())) {
+				sbMovingWidget.withProperties(Map.of("colorWhenFalse", "yellow"));
+				// sbMoving.setString(moving.toHexString());
+			} else {
+				sbMovingWidget.withProperties(Map.of("colorWhenFalse", "red"));
+				// sbMoving.setString(offTgt.toHexString());
+			}
+			sbMoving.setBoolean(false);
+		}
 	}
 
 	/**************************************************************
