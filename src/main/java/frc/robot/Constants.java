@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.util.Color;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -65,6 +66,12 @@ public final class Constants {
 		public static final double kVortexFreeSpeedRpm = 6784;
 		public static final double kNeoFreeSpeedRpm = 5676;
 		public static final double k550FreeSpeedRpm = 11000;
+	}
+
+	public static final class ColorConstants {
+		public static final String Stopped = Color.kRed.toHexString();
+		public static final String Moving = Color.kYellow.toHexString();
+		public static final String OnTarget = Color.kGreen.toHexString();
 	}
 
 	public static final class ChassisConstants {

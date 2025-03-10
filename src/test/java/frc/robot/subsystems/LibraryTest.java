@@ -10,15 +10,17 @@ import org.junit.jupiter.api.Test;
 import frc.robot.utils.Library;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 public class LibraryTest {
 
-	Library lib = new Library();
+	static Library lib = new Library();
 
-	@BeforeAll
-	public static void setup() {
-
-	}
+	// @BeforeEach
+	// public static void setup() {
+	// 	// lib = new Library();
+	// 	// lib.setPrevGap(0.0);
+	// }
 
 	@Test
 	public void testMovingStop() {
@@ -34,10 +36,12 @@ public class LibraryTest {
 	@Test
 	public void testMovingUp() {
 		double sp = 10.0;
-		lib.isMoving(0, sp);
-		for (int i = 0; i < 10; i++) {
-			System.out.println("MovingUp - i/sp: " + i + "/" + sp);
-			assertTrue(lib.isMoving(i, sp));
+		double j = 0.0;
+		lib.isMoving(j, sp);
+		for (int i = 1; i < 10; i++) {
+			j = i;
+			System.out.println("MovingUp - j/sp: " + j + "/" + sp);
+			assertTrue(lib.isMoving(j, sp));
 		}
 	}
 
@@ -46,19 +50,21 @@ public class LibraryTest {
 		double sp = 0.0;
 		double j = 10.0;
 		lib.isMoving(j, sp);
-		for (int i = 0; i < 10; i++) {
-			j = 10.0 - i;
+		for (int i = 1; i < 10; i++) {
+			j = 10 - i;
 			System.out.println("MovingDn - j/sp: " + j + "/" + sp);
 			assertTrue(lib.isMoving(j, sp));
 		}
 	}
 
 	@Test
-	public void testMovingWidget() {
-		double sp = 0.0;
-		lib.isMoving(0, sp);
-		for (int i = 0; i < 10; i++) {
-			System.out.println("MovingDn - i/sp: " + i + "/" + sp);
+	public void testMovingWidgetUp() {
+		double sp = 10.0;
+		double j = 0.0;
+		lib.isMoving(j, sp);
+		for (int i = 1; i < 10; i++) {
+			j = i;
+			System.out.println("MovingWidgetUp - j/sp: " + j + "/" + sp);
 			// j = 10.0 - i;
 			// if (onTarget()) {
 			if (false) {
@@ -66,7 +72,36 @@ public class LibraryTest {
 				// sbMoving.setBoolean(true);
 				System.out.println("Black");
 			} else {
-				if (lib.isMoving(i, sp)) {
+				if (lib.isMoving(j, sp)) {
+					System.out.println("Yellow");
+					// sbMovingWidget.withProperties(Map.of("colorWhenFalse", "yellow"));
+					// sbMoving.setString(moving.toHexString());
+				} else {
+					System.out.println("Red");
+					// sbMovingWidget.withProperties(Map.of("colorWhenFalse", "red"));
+					// sbMoving.setString(offTgt.toHexString());
+				}
+				// sbMoving.setBoolean(false);
+			}
+		}
+	}
+
+	@Test
+	public void testMovingWidgetDn() {
+		double sp = 0.0;
+		double j = 10.0;
+		lib.isMoving(j, sp);
+		for (int i = 1; i < 10; i++) {
+			j = 10.0 - i;
+			System.out.println("MovingWidgetDn - j/sp: " + j + "/" + sp);
+			// j = 10.0 - i;
+			// if (onTarget()) {
+			if (false) {
+				// sbMovingWidget.withProperties(Map.of("colorWhenTrue", "black"));
+				// sbMoving.setBoolean(true);
+				System.out.println("Black");
+			} else {
+				if (lib.isMoving(j, sp)) {
 					System.out.println("Yellow");
 					// sbMovingWidget.withProperties(Map.of("colorWhenFalse", "yellow"));
 					// sbMoving.setString(moving.toHexString());

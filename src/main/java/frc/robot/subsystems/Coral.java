@@ -109,9 +109,9 @@ public class Coral extends SubsystemBase {
 	private final GenericEntry sbLeftIntakeVel = compTab.addPersistent("Coral Intake Vel", 0)
 			.withWidget("Text View").withPosition(11, 8).withSize(2, 1).getEntry();
 	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Coral Moving", false)
-			.withWidget("Boolean Box")
+			.withWidget("Single Color View")
 			.withPosition(11, 0)
-			.withProperties(Map.of("colorWhenTrue", "green"))
+//			.withProperties(Map.of("colorWhenTrue", "green"))
 			.withSize(2, 1);
 	private final GenericEntry sbMoving = sbMovingWidget.getEntry();
 
@@ -298,17 +298,19 @@ public class Coral extends SubsystemBase {
 		// sbRightLimit.setBoolean(isRightLimit());
 
 		if (onTiltTarget()) {
-			sbMovingWidget.withProperties(Map.of("colorWhenTrue", "blue"));
-			sbMoving.setBoolean(true);
+			// sbMovingWidget.withProperties(Map.of("colorWhenTrue", "blue"));
+			sbMoving.setString(Constants.ColorConstants.OnTarget);
 		} else {
 			if (lib.isMoving(getTiltPos(), getTiltSP().getValue())) {
-				sbMovingWidget.withProperties(Map.of("colorWhenFalse", "yellow"));
+				sbMoving.setString(Constants.ColorConstants.Moving);
+				// sbMovingWidget.withProperties(Map.of("colorWhenFalse", "yellow"));
 				// sbMoving.setString(moving.toHexString());
 			} else {
-				sbMovingWidget.withProperties(Map.of("colorWhenFalse", "red"));
+				sbMoving.setString(Constants.ColorConstants.Stopped);
+				// sbMovingWidget.withProperties(Map.of("colorWhenFalse", "red"));
 				// sbMoving.setString(offTgt.toHexString());
 			}
-			sbMoving.setBoolean(false);
+			// sbMoving.setBoolean(false);
 		}
 	}
 

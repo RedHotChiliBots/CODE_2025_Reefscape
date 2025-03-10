@@ -90,9 +90,9 @@ public class Climber extends SubsystemBase {
 			.withWidget("Text View").withPosition(7, 4)
 			.withSize(2, 1).getEntry();
 	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Climb Moving", false)
-			.withWidget("Boolean Box")
-			.withPosition(7, 7)
-			.withProperties(Map.of("colorWhenTrue", "green"))
+			.withWidget("Single Color View")
+			.withPosition(7, 0)
+//			.withProperties(Map.of("colorWhenTrue", "green"))
 			.withSize(2, 1);
 	private final GenericEntry sbMoving = sbMovingWidget.getEntry();
 
@@ -217,17 +217,19 @@ public class Climber extends SubsystemBase {
 		sbOnTgt.setBoolean(onTarget());
 
 		if (onTarget()) {
-			sbMovingWidget.withProperties(Map.of("colorWhenTrue", "blue"));
-			sbMoving.setBoolean(true);
+			// sbMovingWidget.withProperties(Map.of("colorWhenTrue", "blue"));
+			sbMoving.setString(Constants.ColorConstants.OnTarget);
 		} else {
 			if (lib.isMoving(getClimberPos(), getClimberSP().getValue())) {
-				sbMovingWidget.withProperties(Map.of("colorWhenFalse", "yellow"));
+				sbMoving.setString(Constants.ColorConstants.Moving);
+				// sbMovingWidget.withProperties(Map.of("colorWhenFalse", "yellow"));
 				// sbMoving.setString(moving.toHexString());
 			} else {
-				sbMovingWidget.withProperties(Map.of("colorWhenFalse", "red"));
+				sbMoving.setString(Constants.ColorConstants.Stopped);
+				// sbMovingWidget.withProperties(Map.of("colorWhenFalse", "red"));
 				// sbMoving.setString(offTgt.toHexString());
 			}
-			sbMoving.setBoolean(false);
+			// sbMoving.setBoolean(false);
 		}
 
 		// sbLimit.setBoolean(getLimitSwitch());

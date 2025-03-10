@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-[]
-=======
 [
   {
     "name": "/Shuffleboard/Chassis/Angle",
@@ -83,7 +80,15 @@
     }
   },
   {
-    "name": "/Shuffleboard/Ladder/Ladder tSP",
+    "name": "/Shuffleboard/Competition/Ladder OnTgt",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Competition/Ladder SP",
     "type": "string",
     "value": "",
     "properties": {
@@ -91,7 +96,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Ladder/Ladder dSP",
+    "name": "/Shuffleboard/Competition/Ladder SP (deg)",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -99,7 +104,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Ladder/Ladder Pos",
+    "name": "/Shuffleboard/Competition/Ladder Pos",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -107,7 +112,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Ladder/On Tgt",
+    "name": "/Shuffleboard/Competition/Ladder Limit",
     "type": "boolean",
     "value": false,
     "properties": {
@@ -115,7 +120,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Ladder/Ladder Limit",
+    "name": "/Shuffleboard/Competition/First",
     "type": "boolean",
     "value": false,
     "properties": {
@@ -123,7 +128,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Ladder/First",
+    "name": "/Shuffleboard/Competition/Zeroing",
     "type": "boolean",
     "value": false,
     "properties": {
@@ -131,7 +136,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Ladder/Zeroing",
+    "name": "/Shuffleboard/Competition/Algae OnTgt",
     "type": "boolean",
     "value": false,
     "properties": {
@@ -139,31 +144,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Algae/Intake Vel",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Algae/Intake SP",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Algae/Intake On Tgt",
-    "type": "boolean",
-    "value": false,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Algae/Tilt tSP",
+    "name": "/Shuffleboard/Competition/Algae SP",
     "type": "string",
     "value": "",
     "properties": {
@@ -171,7 +152,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Algae/Tilt dSP",
+    "name": "/Shuffleboard/Competition/Algae SP (deg)",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -179,7 +160,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Algae/Tilt Pos",
+    "name": "/Shuffleboard/Competition/Algae Pos (deg)",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -187,7 +168,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Algae/Tilt On Tgt",
+    "name": "/Shuffleboard/Competition/Algae Intake OnTgt",
     "type": "boolean",
     "value": false,
     "properties": {
@@ -195,31 +176,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Algae/Limit",
-    "type": "boolean",
-    "value": false,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Algae/Expel",
-    "type": "boolean",
-    "value": false,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Algae/Intake",
-    "type": "boolean",
-    "value": false,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Algae/Intake Ctr",
+    "name": "/Shuffleboard/Competition/Algae Intake SP",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -227,7 +184,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Coral/Left Intake Vel",
+    "name": "/Shuffleboard/Competition/Algae Intake (vel))",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -235,15 +192,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Coral/Left Intake SP",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Coral/Left On Tgt",
+    "name": "/Shuffleboard/Competition/Limit",
     "type": "boolean",
     "value": false,
     "properties": {
@@ -251,23 +200,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Coral/Right Intake Vel",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Coral/Right Intake SP",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Coral/Right On Tgt",
+    "name": "/Shuffleboard/Competition/Expel",
     "type": "boolean",
     "value": false,
     "properties": {
@@ -275,7 +208,15 @@
     }
   },
   {
-    "name": "/Shuffleboard/Coral/Tilt tSP",
+    "name": "/Shuffleboard/Competition/Coral Tilt OnTgt",
+    "type": "boolean",
+    "value": false,
+    "properties": {
+      "persistent": true
+    }
+  },
+  {
+    "name": "/Shuffleboard/Competition/Coral Tilt SP",
     "type": "string",
     "value": "",
     "properties": {
@@ -283,7 +224,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Coral/Tilt dSP",
+    "name": "/Shuffleboard/Competition/Coral Tilt SP (deg)",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -291,7 +232,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Coral/Tilt Pos",
+    "name": "/Shuffleboard/Competition/Coral Tilt Pos",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -299,7 +240,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Coral/Tilt On Tgt",
+    "name": "/Shuffleboard/Competition/Coral Intake OnTgt",
     "type": "boolean",
     "value": false,
     "properties": {
@@ -307,23 +248,23 @@
     }
   },
   {
-    "name": "/Shuffleboard/Coral/Left Limit",
-    "type": "boolean",
-    "value": false,
+    "name": "/Shuffleboard/Competition/Coral Intake SP",
+    "type": "double",
+    "value": 0.0,
     "properties": {
       "persistent": true
     }
   },
   {
-    "name": "/Shuffleboard/Coral/Right Limit",
-    "type": "boolean",
-    "value": false,
+    "name": "/Shuffleboard/Competition/Coral Intake Vel",
+    "type": "double",
+    "value": 0.0,
     "properties": {
       "persistent": true
     }
   },
   {
-    "name": "/Shuffleboard/Coral/Side",
+    "name": "/Shuffleboard/Competition/Side",
     "type": "string",
     "value": "",
     "properties": {
@@ -331,31 +272,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Climber/Climber tSP",
-    "type": "string",
-    "value": "",
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Climber/Climber dSP",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Climber/Climber Pos",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Climber/On Tgt",
+    "name": "/Shuffleboard/Competition/Climber OnTgt",
     "type": "boolean",
     "value": false,
     "properties": {
@@ -363,15 +280,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Climber/Climber Limit",
-    "type": "boolean",
-    "value": false,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Competition/Climber tSP",
+    "name": "/Shuffleboard/Competition/Climber SP",
     "type": "string",
     "value": "",
     "properties": {
@@ -379,7 +288,7 @@
     }
   },
   {
-    "name": "/Shuffleboard/Competition/Climber dSP",
+    "name": "/Shuffleboard/Competition/Climber SP (deg)",
     "type": "double",
     "value": 0.0,
     "properties": {
@@ -395,52 +304,11 @@
     }
   },
   {
-    "name": "/Shuffleboard/Competition/On Tgt",
+    "name": "/Shuffleboard/Competition/OnTgt-Moving",
     "type": "boolean",
     "value": false,
     "properties": {
       "persistent": true
     }
-  },
-  {
-    "name": "/Shuffleboard/Competition/CLIMBER",
-    "type": "string",
-    "value": "",
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Competition/Set Point",
-    "type": "string",
-    "value": "",
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Competition/Set Point (deg)",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Competition/Position",
-    "type": "double",
-    "value": 0.0,
-    "properties": {
-      "persistent": true
-    }
-  },
-  {
-    "name": "/Shuffleboard/Competition/ALGAE",
-    "type": "string",
-    "value": "",
-    "properties": {
-      "persistent": true
-    }
   }
 ]
->>>>>>> 0febd0aff4e31b79a1042f560986cec239a13297
