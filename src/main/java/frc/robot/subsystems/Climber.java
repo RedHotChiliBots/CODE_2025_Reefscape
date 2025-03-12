@@ -70,13 +70,9 @@ public class Climber extends SubsystemBase {
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
-	//private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
-	// private final GenericEntry sbTitle = compTab.addPersistent("CLIMBER", "")
-	// .withWidget("Text View").withPosition(7, 1)
-	// .withSize(2, 1).getEntry();
 	private final GenericEntry sbOnTgt = compTab.addPersistent("Climber OnTgt", false)
 			.withWidget("Boolean Box").withPosition(7, 1)
 			.withSize(2, 1).getEntry();
@@ -89,17 +85,12 @@ public class Climber extends SubsystemBase {
 	private final GenericEntry sbLeftPos = compTab.addPersistent("Climber Pos", 0)
 			.withWidget("Text View").withPosition(7, 4)
 			.withSize(2, 1).getEntry();
-	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Climb Moving", false)
+	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Climb Moving", "")
 			.withWidget("Single Color View")
 			.withPosition(7, 0)
-//			.withProperties(Map.of("colorWhenTrue", "green"))
 			.withSize(2, 1);
 	private final GenericEntry sbMoving = sbMovingWidget.getEntry();
 
-	// private final GenericEntry sbLimit = compTab.addPersistent("Climber Limit",
-	// false)
-	// .withWidget("Boolean Box").withPosition(6, 0)
-	// .withSize(1, 1).getEntry();
 
 	private final ShuffleboardLayout climberCommands = cmdTab
 			.getLayout("Climber", BuiltInLayouts.kList)
@@ -107,11 +98,6 @@ public class Climber extends SubsystemBase {
 			.withPosition(13, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
-	// private final ShuffleboardLayout climberData = compTab
-	// .getLayout("Climber", BuiltInLayouts.kList)
-	// .withSize(2, 5)
-	// .withPosition(5, 1)
-	// .withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************
 	 * Constructor
@@ -119,7 +105,7 @@ public class Climber extends SubsystemBase {
 	public Climber() {
 		System.out.println("+++++ Starting Climber Constructor +++++");
 
-		cmdTab.add("Climber Current", this)
+		compTab.add("Climber Current", this)
 				.withWidget("Subsystem")
 				.withPosition(22, 10)
 				.withSize(4, 2);
@@ -188,15 +174,6 @@ public class Climber extends SubsystemBase {
 		climberCommands.add("Stow", this.stow)
 				.withProperties(Map.of("show type", false));
 
-		// climberData.add("Txt SP", this.climberSP.toString(),
-		// exampleColor.toHexString());
-		// climberData.add("Txt SP", this.climberSP.toString(),
-		// exampleColor.toHexString())
-		// .withProperties(Map.of("Widget Type", "Single Color View"));
-
-		// climberData.add("Moving", "Single Color View", "");
-		// .withProperties(Map.of("Color", "exampleColor.toHexString()"));
-
 		// Initialize intake start positions
 		setClimberSP(climberSP);
 
@@ -217,19 +194,13 @@ public class Climber extends SubsystemBase {
 		sbOnTgt.setBoolean(onTarget());
 
 		if (onTarget()) {
-			// sbMovingWidget.withProperties(Map.of("colorWhenTrue", "blue"));
 			sbMoving.setString(Constants.ColorConstants.OnTarget);
 		} else {
 			if (lib.isMoving(getClimberPos(), getClimberSP().getValue())) {
 				sbMoving.setString(Constants.ColorConstants.Moving);
-				// sbMovingWidget.withProperties(Map.of("colorWhenFalse", "yellow"));
-				// sbMoving.setString(moving.toHexString());
 			} else {
 				sbMoving.setString(Constants.ColorConstants.Stopped);
-				// sbMovingWidget.withProperties(Map.of("colorWhenFalse", "red"));
-				// sbMoving.setString(offTgt.toHexString());
 			}
-			// sbMoving.setBoolean(false);
 		}
 
 		// sbLimit.setBoolean(getLimitSwitch());

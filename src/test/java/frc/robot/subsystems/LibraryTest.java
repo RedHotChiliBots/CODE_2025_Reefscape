@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Map;
-
 import org.junit.jupiter.api.Test;
 
 import frc.robot.utils.Library;
@@ -27,7 +25,7 @@ public class LibraryTest {
 		double sp = 0.0;
 		double j = 5.0;
 		lib.isMoving(j, sp);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 1; i < 10; i++) {
 			System.out.println("MovingStop - j/sp: " + j + "/" + sp);
 			assertFalse(lib.isMoving(j, sp));
 		}

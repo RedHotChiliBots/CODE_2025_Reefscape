@@ -230,7 +230,7 @@ public final class Constants {
 		public static final double kTiltPosMaxOutput = 1.0;
 
 		public static final double kTiltPosMaxVel = 10000.0;
-		public static final double kTiltPosMaxAccel = 20000.0;
+		public static final double kTiltPosMaxAccel = 30000.0;
 		public static final double kTiltPosAllowedErr = 0.1;
 
 		public static final IdleMode kIntakeIdleMode = IdleMode.kBrake;
@@ -247,9 +247,6 @@ public final class Constants {
 
 		// define algae velocities
 		public static final double STOP = 0.0;
-		public static final double INTAKE = 25000.0;
-		public static final double HOLD = 5000.0;
-		public static final double EJECT = -25000.0;
 
 		public static final double kTiltZeroOffset = 0.7307724;
 		public static final boolean kTiltZeroCentered = true;
@@ -283,10 +280,6 @@ public final class Constants {
 		public static final double kTiltPosP = 0.002;
 		public static final double kTiltPosI = 0.000001;
 		public static final double kTiltPosD = 0.0;
-
-		// public static final double kTiltPosP = 0.0025;
-		// public static final double kTiltPosI = 0.0;//000002;
-		// public static final double kTiltPosD = 0.00001;
 		public static final double kTiltPosMinOutput = -1.0;
 		public static final double kTiltPosMaxOutput = 1.0;
 

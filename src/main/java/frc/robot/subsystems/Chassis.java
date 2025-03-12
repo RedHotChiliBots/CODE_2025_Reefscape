@@ -139,7 +139,7 @@ public class Chassis extends SubsystemBase {
 	public Chassis() {
 		System.out.println("+++++ Starting Chassis Constructor +++++");
 
-		cmdTab.add("Chassis Current", this)
+		compTab.add("Chassis Current", this)
 				.withWidget("Subsystem")
 				.withPosition(22, 2)
 				.withSize(4, 2);
@@ -199,9 +199,6 @@ public class Chassis extends SubsystemBase {
 				.withProperties(Map.of("show type", false));
 
 		chassisData.add("Heading", this.getHeading());
-		// chassisData.add("Dbl SP", this.ladderSP.getValue());
-		// chassisData.add("Position", this.getLeftPos());
-		// chassisData.add("On Target", this.onTarget());
 
 		pitchOffset = -getRawPitch();
 		rollOffset = -getRawRoll();

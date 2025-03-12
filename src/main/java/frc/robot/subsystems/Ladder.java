@@ -78,7 +78,6 @@ public class Ladder extends SubsystemBase {
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
-	//private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
@@ -108,7 +107,6 @@ public class Ladder extends SubsystemBase {
 	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Ladder Moving", "")
 			.withWidget("Single Color View")
 			.withPosition(13, 0)
-//			.withProperties(Map.of("colorWhenTrue", "green"))
 			.withSize(2, 1);
 	private final GenericEntry sbMoving = sbMovingWidget.getEntry();
 
@@ -118,11 +116,6 @@ public class Ladder extends SubsystemBase {
 			.withPosition(9, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
-	// private final ShuffleboardLayout ladderData = compTab
-	// .getLayout("Ladder", BuiltInLayouts.kList)
-	// .withSize(2, 5)
-	// .withPosition(3, 1)
-	// .withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************
 	 * Constructor
@@ -130,7 +123,7 @@ public class Ladder extends SubsystemBase {
 	public Ladder() {
 		System.out.println("+++++ Starting Ladder Constructor +++++");
 
-		cmdTab.add("Ladder Current", this)
+		compTab.add("Ladder Current", this)
 				.withWidget("Subsystem")
 				.withPosition(22, 8)
 				.withSize(4, 2);
@@ -187,11 +180,6 @@ public class Ladder extends SubsystemBase {
 		ladderCommands.add("Stow", this.stow)
 				.withProperties(Map.of("show type", false));
 
-		// ladderData.add("Txt SP", this.ladderSP.toString());
-		// ladderData.add("Dbl SP", this.ladderSP.getValue());
-		// ladderData.add("Position", this.getLeftPos());
-		// // ladderData.add("Position", String.format("%.2f", this.getLeftPos()));
-		// ladderData.add("On Target", this.onTarget());
 
 		// Initialize intake start positions
 		leftEncoder.setPosition(ladderSP.getValue());
@@ -221,19 +209,13 @@ public class Ladder extends SubsystemBase {
 		}
 
 		if (onTarget()) {
-//			sbMovingWidget.withProperties(Map.of("colorWhenTrue", "blue"));
 			sbMoving.setString(Constants.ColorConstants.OnTarget);
 		} else {
 			if (lib.isMoving(getLeftPos(), getLadderSP().getValue())) {
 				sbMoving.setString(Constants.ColorConstants.Moving);
-//				sbMovingWidget.withProperties(Map.of("colorWhenFalse", "yellow"));
-				// sbMoving.setString(moving.toHexString());
 			} else {
 				sbMoving.setString(Constants.ColorConstants.Stopped);
-//				sbMovingWidget.withProperties(Map.of("colorWhenFalse", "red"));
-				// sbMoving.setString(offTgt.toHexString());
 			}
-//			sbMoving.setBoolean(false);
 		}
 	}
 

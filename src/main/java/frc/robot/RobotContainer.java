@@ -113,8 +113,12 @@ public class RobotContainer {
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
 
+	private final Command doAction = new ParallelCommandGroup(
+			coral.doAction(),
+			algae.doAction());
+
+
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
-	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -201,6 +205,15 @@ public class RobotContainer {
 				.withProperties(Map.of("show type", false));
 		goCommands.add("Stow", goStow)
 				.withProperties(Map.of("show type", false));
+
+				ShuffleboardLayout doCommands = cmdTab
+				.getLayout("Do", BuiltInLayouts.kList)
+				.withSize(3, 4)
+				.withPosition(21, 1)
+				.withProperties(Map.of("Label position",
+						"Hidden"));
+		doCommands.add("Do Action", doAction)
+				.withProperties(Map.of("show type", false));
 	}
 
 	/**
@@ -223,18 +236,35 @@ public class RobotContainer {
 				.onTrue(new InstantCommand(() -> chassis.setSpdLow()));
 		// m_driverController.x().onTrue(chassis.setX);
 
-		m_operatorController.y().onTrue(climber.stow);
-		m_operatorController.b().onTrue(climber.ready);
-		m_operatorController.a().onTrue(climber.climb);
-		m_operatorController.x().onTrue(climber.zero);
+		// m_operatorController.y().onTrue(climber.stow);
+		// m_operatorController.b().onTrue(climber.ready);
+		// m_operatorController.a().onTrue(climber.climb);
+		// m_operatorController.x().onTrue(climber.zero);
 
-		m_operatorController.start().onTrue(algae.intake);
-		m_operatorController.back().onTrue(algae.eject);
+		// m_operatorController.start().onTrue(algae.intake);
+		// m_operatorController.back().onTrue(algae.eject);
 
-		new POVButton(m_operatorHID, 0).onTrue(algae.stow);
-		new POVButton(m_operatorHID, 90).onTrue(algae.processor);
-		new POVButton(m_operatorHID, 270).onTrue(algae.processor);
-		new POVButton(m_operatorHID, 180).onTrue(algae.floor);
+		// new POVButton(m_operatorHID, 0).onTrue(algae.stow);
+		// new POVButton(m_operatorHID, 90).onTrue(algae.processor);
+		// new POVButton(m_operatorHID, 270).onTrue(algae.processor);
+		// new POVButton(m_operatorHID, 180).onTrue(algae.floor);
+
+		m_operatorController.y().onTrue(this.goL4);
+		m_operatorController.b().onTrue(this.goL3);
+		m_operatorController.a().onTrue(this.goL2);
+		m_operatorController.x().onTrue(this.goL1);
+
+		new POVButton(m_operatorHID, 0).onTrue(this.goBarge);
+		new POVButton(m_operatorHID, 90).onTrue(this.goStation);
+		new POVButton(m_operatorHID, 270).onTrue(this.goProcessor);
+		new POVButton(m_operatorHID, 180).onTrue(this.goFloor);
+
+		m_operatorController.start().onTrue(climber.ready);
+		m_operatorController.back().onTrue(this.goStow);
+
+		m_operatorController.leftBumper().onTrue(climber.climb);
+		m_operatorController.rightBumper().onTrue(this.doAction);
+
 	}
 
 	/**
