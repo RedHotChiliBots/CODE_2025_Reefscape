@@ -118,14 +118,14 @@ public class Chassis extends SubsystemBase {
 
 	private final ShuffleboardLayout chassisCommands = cmdTab
 			.getLayout("Chassis", BuiltInLayouts.kList)
-			.withSize(2, 5)
-			.withPosition(6, 1)
+			.withSize(3, 3)
+			.withPosition(13, 11)
 			.withProperties(Map.of("Label position", "Hidden"));
 
 	private final ShuffleboardLayout chassisData = compTab
 			.getLayout("Chassis", BuiltInLayouts.kList)
 			.withSize(2, 5)
-			.withPosition(1, 1)
+			.withPosition(12, 10)
 			.withProperties(Map.of("Label position", "Top"));
 
 	private double pitchOffset = 0.0;
@@ -139,10 +139,10 @@ public class Chassis extends SubsystemBase {
 	public Chassis() {
 		System.out.println("+++++ Starting Chassis Constructor +++++");
 
-		cmdTab.add("Chassis", this)
+		compTab.add("Chassis Current", this)
 				.withWidget("Subsystem")
-				.withPosition(9, 1)
-				.withSize(2, 1);
+				.withPosition(22, 2)
+				.withSize(4, 2);
 
 		// Usage reporting for MAXSwerve template
 		HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
@@ -195,12 +195,10 @@ public class Chassis extends SubsystemBase {
 
 		setChannelOff();
 
-		chassisCommands.add("setX", this.setX);
+		chassisCommands.add("setX", this.setX)
+				.withProperties(Map.of("show type", false));
 
 		chassisData.add("Heading", this.getHeading());
-		// chassisData.add("Dbl SP", this.ladderSP.getValue());
-		// chassisData.add("Position", this.getLeftPos());
-		// chassisData.add("On Target", this.onTarget());
 
 		pitchOffset = -getRawPitch();
 		rollOffset = -getRawRoll();

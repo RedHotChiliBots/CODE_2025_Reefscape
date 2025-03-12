@@ -20,11 +20,13 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.utils.Library;
 
 public class Climber extends SubsystemBase {
 
@@ -62,40 +64,40 @@ public class Climber extends SubsystemBase {
 
 	private ClimberSP climberSP = Climber.ClimberSP.STOW;
 
+	private Library lib = new Library();
+
+
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
-	private final ShuffleboardTab climberTab = Shuffleboard.getTab("Climber");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
-	private final GenericEntry sbTxtSP = climberTab.addPersistent("Climber tSP", "")
-			.withWidget("Text View").withPosition(1, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbDblSP = climberTab.addPersistent("Climber dSP", 0)
-			.withWidget("Text View").withPosition(2, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbLeftPos = climberTab.addPersistent("Climber Pos", 0)
-			.withWidget("Text View").withPosition(3, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbOnTgt = climberTab.addPersistent("On Tgt", false)
-			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
+	private final GenericEntry sbOnTgt = compTab.addPersistent("Climber OnTgt", false)
+			.withWidget("Boolean Box").withPosition(7, 1)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbTxtSP = compTab.addPersistent("Climber SP", "")
+			.withWidget("Text View").withPosition(7, 2)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbDblSP = compTab.addPersistent("Climber SP (deg)", 0)
+			.withWidget("Text View").withPosition(7, 3)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbLeftPos = compTab.addPersistent("Climber Pos", 0)
+			.withWidget("Text View").withPosition(7, 4)
+			.withSize(2, 1).getEntry();
+	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Climb Moving", "")
+			.withWidget("Single Color View")
+			.withPosition(7, 0)
+			.withSize(2, 1);
+	private final GenericEntry sbMoving = sbMovingWidget.getEntry();
 
-	private final GenericEntry sbLimit = climberTab.addPersistent("Climber Limit", false)
-			.withWidget("Boolean Box").withPosition(6, 0)
-			.withSize(1, 1).getEntry();
 
 	private final ShuffleboardLayout climberCommands = cmdTab
 			.getLayout("Climber", BuiltInLayouts.kList)
-			.withSize(2, 2)
-			.withPosition(4, 1)
+			.withSize(3, 6)
+			.withPosition(13, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
-			private final ShuffleboardLayout climberData = compTab
-			.getLayout("Climber", BuiltInLayouts.kList)
-			.withSize(2, 5)
-			.withPosition(5, 1)
-			.withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************
 	 * Constructor
@@ -103,10 +105,10 @@ public class Climber extends SubsystemBase {
 	public Climber() {
 		System.out.println("+++++ Starting Climber Constructor +++++");
 
-		cmdTab.add("Climber", this)
+		compTab.add("Climber Current", this)
 				.withWidget("Subsystem")
-				.withPosition(9, 4)
-				.withSize(2, 1);
+				.withPosition(22, 10)
+				.withSize(4, 2);
 
 		// Configure Left Intake motor
 		leftConfig
@@ -163,15 +165,14 @@ public class Climber extends SubsystemBase {
 		rightClimber.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		climberCommands.add("Climb", this.climb);
-		climberCommands.add("Ready", this.ready);
-		climberCommands.add("Zero", this.zero);
-		climberCommands.add("Stow", this.stow);
-
-		climberData.add("Txt SP", this.climberSP.toString());
-		climberData.add("Dbl SP", this.climberSP.getValue());
-		climberData.add("Position", this.getClimberPos());
-		climberData.add("On Target", this.onTarget());
+		climberCommands.add("Climb", this.climb)
+				.withProperties(Map.of("show type", false));
+		climberCommands.add("Ready", this.ready)
+				.withProperties(Map.of("show type", false));
+		climberCommands.add("Zero", this.zero)
+				.withProperties(Map.of("show type", false));
+		climberCommands.add("Stow", this.stow)
+				.withProperties(Map.of("show type", false));
 
 		// Initialize intake start positions
 		setClimberSP(climberSP);
@@ -185,13 +186,24 @@ public class Climber extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-		sbLeftPos.setDouble(getClimberPos());
 		sbTxtSP.setString(getClimberSP().toString());
 		sbDblSP.setDouble(getClimberSP().getValue());
+		// sbLeftPos.setString(String.format("%.2f", getClimberPos()));
+		sbLeftPos.setDouble(getClimberPos());
 
 		sbOnTgt.setBoolean(onTarget());
 
-		sbLimit.setBoolean(getLimitSwitch());
+		if (onTarget()) {
+			sbMoving.setString(Constants.ColorConstants.OnTarget);
+		} else {
+			if (lib.isMoving(getClimberPos(), getClimberSP().getValue())) {
+				sbMoving.setString(Constants.ColorConstants.Moving);
+			} else {
+				sbMoving.setString(Constants.ColorConstants.Stopped);
+			}
+		}
+
+		// sbLimit.setBoolean(getLimitSwitch());
 	}
 
 	/**************************************************************
@@ -206,6 +218,7 @@ public class Climber extends SubsystemBase {
 	/**************************************************************
 	 * Methods
 	 **************************************************************/
+
 	private double sp = getClimberPos();
 
 	public void moveClimber(double pos) {
@@ -216,6 +229,10 @@ public class Climber extends SubsystemBase {
 
 	public double getClimberPos() {
 		return leftEncoder.getPosition();
+	}
+
+	public double getClimberVel() {
+		return leftEncoder.getVelocity();
 	}
 
 	public void setClimberPos(ClimberSP pos) {

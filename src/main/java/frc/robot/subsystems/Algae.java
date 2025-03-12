@@ -22,12 +22,14 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import frc.robot.Constants;
+import frc.robot.utils.Library;
 
 public class Algae extends SubsystemBase {
 
@@ -52,71 +54,78 @@ public class Algae extends SubsystemBase {
 	private SparkLimitSwitch isLimitSwitch = leftIntake.getForwardLimitSwitch();
 
 	public enum AlgaeSP {
-		STOW(109.0),
-		ZERO(0.0),
-		PROCESSOR(45.0),
-		BARGE(-20.0),
-		L2(-35.0),
-		L3(-35.0),
-		FLOOR(0.0);
+		STOW(109.0, 0.0),
+		ZERO(0.0, 0.0),
+		PROCESSOR(45.0, -25000),
+		BARGE(-20.0, -25000),
+		L2(-35.0, 25000),
+		L3(-35.0, 25000),
+		FLOOR(0.0, 25000);
 
-		private final double sp;
+		private final double tilt;
+		private final double intake;
 
-		AlgaeSP(final double sp) {
-			this.sp = sp;
+		AlgaeSP(double tilt, double intake) {
+			this.tilt = tilt;
+			this.intake = intake;
 		}
 
-		public double getValue() {
-			return sp;
+		public double getTilt() {
+			return tilt;
+		}
+
+		public double getIntake() {
+			return intake;
 		}
 	}
 
 	private Ladder ladder = null;
 
-	private AlgaeSP tiltSP = AlgaeSP.ZERO;
-	private double intakeSP = Constants.Algae.STOP;
+	private AlgaeSP algaeSP = AlgaeSP.ZERO;
 
 	private boolean extractAlgae = false;
+
+	private Library lib = new Library();
 
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
-	private final ShuffleboardTab algaeTab = Shuffleboard.getTab("Algae");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
-	private final GenericEntry sbIntakeVel = algaeTab.addPersistent("Intake Vel", 0)
-			.withWidget("Text View").withPosition(2, 0).withSize(1, 1).getEntry();
-	private final GenericEntry sbIntakeSP = algaeTab.addPersistent("Intake SP", 0)
-			.withWidget("Text View").withPosition(3, 0).withSize(1, 1).getEntry();
-	private final GenericEntry sbIntakeOnTgt = algaeTab.addPersistent("Intake On Tgt", false)
-			.withWidget("Boolean Box").withPosition(4, 0).withSize(1, 1).getEntry();
+	private final GenericEntry sbTiltOnTgt = compTab.addPersistent("Algae OnTgt", false)
+			.withWidget("Boolean Box").withPosition(9, 1).withSize(2, 1).getEntry();
+	private final GenericEntry sbTxtTiltSP = compTab.addPersistent("Algae SP", "")
+			.withWidget("Text View").withPosition(9, 2).withSize(2, 1).getEntry();
+	private final GenericEntry sbDblTiltSP = compTab.addPersistent("Algae SP (deg)", 0)
+			.withWidget("Text View").withPosition(9, 3).withSize(2, 1).getEntry();
+	private final GenericEntry sbTiltPos = compTab.addPersistent("Algae Pos (deg)", 0)
+			.withWidget("Text View").withPosition(9, 4).withSize(2, 1).getEntry();
 
-	private final GenericEntry sbTxtTiltSP = algaeTab.addPersistent("Tilt tSP", "")
-			.withWidget("Text View").withPosition(1, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbDblTiltSP = algaeTab.addPersistent("Tilt dSP", 0)
-			.withWidget("Text View").withPosition(2, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbTiltPos = algaeTab.addPersistent("Tilt Pos", 0)
-			.withWidget("Text View").withPosition(3, 1).withSize(1, 1).getEntry();
-	private final GenericEntry sbTiltOnTgt = algaeTab.addPersistent("Tilt On Tgt", false)
-			.withWidget("Boolean Box").withPosition(4, 1).withSize(1, 1).getEntry();
+	private final GenericEntry sbIntakeOnTgt = compTab.addPersistent("Algae Intake OnTgt", false)
+			.withWidget("Boolean Box").withPosition(9, 6).withSize(2, 1).getEntry();
+	private final GenericEntry sbIntakeSP = compTab.addPersistent("Algae Intake SP", 0)
+			.withWidget("Text View").withPosition(9, 7).withSize(2, 1).getEntry();
+	private final GenericEntry sbIntakeVel = compTab.addPersistent("Algae Intake (vel))", 0)
+			.withWidget("Text View").withPosition(9, 8).withSize(2, 1).getEntry();
 
-	private final GenericEntry sbLimit = algaeTab.addPersistent("Limit", false)
-			.withWidget("Boolean Box").withPosition(6, 0).withSize(1, 1).getEntry();
-	private final GenericEntry sbExtract = algaeTab.addPersistent("Expel", false)
-			.withWidget("Boolean Box").withPosition(6, 1).withSize(1, 1).getEntry();
+	private final GenericEntry sbLimit = compTab.addPersistent("Limit", false)
+			.withWidget("Boolean Box").withPosition(9, 10).withSize(2, 1).getEntry();
+	private final GenericEntry sbExtract = compTab.addPersistent("Expel", false)
+			.withWidget("Boolean Box").withPosition(9, 11).withSize(2, 1).getEntry();
+
+	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Algae Moving", "")
+			.withWidget("Single Color View")
+			.withPosition(9, 0)
+			.withSize(2, 1);
+	private final GenericEntry sbMoving = sbMovingWidget.getEntry();
 
 	private final ShuffleboardLayout algaeCommands = cmdTab
 			.getLayout("Algae", BuiltInLayouts.kList)
-			.withSize(2, 5)
+			.withSize(3, 12)
 			.withPosition(0, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
-	private final ShuffleboardLayout algaeData = compTab
-			.getLayout("Algae", BuiltInLayouts.kList)
-			.withSize(2, 5)
-			.withPosition(9, 1)
-			.withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************
 	 * Constructor
@@ -126,10 +135,10 @@ public class Algae extends SubsystemBase {
 
 		this.ladder = ladder;
 
-		cmdTab.add("Algae", this)
+		compTab.add("Algae Current", this)
 				.withWidget("Subsystem")
-				.withPosition(9, 2)
-				.withSize(2, 1);
+				.withPosition(22, 6)
+				.withSize(4, 2);
 
 		// Configure Left Intake motor
 		leftConfig
@@ -192,26 +201,29 @@ public class Algae extends SubsystemBase {
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		algaeCommands.add("Barge", this.barge);
-		algaeCommands.add("L3", this.l3);
-		algaeCommands.add("L2", this.l2);
-		algaeCommands.add("Processor", this.processor);
-		algaeCommands.add("Floor", this.floor);
-		algaeCommands.add("Stow", this.stow);
-		algaeCommands.add("Intake", this.intake);
-		algaeCommands.add("Eject", this.eject);
-		
-		algaeData.add("Txt SP", this.tiltSP.toString());
-		algaeData.add("Dbl SP", this.tiltSP.getValue());
-		algaeData.add("Position", this.getTiltPos());
-		algaeData.add("On Target", this.onTiltTarget());
-		algaeData.add("Extract Algae", this.extractAlgae);
-		algaeData.add("Vel SP", this.intakeSP);
-		algaeData.add("Velocity", this.getIntakeVel());
-		algaeData.add("Intake On Target", this.onIntakeTarget());
+		algaeCommands.add("Barge", this.barge)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("L3", this.l3)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("L2", this.l2)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Processor", this.processor)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Floor", this.floor)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Stow", this.stow)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Intake", this.intake)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Eject", this.eject)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("Zero", this.zero)
+				.withProperties(Map.of("show type", false));
 
-		setIntakeVel(intakeSP);
-		setTiltPos(tiltSP);
+
+		setAlgaeSP(AlgaeSP.ZERO);
+		setIntakeVel(getAlgaeSP());
+		setTiltPos(getAlgaeSP());
 
 		System.out.println("----- Ending Algae Constructor -----");
 	}
@@ -225,14 +237,24 @@ public class Algae extends SubsystemBase {
 		sbIntakeVel.setDouble(getIntakeVel());
 		sbIntakeSP.setDouble(getIntakeSP());
 		sbTiltPos.setDouble(getTiltPos());
-		sbTxtTiltSP.setString(getTiltSP().toString());
-		sbDblTiltSP.setDouble(getTiltSP().getValue());
+		sbTxtTiltSP.setString(getAlgaeSP().toString());
+		sbDblTiltSP.setDouble(getTiltSP());
 
 		sbTiltOnTgt.setBoolean(onTiltTarget());
 		sbIntakeOnTgt.setBoolean(onIntakeTarget());
 
 		sbLimit.setBoolean(isLimit());
 		sbExtract.setBoolean(getExtract());
+
+		if (onTiltTarget()) {
+			sbMoving.setString(Constants.ColorConstants.OnTarget);
+		} else {
+			if (lib.isMoving(getTiltPos(), getTiltSP())) {
+				sbMoving.setString(Constants.ColorConstants.Moving);
+			} else {
+				sbMoving.setString(Constants.ColorConstants.Stopped);
+			}
+		}
 	}
 
 	/**************************************************************
@@ -245,14 +267,13 @@ public class Algae extends SubsystemBase {
 	public Command floor = new InstantCommand(() -> setTiltPos(AlgaeSP.FLOOR));
 	public Command zero = new InstantCommand(() -> setTiltPos(AlgaeSP.ZERO));
 	public Command stow = new InstantCommand(() -> setTiltPos(AlgaeSP.STOW));
-
 	public Command toggleExtract = new InstantCommand(() -> toggleExtract());
 
-	public Command intake = new InstantCommand(() -> setIntakeVel(Constants.Algae.INTAKE))
+	public Command intake = new InstantCommand(() -> setIntakeVel(algaeSP))
 			.until(() -> isLimit())
 			// .andThen(() -> setTiltPos(AlgaeSP.PROCESSOR))
-			.andThen(() -> setIntakeVel(Constants.Algae.HOLD));
-	public Command eject = new InstantCommand(() -> setIntakeVel(Constants.Algae.EJECT))
+			.andThen(() -> setIntakeVel(getIntakeVel() / 4.0));
+	public Command eject = new InstantCommand(() -> setIntakeVel(algaeSP))
 			.andThen(new WaitCommand(0.5))
 			.andThen(() -> setIntakeVel(Constants.Algae.STOP));
 
@@ -274,48 +295,52 @@ public class Algae extends SubsystemBase {
 		return tiltEncoder.getPosition();
 	}
 
+	public void setAlgaeSP(AlgaeSP sp) {
+		algaeSP = sp;
+	}
+
+	public AlgaeSP getAlgaeSP() {
+		return algaeSP;
+	}
+
+	public double getTiltSP() {
+		return algaeSP.getTilt();
+	}
+
+	public double getIntakeSP() {
+		return algaeSP.getIntake();
+	}
+
 	// Sets the position of the encoders
-	public void setTiltPos(AlgaeSP pos) {
-		setTiltSP(pos);
-		tiltController.setReference(pos.getValue(), SparkBase.ControlType.kMAXMotionPositionControl);
+	public void setTiltPos(AlgaeSP sp) {
+		setAlgaeSP(sp);
+		tiltController.setReference(sp.getTilt(), SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 
 	// Sets the position of the encoders
 	public void setTiltPos() {
-		setTiltPos(getTiltSP());
+		setTiltPos(getAlgaeSP());
 	}
 
 	public void setIntakeVel(double vel) {
-		setIntakeSP(vel);
 		intakeController.setReference(vel, SparkBase.ControlType.kMAXMotionVelocityControl);
 	}
 
+	public void setIntakeVel(AlgaeSP sp) {
+		setAlgaeSP(sp);
+		intakeController.setReference(sp.getIntake(), SparkBase.ControlType.kMAXMotionVelocityControl);
+	}
+
 	public void setIntakeVel() {
-		setIntakeVel(getIntakeSP());
+		setIntakeVel(getAlgaeSP());
 	}
 
 	public boolean onTiltTarget() {
-		return Math.abs(getTiltPos() - getTiltSP().getValue()) < Constants.Algae.kTiltTollerance;
+		return Math.abs(getTiltPos() - getTiltSP()) < Constants.Algae.kTiltTollerance;
 	}
 
 	public boolean onIntakeTarget() {
 		return Math.abs(getIntakeVel() - getIntakeSP()) < Constants.Algae.kIntakeTollerance;
-	}
-
-	public void setIntakeSP(double sp) {
-		intakeSP = sp;
-	}
-
-	public double getIntakeSP() {
-		return intakeSP;
-	}
-
-	public void setTiltSP(AlgaeSP sp) {
-		tiltSP = sp;
-	}
-
-	public AlgaeSP getTiltSP() {
-		return tiltSP;
 	}
 
 	public boolean isLimit() {
@@ -333,26 +358,27 @@ public class Algae extends SubsystemBase {
 	/**
 	 * doAction - performs Algea action based on Ladder position
 	 */
-	public void doAction() {
-		double vel = 0.0;
+	public Command doAction() {
+		Command cmd = null;
 
 		switch (ladder.getLadderSP()) {
 			case BARGE:
 			case PROCESSOR:
-				vel = Constants.Algae.EJECT;
+				cmd = this.eject;
 				break;
 			case L3:
 			case L2:
 				if (extractAlgae) {
-					vel = Constants.Algae.INTAKE;
+					cmd = this.intake;
 				}
 				break;
 			case FLOOR:
-				vel = Constants.Algae.INTAKE;
+				cmd = this.intake;
 				break;
 			default:
+				cmd = new WaitCommand(0.25);
 		}
 
-		setIntakeVel(vel);
+		return cmd;
 	}
 }

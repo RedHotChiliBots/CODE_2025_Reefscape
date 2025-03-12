@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -19,10 +20,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
 import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.Algae.AlgaeSP;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
+import frc.robot.subsystems.Coral.CoralSP;
 import frc.robot.subsystems.Ladder;
+import frc.robot.subsystems.Ladder.LadderSP;
 import frc.robot.subsystems.Vision;
 
 import java.util.List;
@@ -71,9 +75,51 @@ public class RobotContainer {
 	private final GenericHID m_operatorHID = new GenericHID(
 			OIConstants.kOperatorControllerPort);
 
+	// =====TESTING=====//
+	private final Command goBarge = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.BARGE)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.BARGE)));
+	private final Command goL4 = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L4)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L4)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
+	private final Command goL3 = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L3)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L3)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L3)));
+	private final Command goL2 = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L2)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L2)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L2)));
+	private final Command goL1 = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L1)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L1)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
+	private final Command goStation = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STATION)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STATION)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
+	private final Command goProcessor = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.PROCESSOR)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.PROCESSOR)));
+	private final Command goFloor = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.FLOOR)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.FLOOR)));
+	private final Command goStow = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STOW)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
+
+	private final Command doAction = new ParallelCommandGroup(
+			coral.doAction(),
+			algae.doAction());
+
+
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
-	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
-	
+
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
@@ -102,12 +148,12 @@ public class RobotContainer {
 						chassis));
 
 		// climber.setDefaultCommand(
-		// 		// The right Y stick controls movement
-		// 		new RunCommand(
-		// 				() -> climber.moveClimber(
-		// 						-MathUtil.applyDeadband(m_operatorController.getRightY(), 0.10)),
-		// 				// OIConstants.kDriveDeadband)),
-		// 				climber));
+		// // The right Y stick controls movement
+		// new RunCommand(
+		// () -> climber.moveClimber(
+		// -MathUtil.applyDeadband(m_operatorController.getRightY(), 0.10)),
+		// // OIConstants.kDriveDeadband)),
+		// climber));
 
 		// coral.setDefaultCommand(
 		// // The left stick controls translation of the robot.
@@ -129,11 +175,45 @@ public class RobotContainer {
 
 		ShuffleboardLayout toggleCommands = cmdTab
 				.getLayout("Toggle", BuiltInLayouts.kList)
-				.withSize(2, 2)
-				.withPosition(4, 4)
+				.withSize(3, 4)
+				.withPosition(13, 7)
 				.withProperties(Map.of("Label position", "Hidden"));
 		toggleCommands.add("Algae Extract", algae.toggleExtract);
 		toggleCommands.add("Coral Left-Right", coral.toggleSide);
+
+		ShuffleboardLayout goCommands = cmdTab
+				.getLayout("Go To", BuiltInLayouts.kList)
+				.withSize(3, 12)
+				.withPosition(17, 1)
+				.withProperties(Map.of("Label position",
+						"Hidden"));
+		goCommands.add("Barge", goBarge)
+				.withProperties(Map.of("show type", false));
+		goCommands.add("L4", goL4)
+				.withProperties(Map.of("show type", false));
+		goCommands.add("L3", goL3)
+				.withProperties(Map.of("show type", false));
+		goCommands.add("L2", goL2)
+				.withProperties(Map.of("show type", false));
+		goCommands.add("L1", goL1)
+				.withProperties(Map.of("show type", false));
+		goCommands.add("Station", goStation)
+				.withProperties(Map.of("show type", false));
+		goCommands.add("Processor", goProcessor)
+				.withProperties(Map.of("show type", false));
+		goCommands.add("Floor", goFloor)
+				.withProperties(Map.of("show type", false));
+		goCommands.add("Stow", goStow)
+				.withProperties(Map.of("show type", false));
+
+				ShuffleboardLayout doCommands = cmdTab
+				.getLayout("Do", BuiltInLayouts.kList)
+				.withSize(3, 4)
+				.withPosition(21, 1)
+				.withProperties(Map.of("Label position",
+						"Hidden"));
+		doCommands.add("Do Action", doAction)
+				.withProperties(Map.of("show type", false));
 	}
 
 	/**
@@ -154,20 +234,37 @@ public class RobotContainer {
 		m_driverController.leftBumper()
 				.onFalse(new InstantCommand(() -> chassis.setSpdHigh()))
 				.onTrue(new InstantCommand(() -> chassis.setSpdLow()));
-//		m_driverController.x().onTrue(chassis.setX);
+		// m_driverController.x().onTrue(chassis.setX);
 
-		m_operatorController.y().onTrue(climber.stow);
-		m_operatorController.b().onTrue(climber.ready);
-		m_operatorController.a().onTrue(climber.climb);
-		m_operatorController.x().onTrue(climber.zero);
+		// m_operatorController.y().onTrue(climber.stow);
+		// m_operatorController.b().onTrue(climber.ready);
+		// m_operatorController.a().onTrue(climber.climb);
+		// m_operatorController.x().onTrue(climber.zero);
 
-		m_operatorController.start().onTrue(algae.intake);
-		m_operatorController.back().onTrue(algae.eject);
+		// m_operatorController.start().onTrue(algae.intake);
+		// m_operatorController.back().onTrue(algae.eject);
 
-		new POVButton(m_operatorHID, 0).onTrue(algae.stow);
-		new POVButton(m_operatorHID, 90).onTrue(algae.processor);
-		new POVButton(m_operatorHID, 270).onTrue(algae.processor);
-		new POVButton(m_operatorHID, 180).onTrue(algae.floor);
+		// new POVButton(m_operatorHID, 0).onTrue(algae.stow);
+		// new POVButton(m_operatorHID, 90).onTrue(algae.processor);
+		// new POVButton(m_operatorHID, 270).onTrue(algae.processor);
+		// new POVButton(m_operatorHID, 180).onTrue(algae.floor);
+
+		m_operatorController.y().onTrue(this.goL4);
+		m_operatorController.b().onTrue(this.goL3);
+		m_operatorController.a().onTrue(this.goL2);
+		m_operatorController.x().onTrue(this.goL1);
+
+		new POVButton(m_operatorHID, 0).onTrue(this.goBarge);
+		new POVButton(m_operatorHID, 90).onTrue(this.goStation);
+		new POVButton(m_operatorHID, 270).onTrue(this.goProcessor);
+		new POVButton(m_operatorHID, 180).onTrue(this.goFloor);
+
+		m_operatorController.start().onTrue(climber.ready);
+		m_operatorController.back().onTrue(this.goStow);
+
+		m_operatorController.leftBumper().onTrue(climber.climb);
+		m_operatorController.rightBumper().onTrue(this.doAction);
+
 	}
 
 	/**
@@ -176,7 +273,7 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-	//	return new ChassisTimedDrive(chassis, 0.25, 1.0);
+		// return new ChassisTimedDrive(chassis, 0.25, 1.0);
 		return auton.getChooser().getSelected();
 	}
 }

@@ -19,11 +19,13 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.utils.Library;
 
 public class Ladder extends SubsystemBase {
 
@@ -71,47 +73,49 @@ public class Ladder extends SubsystemBase {
 	private boolean firstPeriod = true;
 	private boolean zeroingLadder = false;
 
+	private Library lib = new Library();
+
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
-	private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
-	private final GenericEntry sbTxtSP = ladderTab.addPersistent("Ladder tSP", "")
-			.withWidget("Text View").withPosition(1, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbDblSP = ladderTab.addPersistent("Ladder dSP", 0)
-			.withWidget("Text View").withPosition(2, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbLadderPos = ladderTab.addPersistent("Ladder Pos", 0)
-			.withWidget("Text View").withPosition(3, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbOnTgt = ladderTab.addPersistent("On Tgt", false)
-			.withWidget("Boolean Box").withPosition(4, 0)
-			.withSize(1, 1).getEntry();
+	private final GenericEntry sbOnTgt = compTab.addPersistent("Ladder OnTgt", false)
+			.withWidget("Boolean Box").withPosition(13, 1)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbTxtSP = compTab.addPersistent("Ladder SP", "")
+			.withWidget("Text View").withPosition(13, 2)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbDblSP = compTab.addPersistent("Ladder SP (deg)", 0)
+			.withWidget("Text View").withPosition(13, 3)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbLadderPos = compTab.addPersistent("Ladder Pos", 0)
+			.withWidget("Text View").withPosition(13, 4)
+			.withSize(2, 1).getEntry();
 
-	private final GenericEntry sbLimit = ladderTab.addPersistent("Ladder Limit", false)
-			.withWidget("Boolean Box").withPosition(6, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbFirst = ladderTab.addPersistent("First", false)
-			.withWidget("Boolean Box").withPosition(6, 1)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbZeroing = ladderTab.addPersistent("Zeroing", false)
-			.withWidget("Boolean Box").withPosition(6, 2)
-			.withSize(1, 1).getEntry();
+	private final GenericEntry sbLimit = compTab.addPersistent("Ladder Limit", false)
+			.withWidget("Boolean Box").withPosition(13, 6)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbFirst = compTab.addPersistent("First", false)
+			.withWidget("Boolean Box").withPosition(13, 7)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbZeroing = compTab.addPersistent("Zeroing", false)
+			.withWidget("Boolean Box").withPosition(13, 8)
+			.withSize(2, 1).getEntry();
+
+	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Ladder Moving", "")
+			.withWidget("Single Color View")
+			.withPosition(13, 0)
+			.withSize(2, 1);
+	private final GenericEntry sbMoving = sbMovingWidget.getEntry();
 
 	private final ShuffleboardLayout ladderCommands = cmdTab
 			.getLayout("Ladder", BuiltInLayouts.kList)
-			.withSize(2, 5)
-			.withPosition(6, 1)
+			.withSize(3, 12)
+			.withPosition(9, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
-	private final ShuffleboardLayout ladderData = compTab
-			.getLayout("Ladder", BuiltInLayouts.kList)
-			.withSize(2, 5)
-			.withPosition(3, 1)
-			.withProperties(Map.of("Label position", "Top"));
 
 	/**************************************************************
 	 * Constructor
@@ -119,10 +123,10 @@ public class Ladder extends SubsystemBase {
 	public Ladder() {
 		System.out.println("+++++ Starting Ladder Constructor +++++");
 
-		cmdTab.add("Ladder", this)
+		compTab.add("Ladder Current", this)
 				.withWidget("Subsystem")
-				.withPosition(9, 5)
-				.withSize(2, 1);
+				.withPosition(22, 8)
+				.withSize(4, 2);
 
 		// Configure Left Intake motor
 		leftConfig
@@ -157,20 +161,25 @@ public class Ladder extends SubsystemBase {
 		rightLadder.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-		ladderCommands.add("Barge", this.barge);
-		ladderCommands.add("L4", this.l4);
-		ladderCommands.add("L3", this.l3);
-		ladderCommands.add("L2", this.l2);
-		ladderCommands.add("L1", this.l1);
-		ladderCommands.add("Station", this.station);
-		ladderCommands.add("Processor", this.processor);
-		ladderCommands.add("Floor", this.floor);
-		ladderCommands.add("Stow", this.stow);
+		ladderCommands.add("Barge", this.barge)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L4", this.l4)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L3", this.l3)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L2", this.l2)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L1", this.l1)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Station", this.station)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Processor", this.processor)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Floor", this.floor)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Stow", this.stow)
+				.withProperties(Map.of("show type", false));
 
-		ladderData.add("Txt SP", this.ladderSP.toString());
-		ladderData.add("Dbl SP", this.ladderSP.getValue());
-		ladderData.add("Position", this.getLeftPos());
-		ladderData.add("On Target", this.onTarget());	
 
 		// Initialize intake start positions
 		leftEncoder.setPosition(ladderSP.getValue());
@@ -197,6 +206,16 @@ public class Ladder extends SubsystemBase {
 
 		if (firstPeriod || zeroingLadder) {
 			zeroLadder();
+		}
+
+		if (onTarget()) {
+			sbMoving.setString(Constants.ColorConstants.OnTarget);
+		} else {
+			if (lib.isMoving(getLeftPos(), getLadderSP().getValue())) {
+				sbMoving.setString(Constants.ColorConstants.Moving);
+			} else {
+				sbMoving.setString(Constants.ColorConstants.Stopped);
+			}
 		}
 	}
 
