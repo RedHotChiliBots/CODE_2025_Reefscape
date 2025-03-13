@@ -95,11 +95,11 @@ public class Algae extends SubsystemBase {
 
 	private final GenericEntry sbTiltOnTgt = compTab.addPersistent("Algae OnTgt", false)
 			.withWidget("Boolean Box").withPosition(9, 1).withSize(2, 1).getEntry();
-	private final GenericEntry sbTxtTiltSP = compTab.addPersistent("Algae SP", "")
+	private final GenericEntry sbTxtTiltSP = compTab.addPersistent("Algae Tilt SP", "")
 			.withWidget("Text View").withPosition(9, 2).withSize(2, 1).getEntry();
-	private final GenericEntry sbDblTiltSP = compTab.addPersistent("Algae SP (deg)", 0)
+	private final GenericEntry sbDblTiltSP = compTab.addPersistent("Algae Tilt SP (deg)", 0)
 			.withWidget("Text View").withPosition(9, 3).withSize(2, 1).getEntry();
-	private final GenericEntry sbTiltPos = compTab.addPersistent("Algae Pos (deg)", 0)
+	private final GenericEntry sbTiltPos = compTab.addPersistent("Algae Tilt Pos (deg)", 0)
 			.withWidget("Text View").withPosition(9, 4).withSize(2, 1).getEntry();
 
 	private final GenericEntry sbIntakeOnTgt = compTab.addPersistent("Algae Intake OnTgt", false)
