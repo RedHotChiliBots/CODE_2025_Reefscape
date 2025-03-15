@@ -3,6 +3,9 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
+
+import java.util.Map;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -12,11 +15,17 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
+import frc.robot.utils.Library;
 
 public class Ladder extends SubsystemBase {
 
@@ -33,7 +42,7 @@ public class Ladder extends SubsystemBase {
 
 	private RelativeEncoder leftEncoder = leftLadder.getEncoder();
 
-	private SparkLimitSwitch limitSwitch = leftLadder.getForwardLimitSwitch(); // leftLadder.getReverseLimitSwitch();
+	private SparkLimitSwitch limitSwitch = leftLadder.getForwardLimitSwitch();
 
 	// define ladder positions
 	public enum LadderSP {
@@ -64,34 +73,60 @@ public class Ladder extends SubsystemBase {
 	private boolean firstPeriod = true;
 	private boolean zeroingLadder = false;
 
-	private final ShuffleboardTab ladderTab = Shuffleboard.getTab("Ladder");
+	private Library lib = new Library();
 
-	private final GenericEntry sbTxtSP = ladderTab.addPersistent("Ladder tSP", "")
-			.withWidget("Text View").withPosition(1, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbDblSP = ladderTab.addPersistent("Ladder dSP", 0)
-			.withWidget("Text View").withPosition(2, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbLadderPos = ladderTab.addPersistent("Ladder Pos", 0)
-			.withWidget("Text View").withPosition(3, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbOnTgt = ladderTab.addPersistent("On Tgt", false)
-			.withWidget("Boolean Box").withPosition(4, 0)
-			.withSize(1, 1).getEntry();
+	/**************************************************************
+	 * Initialize Shuffleboard entries
+	 **************************************************************/
+	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
-	private final GenericEntry sbLimit = ladderTab.addPersistent("Ladder Limit", false)
-			.withWidget("Boolean Box").withPosition(6, 0)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbFirst = ladderTab.addPersistent("First", false)
-			.withWidget("Boolean Box").withPosition(6, 1)
-			.withSize(1, 1).getEntry();
-	private final GenericEntry sbZeroing = ladderTab.addPersistent("Zeroing", false)
-			.withWidget("Boolean Box").withPosition(6, 2)
-			.withSize(1, 1).getEntry();
+	private final GenericEntry sbOnTgt = compTab.addPersistent("Ladder OnTgt", false)
+			.withWidget("Boolean Box").withPosition(13, 1)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbTxtSP = compTab.addPersistent("Ladder SP", "")
+			.withWidget("Text View").withPosition(13, 2)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbDblSP = compTab.addPersistent("Ladder SP (deg)", 0)
+			.withWidget("Text View").withPosition(13, 3)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbLadderPos = compTab.addPersistent("Ladder Pos", 0)
+			.withWidget("Text View").withPosition(13, 4)
+			.withSize(2, 1).getEntry();
 
-	// Creates a new Ladder.
+	private final GenericEntry sbLimit = compTab.addPersistent("Ladder Limit", false)
+			.withWidget("Boolean Box").withPosition(13, 6)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbFirst = compTab.addPersistent("First", false)
+			.withWidget("Boolean Box").withPosition(13, 7)
+			.withSize(2, 1).getEntry();
+	private final GenericEntry sbZeroing = compTab.addPersistent("Zeroing", false)
+			.withWidget("Boolean Box").withPosition(13, 8)
+			.withSize(2, 1).getEntry();
+
+	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Ladder Moving", "")
+			.withWidget("Single Color View")
+			.withPosition(13, 0)
+			.withSize(2, 1);
+	private final GenericEntry sbMoving = sbMovingWidget.getEntry();
+
+	private final ShuffleboardLayout ladderCommands = cmdTab
+			.getLayout("Ladder", BuiltInLayouts.kList)
+			.withSize(3, 12)
+			.withPosition(9, 1)
+			.withProperties(Map.of("Label position", "Hidden"));
+
+
+	/**************************************************************
+	 * Constructor
+	 **************************************************************/
 	public Ladder() {
 		System.out.println("+++++ Starting Ladder Constructor +++++");
+
+		compTab.add("Ladder Current", this)
+				.withWidget("Subsystem")
+				.withPosition(22, 8)
+				.withSize(4, 2);
 
 		// Configure Left Intake motor
 		leftConfig
@@ -126,6 +161,26 @@ public class Ladder extends SubsystemBase {
 		rightLadder.configure(rightConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+		ladderCommands.add("Barge", this.barge)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L4", this.l4)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L3", this.l3)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L2", this.l2)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L1", this.l1)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Station", this.station)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Processor", this.processor)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Floor", this.floor)
+				.withProperties(Map.of("show type", false));
+		ladderCommands.add("Stow", this.stow)
+				.withProperties(Map.of("show type", false));
+
+
 		// Initialize intake start positions
 		leftEncoder.setPosition(ladderSP.getValue());
 		setLadderPos(ladderSP);
@@ -133,6 +188,9 @@ public class Ladder extends SubsystemBase {
 		System.out.println("----- Ending Ladder Constructor -----");
 	}
 
+	/**************************************************************
+	 * Periodic
+	 **************************************************************/
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
@@ -146,10 +204,37 @@ public class Ladder extends SubsystemBase {
 		sbFirst.setBoolean(firstPeriod);
 		sbZeroing.setBoolean(zeroingLadder);
 
-		// if (firstPeriod || zeroingLadder) {
-		// 	zeroLadder();
-		// }
+		if (firstPeriod || zeroingLadder) {
+			zeroLadder();
+		}
+
+		if (onTarget()) {
+			sbMoving.setString(Constants.ColorConstants.OnTarget);
+		} else {
+			if (lib.isMoving(getLeftPos(), getLadderSP().getValue())) {
+				sbMoving.setString(Constants.ColorConstants.Moving);
+			} else {
+				sbMoving.setString(Constants.ColorConstants.Stopped);
+			}
+		}
 	}
+
+	/**************************************************************
+	 * Commands
+	 **************************************************************/
+	public Command barge = new InstantCommand(() -> setLadderPos(LadderSP.BARGE));
+	public Command l4 = new InstantCommand(() -> setLadderPos(LadderSP.L3));
+	public Command l3 = new InstantCommand(() -> setLadderPos(LadderSP.L2));
+	public Command l2 = new InstantCommand(() -> setLadderPos(LadderSP.L3));
+	public Command l1 = new InstantCommand(() -> setLadderPos(LadderSP.L2));
+	public Command station = new InstantCommand(() -> setLadderPos(LadderSP.PROCESSOR));
+	public Command processor = new InstantCommand(() -> setLadderPos(LadderSP.PROCESSOR));
+	public Command floor = new InstantCommand(() -> setLadderPos(LadderSP.FLOOR));
+	public Command stow = new InstantCommand(() -> setLadderPos(LadderSP.STOW));
+
+	/**************************************************************
+	 * Methods
+	 **************************************************************/
 
 	private void zeroLadder() {
 		if (firstPeriod) {
@@ -164,34 +249,6 @@ public class Ladder extends SubsystemBase {
 			setLadderPos(LadderSP.STOW);
 			zeroingLadder = false;
 		}
-	}
-
-	/**
-	 * setTiltCmd - command factory method to update the Tilt pos
-	 * 
-	 * @return a command
-	 */
-	public Command setLadderSPCmd(LadderSP sp) {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setLadderSP(sp);
-		});
-	}
-
-	/**
-	 * setTiltCmd - command factory method to update the Tilt pos
-	 * 
-	 * @return a command
-	 */
-	public Command setLadderPosCmd(LadderSP pos) {
-		// Subsystem::RunOnce implicitly requires `this` subsystem.
-		return runOnce(() -> {
-			setLadderPos(pos);
-		});
-	}
-
-	public Command setLadderPosCmd() {
-		return setLadderPosCmd(getLadderSP());
 	}
 
 	public boolean onTarget() {
@@ -221,43 +278,6 @@ public class Ladder extends SubsystemBase {
 	}
 
 	public boolean isLimit() {
-		return limitSwitch.isPressed(); // || rightForLimitSwitch.isPressed();
+		return limitSwitch.isPressed();
 	}
-
-	public Command ladderBarge() {
-		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.BARGE));
-	}
-
-	public Command ladderL4() {
-		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L4));
-	}
-
-	public Command ladderL3() {
-		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L3));
-	}
-
-	public Command ladderL2() {
-		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L2));
-	}
-
-	public Command ladderL1() {
-		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.L1));
-	}
-
-	public Command ladderStation() {
-		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.STATION));
-	}
-
-	public Command ladderProcessor() {
-		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.PROCESSOR));
-	}
-
-	public Command ladderFloor() {
-		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.FLOOR));
-	}
-
-	public Command ladderStow() {
-		return this.runOnce(() -> setLadderPos(Ladder.LadderSP.STOW));
-	}
-
 }
