@@ -50,14 +50,13 @@ public class RobotContainer {
 	// private final PhotonCamera camera3 = null;
 	// private final PhotonCamera camera4 = null;
 	// private final Vision vision = new Vision(camera1, camera2, camera3, camera4);
-
+	
 	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder, algae);
 	private final Climber climber = new Climber();
-	private final Autos auton = new Autos(chassis, ladder, algae, coral, climber);
-
+    
 	private final PhotonCamera camera1 = new PhotonCamera("Camera1");
 	private final PhotonCamera camera2 = new PhotonCamera("Camera2");
 	private final PhotonCamera camera3 = new PhotonCamera("Camera3");
@@ -75,49 +74,50 @@ public class RobotContainer {
 	private final GenericHID m_operatorHID = new GenericHID(
 			OIConstants.kOperatorControllerPort);
 
-	// =====TESTING=====//
-	private final Command goBarge = new ParallelCommandGroup(
+			// =====TESTING=====//
+	public final Command goBarge = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.BARGE)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.BARGE)));
-	private final Command goL4 = new ParallelCommandGroup(
+	public final Command goL4 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L4)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L4)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
-	private final Command goL3 = new ParallelCommandGroup(
+	public final Command goL3 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L3)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L3)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L3)));
-	private final Command goL2 = new ParallelCommandGroup(
+	public final Command goL2 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L2)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L2)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L2)));
-	private final Command goL1 = new ParallelCommandGroup(
+	public final Command goL1 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L1)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L1)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
-	private final Command goStation = new ParallelCommandGroup(
+	public final Command goStation = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STATION)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STATION)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
-	private final Command goProcessor = new ParallelCommandGroup(
+	public final Command goProcessor = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.PROCESSOR)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.PROCESSOR)));
-	private final Command goFloor = new ParallelCommandGroup(
+	public final Command goFloor = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.FLOOR)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.FLOOR)));
-	private final Command goStow = new ParallelCommandGroup(
+	public final Command goStow = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STOW)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
 
-	private final Command doAction = new ParallelCommandGroup(
+	public final Command doAction = new ParallelCommandGroup(
 			coral.doAction(),
 			algae.doAction());
 
-
+	private final Autos auton = new Autos(this, chassis, ladder, algae, coral, climber);
+			
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 
 	/**
@@ -265,6 +265,10 @@ public class RobotContainer {
 		m_operatorController.leftBumper().onTrue(climber.climb);
 		m_operatorController.rightBumper().onTrue(this.doAction);
 
+	}
+
+	public RobotContainer getRobotContainer() {
+		return this;
 	}
 
 	/**

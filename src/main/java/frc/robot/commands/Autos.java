@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
@@ -25,26 +27,24 @@ public class Autos {
   // Define a chooser for autonomous commands
   private final SendableChooser<Command> chooser = new SendableChooser<>();
 
+  RobotContainer robotContainer;
   Chassis chassis;
   Ladder ladder;
   Algae algae;
   Coral coral;
   Climber climber;
 
-  AutonLeave autoLeave;
-  Command autoLeave2;
-  
-  /** Example static factory for an autonomous command. */
-  // public static Command AutonLeave(Chassis chassis, Ladder ladder, Algae algae,
-  // Coral coral, Climber climber) {
-  // return Commands.sequence(new AutonLeave(chassis, ladder, algae, coral,
-  // climber));
-  // }
+  AutonLeave autoLeave0;
+  Command autoLeave;
+  Command autoLeaveNScoreL1;
+  Command autoLeaveNScoreL4;
 
-  public Autos(Chassis chassis, Ladder ladder, Algae algae, Coral coral, Climber climber) {
+  public Autos(RobotContainer robotContainer, Chassis chassis, Ladder ladder, Algae algae, Coral coral,
+      Climber climber) {
 
     System.out.println("+++++ Starting Autos Constructor +++++");
 
+    this.robotContainer = robotContainer;
     this.chassis = chassis;
     this.ladder = ladder;
     this.algae = algae;
@@ -55,14 +55,29 @@ public class Autos {
     // Add Auton Command chooser to Shuffleboard
     compTab.add("Auton Command", chooser)
         .withWidget("ComboBox Chooser")
-        .withPosition(8, 1)
+        .withPosition(0, 0)
         .withSize(3, 1);
 
-    this.autoLeave = new AutonLeave(chassis, ladder, algae, coral, climber);
+    // this.autoLeave0 = new AutonLeave(chassis, ladder, algae, coral, climber);
 
-    this.autoLeave2 = new InstantCommand(() -> chassis.drive(0.25, 0.0, 0.0, true))
-        .andThen(new WaitCommand(1.0))
-        .andThen(() -> chassis.drive(0.0, 0.0, 0.0, true));
+    // this.autoLeave = new InstantCommand(() -> chassis.drive(0.25, 0.0, 0.0, true))
+    //     .andThen(new WaitCommand(1.0))
+    //     .andThen(() -> chassis.drive(0.0, 0.0, 0.0, true));
+
+    // this.autoLeaveNScoreL1 = new InstantCommand(() -> chassis.drive(0.25, 0.0,
+    // 0.0, true))
+    // .andThen(new WaitCommand(1.0))
+    // .alongWith(robotContainer.goL1)
+    // .andThen(() -> chassis.drive(0.0, 0.0, 0.0, true))
+    // .andThen(new WaitCommand(0.1))
+    // .andThen(robotContainer.doAction);
+
+    // this.autoLeaveNScoreL4 = new InstantCommand(() -> chassis.drive(0.25, 0.0, 0.0, true))
+    //     .andThen(new WaitCommand(1.0))
+    //     .alongWith(robotContainer.goL4)
+    //     .andThen(new InstantCommand(() -> chassis.drive(0.0, 0.0, 0.0, true)))
+    //     .andThen(new WaitCommand(0.1))
+    //     .andThen(robotContainer.doAction);
 
     // ********************************************
     // Generate Auto commands
@@ -84,12 +99,42 @@ public class Autos {
     // chooser = AutoBuilder.buildAutoChooser();
 
     chooser.setDefaultOption("Leave", autoLeave);
-    chooser.addOption("Leave2", autoLeave2);
+    chooser.addOption("LeaveNScoreL1", autoLeaveNScoreL1(robotContainer, chassis));
+    chooser.addOption("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
     // chooser.addOption("Shoot N Stay", autoShootStay);
     // chooser.addOption("Speaker Amp", autoSpeakerAmp);
     // chooser.addOption("Auto ZigZag3Cmd", cmdAutoZigZag3m);
 
     System.out.println("----- Ending Autos Constructor -----");
+  }
+
+  public Command autoLeave() {
+    return Commands.sequence(
+        new InstantCommand(() -> chassis.drive(0.25, 0.0, 0.0, true)),
+        new WaitCommand(1.0),
+        new InstantCommand(() -> chassis.drive(0.0, 0.0, 0.0, true)));
+  }
+
+  public Command autoLeaveNScoreL1(RobotContainer robotContainer, Chassis chassis) {
+    return Commands.sequence(
+        Commands.parallel(
+            new InstantCommand(() -> chassis.driveCmd(0.25, 0.0, 0.0, true)),
+            robotContainer.goL1)
+            .withTimeout(1.0),
+        Commands.parallel(
+            new InstantCommand(() -> chassis.driveCmd(0.0, 0.0, 0.0, true)),
+            robotContainer.doAction));
+  }
+
+  public Command autoLeaveNScoreL4(RobotContainer robotContainer, Chassis chassis) {
+    return Commands.sequence(
+        Commands.parallel(
+            new InstantCommand(() -> chassis.driveCmd(0.25, 0.0, 0.0, true)),
+            robotContainer.goL4)
+            .withTimeout(1.0),
+        Commands.parallel(
+            new InstantCommand(() -> chassis.driveCmd(0.0, 0.0, 0.0, true)),
+            robotContainer.doAction));
   }
 
   public SendableChooser<Command> getChooser() {
