@@ -45,13 +45,15 @@ import org.photonvision.PhotonCamera;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	// private final PhotonCamera camera1 = null;
-	// private final PhotonCamera camera2 = null;
-	// private final PhotonCamera camera3 = null;
-	// private final PhotonCamera camera4 = null;
-	// private final Vision vision = new Vision(camera1, camera2, camera3, camera4);
+	private final Vision vision = new Vision(
+        new PhotonCamera("Camera1"),
+        new PhotonCamera("Camera2"),
+        new PhotonCamera("Camera3"),
+        new PhotonCamera("Camera4")
 
-	private final Chassis chassis = new Chassis();
+    );
+
+	private final Chassis chassis = new Chassis(vision);
 	private final Ladder ladder = new Ladder();
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder, algae);
@@ -124,6 +126,42 @@ public class RobotContainer {
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
+
+		vision.setChassis(chassis);
+
+		vision.setChassis(chassis);
+
+		// algaeTab.add("Processor3", algae.processor);
+		// algaeTab.add("Floor3", algae.floor);
+		// algaeTab.add("Intake3", algae.intake);
+		// algaeTab.add("Eject3", algae.eject);
+
+		// cmdTab.add("climberStow", climberStow);
+		// cmdTab.add("climberReady", climberReady);
+		// cmdTab.add("climberZero", climberZero);
+		// cmdTab.add("climberClimb", climberClimb);
+
+		// cmdTab.add("algaeStow", algaeStow);
+		// cmdTab.add("algaeZero", algaeZero);
+		// cmdTab.add("algaeBarge", algaeBarge);
+		// cmdTab.add("algaeProcessor", algaeProcessor);
+		// cmdTab.add("algaeFloor", algaeFloor);
+		// cmdTab.add("algaeL3", algaeL3);
+		// cmdTab.add("algaeL2", algaeL2);
+
+		// cmdTab.add("coralStow", coralStow);
+		// cmdTab.add("coralZero", coralZero);
+		// cmdTab.add("coralStation", coralStation);
+		// cmdTab.add("coralL4", coralL4);
+		// cmdTab.add("coralL3", coralL3);
+		// cmdTab.add("coralL2", coralL2);
+		// cmdTab.add("coralL1", coralL1);
+
+		// compTab.add("Chassis", chassis);
+		// compTab.add("Coral", coral);
+		// compTab.add("Algae", algae);
+		// compTab.add("Ladder", ladder);
+		// compTab.add("Climber", climber);
 
 		for (PhotonCamera camera : cameras) {
 			camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web interface

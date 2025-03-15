@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import java.util.Map;
 
 import com.studica.frc.AHRS;
@@ -20,6 +22,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -30,6 +33,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -43,6 +47,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Chassis extends SubsystemBase {
+	private final Vision vision;
+	
 	// Create MAXSwerveModules
 	private final MAXSwerveModule m_rearRight = new MAXSwerveModule(
 			CANId.kRearRightDrivingCanId,
@@ -133,12 +139,16 @@ public class Chassis extends SubsystemBase {
 
 	// private Vision vision = null;
 
+	public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) {
+		poseEstimator.addVisionMeasurement(visionPose, timestampSeconds);
+	}
+
 	/**************************************************************
 	 * Constructor
 	 **************************************************************/
-	public Chassis() {
+	public Chassis(Vision vision) {
 		System.out.println("+++++ Starting Chassis Constructor +++++");
-
+		this.vision = vision;
 		compTab.add("Chassis Current", this)
 				.withWidget("Subsystem")
 				.withPosition(22, 2)
@@ -164,26 +174,26 @@ public class Chassis extends SubsystemBase {
 			DriverStation.reportError("Error instantiating navX-MXP:  " + ex.getMessage(), true);
 		}
 
-		// Odometry class for tracking robot pose
-		m_odometry = new SwerveDriveOdometry(
-				DriveConstants.kDriveKinematics,
-				getRotation2d(),
-				new SwerveModulePosition[] {
-						m_frontLeft.getPosition(),
-						m_frontRight.getPosition(),
-						m_rearLeft.getPosition(),
-						m_rearRight.getPosition()
-				});
+		// // Odometry class for tracking robot pose
+		// m_odometry = new SwerveDriveOdometry(
+		// 		DriveConstants.kDriveKinematics,
+		// 		getRotation2d(),
+		// 		new SwerveModulePosition[] {
+		// 				m_frontLeft.getPosition(),
+		// 				m_frontRight.getPosition(),
+		// 				m_rearLeft.getPosition(),
+		// 				m_rearRight.getPosition()
+		// 		});
 
-		// The robot pose estimator for tracking swerve odometry and applying vision
-		// corrections.
+		// The robot pose estimator for tracking swerve odometry and applying vision data
 		poseEstimator = new SwerveDrivePoseEstimator(
 				ChassisConstants.kDriveKinematics,
 				getRotation2d(),
 				getModulePositions(),
 				new Pose2d(),
-				VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-				VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+				// more on n1 and n2 = less trust in source
+				VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), //robot position (wheel slipping) and robot heading (gyro)
+				VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); //vision errors (x,y) and rotation
 
 		m_ahrs.reset();
 		zeroYaw();
@@ -212,7 +222,7 @@ public class Chassis extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// Update the odometry in the periodic block
-		m_odometry.update(
+		poseEstimator.update(
 				getRotation2d(),
 				new SwerveModulePosition[] {
 						m_frontLeft.getPosition(),
@@ -220,6 +230,7 @@ public class Chassis extends SubsystemBase {
 						m_rearLeft.getPosition(),
 						m_rearRight.getPosition()
 				});
+		
 
 		currPose.set(getPose());
 
@@ -268,7 +279,7 @@ public class Chassis extends SubsystemBase {
 	 * @return The pose.
 	 */
 	public Pose2d getPose() {
-		return m_odometry.getPoseMeters();
+		return poseEstimator.getEstimatedPosition();
 	}
 
 	/**
@@ -277,15 +288,11 @@ public class Chassis extends SubsystemBase {
 	 * @param pose The pose to which to set the odometry.
 	 */
 	public void resetOdometry(Pose2d pose) {
-		m_odometry.resetPosition(
-				getRotation2d(),
-				new SwerveModulePosition[] {
-						m_frontLeft.getPosition(),
-						m_frontRight.getPosition(),
-						m_rearLeft.getPosition(),
-						m_rearRight.getPosition()
-				},
-				pose);
+		poseEstimator.resetPosition(
+        	getRotation2d(),
+        	getModulePositions(),
+        	pose
+    	);
 	}
 
 	public void setChannelOn() {
