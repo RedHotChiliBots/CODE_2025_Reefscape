@@ -158,15 +158,15 @@ public class Chassis extends SubsystemBase {
 		// 				m_rearRight.getPosition()
 		// 		});
 
-		// The robot pose estimator for tracking swerve odometry and applying vision
-		// corrections.
+		// The robot pose estimator for tracking swerve odometry and applying vision data
 		poseEstimator = new SwerveDrivePoseEstimator(
 				ChassisConstants.kDriveKinematics,
 				getRotation2d(),
 				getModulePositions(),
 				new Pose2d(),
-				VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-				VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+				// more on n1 and n2 = less trust in source
+				VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), //robot position (wheel slipping) and robot heading (gyro)
+				VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); //vision errors (x,y) and rotation
 
 		m_ahrs.reset();
 		zeroYaw();

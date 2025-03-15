@@ -46,9 +46,9 @@ public class Vision extends SubsystemBase {
         // Define the camera-to-robot transforms for each camera (adjust for the robot)
         this.cameraToRobotTransforms = new Transform3d[] {
             new Transform3d(new Translation3d(0.3, 0.31, 0.5), new Rotation3d(0, 0.61, 0)), // Camera 1
-            new Transform3d(new Translation3d(0.3, -0.31, 0.5), new Rotation3d(0, 0.61, 0)),  // Camera 2
+            new Transform3d(new Translation3d(0.3, -0.31, 0.5), new Rotation3d(0, -0.61, 0)),  // Camera 2
             new Transform3d(new Translation3d(-0.3, 0.31, 0.5), new Rotation3d(0, 0.61, 0)), // Camera 3
-            new Transform3d(new Translation3d(-0.3, -0.31, 0.5), new Rotation3d(0, 0.61, 0))   // Camera 4
+            new Transform3d(new Translation3d(-0.3, -0.31, 0.5), new Rotation3d(0, -0.61, 0))   // Camera 4
         };
 
         // Initialize pose estimators for each camera
@@ -73,21 +73,31 @@ public class Vision extends SubsystemBase {
             robotPoseXWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Pose X", 0.0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
+                .withPosition(0, 1)
+                .withSize(10, 3)
                 .withProperties(Map.of("min", -10, "max", 10)); // Adjust min/max as needed
             robotPoseYWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Pose Y", 0.0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
+                .withPosition(20, 0)
+                .withSize(10, 3)
                 .withProperties(Map.of("min", -10, "max", 10)); // Adjust min/max as needed
             robotPoseZWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Pose Z", 0.0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
+                .withPosition(0, 9)
+                .withSize(10, 3)
                 .withProperties(Map.of("min", -10, "max", 10)); // Adjust min/max as needed
             robotRotationWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Rotation", "N/A")
-                .withWidget(BuiltInWidgets.kTextView);
+                .withWidget(BuiltInWidgets.kTextView)
+                .withPosition(0, 13)
+                .withSize(10, 3);
             numTargetsWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Num Targets", 0)
                 .withWidget(BuiltInWidgets.kNumberBar)
+                .withPosition(0, 17)
+                .withSize(10, 3)
                 .withProperties(Map.of("min", 0, "max", 10));
         }
     
