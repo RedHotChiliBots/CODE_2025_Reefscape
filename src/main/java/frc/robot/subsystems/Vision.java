@@ -19,7 +19,6 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.littletonrobotics.junction.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
@@ -45,8 +44,13 @@ public class Vision extends SubsystemBase {
         
         // Define the camera-to-robot transforms for each camera (adjust for the robot)
         this.cameraToRobotTransforms = new Transform3d[] {
-            new Transform3d(new Translation3d(0.3, 0.31, Units.inchesToMeters(8.5062)),
-                            new Rotation3d(0, Units.degreesToRadians(35.0), 0)), // Camera 1
+                new Transform3d(new Translation3d(             // camera 1
+                        Units.inchesToMeters(11.8251),  // x
+                        Units.inchesToMeters(12.0819),  // y
+                        Units.inchesToMeters(8.5062)),  // z
+                new Rotation3d(0.0,                       // roll
+                        Units.degreesToRadians(35.0),  // pitch
+                        Units.degreesToRadians(0.0))), // yaw
             new Transform3d(new Translation3d(0.3, -0.31, Units.inchesToMeters(8.5062)),
                             new Rotation3d(0, Units.degreesToRadians(-35.0), 0)),  // Camera 2
             new Transform3d(new Translation3d(-0.3, 0.31, Units.inchesToMeters(8.5062)),

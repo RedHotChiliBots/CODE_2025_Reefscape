@@ -61,7 +61,7 @@ public class RobotContainer {
 	private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
 	cameras.get(2), cameras.get(3));
 
-	private final Chassis chassis = new Chassis(vision);
+	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder, algae);
@@ -271,6 +271,11 @@ public class RobotContainer {
 		m_driverController.leftBumper()
 				.onFalse(new InstantCommand(() -> chassis.setSpdHigh()))
 				.onTrue(new InstantCommand(() -> chassis.setSpdLow()));
+
+		m_driverController.rightBumper()
+				.onFalse(new InstantCommand(() -> chassis.setPoseErr()))
+				.onTrue(new InstantCommand(() -> chassis.setPoseZero()));
+
 		// m_driverController.x().onTrue(chassis.setX);
 
 		// m_operatorController.y().onTrue(climber.stow);
