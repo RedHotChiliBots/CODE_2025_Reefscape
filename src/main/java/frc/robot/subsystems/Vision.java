@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.Pair;
 
@@ -16,7 +17,6 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
-
 import org.littletonrobotics.junction.Logger;
 
 import java.util.ArrayList;
@@ -45,10 +45,14 @@ public class Vision extends SubsystemBase {
         
         // Define the camera-to-robot transforms for each camera (adjust for the robot)
         this.cameraToRobotTransforms = new Transform3d[] {
-            new Transform3d(new Translation3d(0.3, 0.31, 0.5), new Rotation3d(0, 0.61, 0)), // Camera 1
-            new Transform3d(new Translation3d(0.3, -0.31, 0.5), new Rotation3d(0, -0.61, 0)),  // Camera 2
-            new Transform3d(new Translation3d(-0.3, 0.31, 0.5), new Rotation3d(0, 0.61, 0)), // Camera 3
-            new Transform3d(new Translation3d(-0.3, -0.31, 0.5), new Rotation3d(0, -0.61, 0))   // Camera 4
+            new Transform3d(new Translation3d(0.3, 0.31, Units.inchesToMeters(8.5062)),
+                            new Rotation3d(0, Units.degreesToRadians(35.0), 0)), // Camera 1
+            new Transform3d(new Translation3d(0.3, -0.31, Units.inchesToMeters(8.5062)),
+                            new Rotation3d(0, Units.degreesToRadians(-35.0), 0)),  // Camera 2
+            new Transform3d(new Translation3d(-0.3, 0.31, Units.inchesToMeters(8.5062)),
+                            new Rotation3d(0, Units.degreesToRadians(35.0), 0)), // Camera 3
+            new Transform3d(new Translation3d(-0.3, -0.31, Units.inchesToMeters(8.5062)),
+                            new Rotation3d(0, Units.degreesToRadians(-35.0), 0))   // Camera 4
         };
 
         // Initialize pose estimators for each camera
@@ -73,30 +77,30 @@ public class Vision extends SubsystemBase {
             robotPoseXWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Pose X", 0.0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
-                .withPosition(0, 1)
+                .withPosition(0, 0)
                 .withSize(10, 3)
                 .withProperties(Map.of("min", -10, "max", 10)); // Adjust min/max as needed
             robotPoseYWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Pose Y", 0.0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
-                .withPosition(20, 0)
+                .withPosition(0, 3)
                 .withSize(10, 3)
                 .withProperties(Map.of("min", -10, "max", 10)); // Adjust min/max as needed
             robotPoseZWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Pose Z", 0.0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
-                .withPosition(0, 9)
+                .withPosition(0, 6)
                 .withSize(10, 3)
                 .withProperties(Map.of("min", -10, "max", 10)); // Adjust min/max as needed
             robotRotationWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Rotation", "N/A")
                 .withWidget(BuiltInWidgets.kTextView)
-                .withPosition(0, 13)
+                .withPosition(0, 9)
                 .withSize(10, 3);
             numTargetsWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Num Targets", 0)
                 .withWidget(BuiltInWidgets.kNumberBar)
-                .withPosition(0, 17)
+                .withPosition(0, 12)
                 .withSize(10, 3)
                 .withProperties(Map.of("min", 0, "max", 10));
         }
