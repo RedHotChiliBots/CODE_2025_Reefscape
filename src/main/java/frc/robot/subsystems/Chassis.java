@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
 import java.util.Map;
 
 import com.studica.frc.AHRS;
@@ -16,24 +14,22 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -47,7 +43,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Chassis extends SubsystemBase {
-	private final Vision vision;
 	
 	// Create MAXSwerveModules
 	private final MAXSwerveModule m_rearRight = new MAXSwerveModule(
@@ -75,15 +70,6 @@ public class Chassis extends SubsystemBase {
 	// Alternatively: I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB
 	private AHRS m_ahrs = new AHRS(NavXComType.kMXP_SPI, (byte) 100);
 	private PowerDistribution m_pdh = new PowerDistribution(CANId.kPDHCanID, ModuleType.kCTRE);
-
-	// Slew rate filter variables for controlling lateral acceleration
-	private double m_currentRotation = 0.0;
-	private double m_currentTranslationDir = 0.0;
-	private double m_currentTranslationMag = 0.0;
-
-	private SlewRateLimiter m_magLimiter = new SlewRateLimiter(ChassisConstants.kMagnitudeSlewRate);
-	private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(ChassisConstants.kRotationalSlewRate);
-	private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
 	SwerveDrivePoseEstimator poseEstimator = null;
 	SwerveDriveOdometry m_odometry = null;
@@ -137,18 +123,12 @@ public class Chassis extends SubsystemBase {
 	private double pitchOffset = 0.0;
 	private double rollOffset = 0.0;
 
-	// private Vision vision = null;
-
-	public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) {
-		poseEstimator.addVisionMeasurement(visionPose, timestampSeconds);
-	}
 
 	/**************************************************************
 	 * Constructor
 	 **************************************************************/
-	public Chassis(Vision vision) {
+	public Chassis() {
 		System.out.println("+++++ Starting Chassis Constructor +++++");
-		this.vision = vision;
 		compTab.add("Chassis Current", this)
 				.withWidget("Subsystem")
 				.withPosition(22, 2)
@@ -156,9 +136,6 @@ public class Chassis extends SubsystemBase {
 
 		// Usage reporting for MAXSwerve template
 		HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
-
-		// this.vision = vision;
-		// vision.setChassis(this);
 
 		// ==============================================================
 		// Initialize Rev PDH
@@ -255,6 +232,23 @@ public class Chassis extends SubsystemBase {
 	/**************************************************************
 	 * Methods
 	 **************************************************************/
+
+	Transform2d poseZero = new Transform2d(new Translation2d(0.0, 0.0), new Rotation2d(0.0));
+	Transform2d poseError = new Transform2d(new Translation2d(1.0, 1.0), new Rotation2d(0.0));
+
+	public Transform2d poseTest = poseZero;
+
+	public void setPoseErr() {
+		poseTest = poseError;
+	}
+
+	public void setPoseZero() {
+		poseTest = poseZero;
+	}
+
+	public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) {
+		poseEstimator.addVisionMeasurement(visionPose.plus(poseTest), timestampSeconds);
+	}
 
 	/**
 	 * Reset the estimated pose of the swerve drive on the field.

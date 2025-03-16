@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.Pair;
 
@@ -16,10 +17,8 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
-
 import org.littletonrobotics.junction.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
@@ -39,16 +38,39 @@ public class Vision extends SubsystemBase {
         this.chassis = chassis;
     }
 
-
     public Vision(PhotonCamera camera1, PhotonCamera camera2, PhotonCamera camera3, PhotonCamera camera4) {
         this.cameras = new PhotonCamera[] { camera1, camera2, camera3, camera4 };
         
         // Define the camera-to-robot transforms for each camera (adjust for the robot)
         this.cameraToRobotTransforms = new Transform3d[] {
-            new Transform3d(new Translation3d(0.3, 0.31, 0.5), new Rotation3d(0, 0.61, 0)), // Camera 1
-            new Transform3d(new Translation3d(0.3, -0.31, 0.5), new Rotation3d(0, -0.61, 0)),  // Camera 2
-            new Transform3d(new Translation3d(-0.3, 0.31, 0.5), new Rotation3d(0, 0.61, 0)), // Camera 3
-            new Transform3d(new Translation3d(-0.3, -0.31, 0.5), new Rotation3d(0, -0.61, 0))   // Camera 4
+                new Transform3d(new Translation3d( // camera 1  back right
+                        Units.inchesToMeters(11.8251), // x
+                        Units.inchesToMeters(-12.0819), // y
+                        Units.inchesToMeters(8.5062)), // z
+                        new Rotation3d(0.0, // roll
+                                Units.degreesToRadians(35.0), // pitch
+                                Units.degreesToRadians(180.0))), // yaw
+                new Transform3d(new Translation3d( // camera 2  back left
+                        Units.inchesToMeters(11.8251), // x
+                        Units.inchesToMeters(-12.0819), // y
+                        Units.inchesToMeters(8.5062)), // z
+                        new Rotation3d(0.0, // roll
+                                Units.degreesToRadians(35.0), // pitch
+                                Units.degreesToRadians(180.0))), // yaw
+                new Transform3d(new Translation3d( // camera 3  front left
+                        Units.inchesToMeters(-11.8251), // x
+                        Units.inchesToMeters(12.0819), // y
+                        Units.inchesToMeters(8.5062)), // z
+                        new Rotation3d(0.0, // roll
+                                Units.degreesToRadians(35.0), // pitch
+                                Units.degreesToRadians(-45.0))), // yaw
+                new Transform3d(new Translation3d( // camera 4  front right
+                        Units.inchesToMeters(11.8251), // x
+                        Units.inchesToMeters(12.0819), // y
+                        Units.inchesToMeters(8.5062)), // z
+                        new Rotation3d(0.0, // roll
+                                Units.degreesToRadians(35.0), // pitch
+                                Units.degreesToRadians(45.0))) // yaw
         };
 
         // Initialize pose estimators for each camera
@@ -58,7 +80,6 @@ public class Vision extends SubsystemBase {
                 null, // Field layout is handled by PhotonVision on the Orange Pi 5
                 PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                 cameraToRobotTransforms[i] // Uses the corresponding transform
-                
             );
         }
 
@@ -73,34 +94,33 @@ public class Vision extends SubsystemBase {
             robotPoseXWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Pose X", 0.0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
-                .withPosition(0, 1)
+                .withPosition(0, 0)
                 .withSize(10, 3)
                 .withProperties(Map.of("min", -10, "max", 10)); // Adjust min/max as needed
             robotPoseYWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Pose Y", 0.0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
-                .withPosition(20, 0)
+                .withPosition(0, 3)
                 .withSize(10, 3)
                 .withProperties(Map.of("min", -10, "max", 10)); // Adjust min/max as needed
             robotPoseZWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Pose Z", 0.0)
                 .withWidget(BuiltInWidgets.kNumberSlider)
-                .withPosition(0, 9)
+                .withPosition(0, 6)
                 .withSize(10, 3)
                 .withProperties(Map.of("min", -10, "max", 10)); // Adjust min/max as needed
             robotRotationWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Robot Rotation", "N/A")
                 .withWidget(BuiltInWidgets.kTextView)
-                .withPosition(0, 13)
+                .withPosition(0, 9)
                 .withSize(10, 3);
             numTargetsWidgets[i] = Shuffleboard.getTab(cameraName)
                 .add("Num Targets", 0)
                 .withWidget(BuiltInWidgets.kNumberBar)
-                .withPosition(0, 17)
+                .withPosition(0, 12)
                 .withSize(10, 3)
                 .withProperties(Map.of("min", 0, "max", 10));
         }
-    
     }
 
     @Override
@@ -113,7 +133,6 @@ public class Vision extends SubsystemBase {
             if (poseAndTimestamp.isPresent()) {
                 Pose3d pose3d = poseAndTimestamp.get().getFirst();
                 double timestamp = poseAndTimestamp.get().getSecond();
-
                 
                 Pose2d pose2d = getVisionPose2d(pose3d);
                 chassis.addVisionMeasurement(pose2d, timestamp); // Use PhotonVision's timestamp
@@ -148,14 +167,13 @@ public class Vision extends SubsystemBase {
                 Logger.recordOutput(cameraKey + "PoseEstimationFailed", true);
                 clearShuffleboardData(widgetIndex);
                 return Optional.empty();
-    
             }
+
         } else {
             // No targets detected
             String cameraKey = "Vision/Camera" + cameraNumber + "/";
             Logger.recordOutput(cameraKey + "HasTargets", false);
             clearShuffleboardData(widgetIndex);
-    
         }
     
         return Optional.empty();
