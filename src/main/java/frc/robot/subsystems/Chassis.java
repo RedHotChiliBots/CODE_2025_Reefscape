@@ -6,6 +6,10 @@ package frc.robot.subsystems;
 
 import java.util.Map;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -14,9 +18,10 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -26,7 +31,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
-import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -43,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Chassis extends SubsystemBase {
+
 	// Create MAXSwerveModules
 	private final MAXSwerveModule m_rearRight = new MAXSwerveModule(
 			CANId.kRearRightDrivingCanId,
@@ -69,15 +74,6 @@ public class Chassis extends SubsystemBase {
 	// Alternatively: I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB
 	private AHRS m_ahrs = new AHRS(NavXComType.kMXP_SPI, (byte) 100);
 	private PowerDistribution m_pdh = new PowerDistribution(CANId.kPDHCanID, ModuleType.kCTRE);
-
-	// Slew rate filter variables for controlling lateral acceleration
-	private double m_currentRotation = 0.0;
-	private double m_currentTranslationDir = 0.0;
-	private double m_currentTranslationMag = 0.0;
-
-	private SlewRateLimiter m_magLimiter = new SlewRateLimiter(ChassisConstants.kMagnitudeSlewRate);
-	private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(ChassisConstants.kRotationalSlewRate);
-	private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
 	SwerveDrivePoseEstimator poseEstimator = null;
 	SwerveDriveOdometry m_odometry = null;
@@ -131,14 +127,11 @@ public class Chassis extends SubsystemBase {
 	private double pitchOffset = 0.0;
 	private double rollOffset = 0.0;
 
-	// private Vision vision = null;
-
 	/**************************************************************
 	 * Constructor
 	 **************************************************************/
 	public Chassis() {
 		System.out.println("+++++ Starting Chassis Constructor +++++");
-
 		compTab.add("Chassis Current", this)
 				.withWidget("Subsystem")
 				.withPosition(22, 2)
@@ -146,9 +139,6 @@ public class Chassis extends SubsystemBase {
 
 		// Usage reporting for MAXSwerve template
 		HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
-
-		// this.vision = vision;
-		// vision.setChassis(this);
 
 		// ==============================================================
 		// Initialize Rev PDH
@@ -164,31 +154,68 @@ public class Chassis extends SubsystemBase {
 			DriverStation.reportError("Error instantiating navX-MXP:  " + ex.getMessage(), true);
 		}
 
-		// Odometry class for tracking robot pose
-		m_odometry = new SwerveDriveOdometry(
-				DriveConstants.kDriveKinematics,
-				getRotation2d(),
-				new SwerveModulePosition[] {
-						m_frontLeft.getPosition(),
-						m_frontRight.getPosition(),
-						m_rearLeft.getPosition(),
-						m_rearRight.getPosition()
-				});
+		// // Odometry class for tracking robot pose
+		// m_odometry = new SwerveDriveOdometry(
+		// DriveConstants.kDriveKinematics,
+		// getRotation2d(),
+		// new SwerveModulePosition[] {
+		// m_frontLeft.getPosition(),
+		// m_frontRight.getPosition(),
+		// m_rearLeft.getPosition(),
+		// m_rearRight.getPosition()
+		// });
 
-		// The robot pose estimator for tracking swerve odometry and applying vision
-		// corrections.
-		poseEstimator = new SwerveDrivePoseEstimator(
-				ChassisConstants.kDriveKinematics,
-				getRotation2d(),
-				getModulePositions(),
-				new Pose2d(),
-				VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-				VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+		// Load the RobotConfig from the GUI settings. You should probably
+		// store this in your Constants file
+		RobotConfig config = null;
+		try {
+			config = RobotConfig.fromGUISettings();
+		} catch (Exception e) {
+			// Handle exception as needed
+			e.printStackTrace();
+		}
 
-		m_ahrs.reset();
-		zeroYaw();
-		m_ahrs.setAngleAdjustment(0.0);
-		getPose().getRotation().getDegrees();
+		// Configure AutoBuilder last
+		AutoBuilder.configure(
+				this::getPose, // Robot pose supplier
+				this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+				this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+				(speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT
+																						// RELATIVE ChassisSpeeds. Also optionally outputs
+																						// individual module feedforwards
+				new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for
+															// holonomic drive trains
+						new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+						new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+				),
+				config, // The robot configuration
+				() -> {
+					// Boolean supplier that controls when the path will be mirrored for the red
+					// alliance
+					// This will flip the path being followed to the red side of the field.
+					// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+					var alliance = DriverStation.getAlliance();
+					if (alliance.isPresent()) {
+						return alliance.get() == DriverStation.Alliance.Red;
+					}
+					return false;
+				},
+				this // Reference to this subsystem to set requirements
+		);
+	
+	// The robot pose estimator for tracking swerve odometry and applying vision
+	// data
+	poseEstimator=new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,getRotation2d(),getModulePositions(),new Pose2d(),
+	// more on n1 and n2 = less trust in source
+	VecBuilder.fill(0.05,0.05,Units.degreesToRadians(5)), // robot position (wheel slipping) and robot heading (gyro)
+	VecBuilder.fill(0.5,0.5,Units.degreesToRadians(30))); // vision errors (x,y) and rotation
+
+	m_ahrs.reset();
+
+	zeroYaw();m_ahrs.setAngleAdjustment(0.0);
+
+	getPose().getRotation().getDegrees();
 		resetPose(getPose());
 
 		origPose.set(getPose());
@@ -212,7 +239,7 @@ public class Chassis extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// Update the odometry in the periodic block
-		m_odometry.update(
+		poseEstimator.update(
 				getRotation2d(),
 				new SwerveModulePosition[] {
 						m_frontLeft.getPosition(),
@@ -241,9 +268,65 @@ public class Chassis extends SubsystemBase {
 	 **************************************************************/
 	public Command setX = new InstantCommand(() -> setX());
 
+	public Command driveCmd(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+		return new InstantCommand(() -> this.drive(xSpeed, ySpeed, rot, fieldRelative));
+	}
 	/**************************************************************
 	 * Methods
 	 **************************************************************/
+
+	public ChassisSpeeds getRobotRelativeSpeeds() {
+		// Convert module states to chassis speeds
+		ChassisSpeeds chassisSpeeds = ChassisConstants.kDriveKinematics.toChassisSpeeds(
+				m_frontLeft.getState(), m_frontRight.getState(), m_rearLeft.getState(), m_rearRight.getState());
+
+		return chassisSpeeds;
+	}
+
+	/**
+	 * 
+	 * @param xSpeed
+	 * @param ySpeed
+	 * @param rot
+	 * @param fieldRelative
+	 * @param rateLimit
+	 */
+	public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
+		var swerveModuleStates = ChassisConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+		SwerveDriveKinematics.desaturateWheelSpeeds(
+				swerveModuleStates, ChassisConstants.kMaxSpeedMetersPerSecond);
+		m_frontLeft.setDesiredState(swerveModuleStates[0]);
+		m_frontRight.setDesiredState(swerveModuleStates[1]);
+		m_rearLeft.setDesiredState(swerveModuleStates[2]);
+		m_rearRight.setDesiredState(swerveModuleStates[3]);
+	}
+
+	private boolean flipPath = false;
+
+	public void setFlipPath(boolean fp) {
+		flipPath = fp;
+	}
+
+	public boolean getFlipPath() {
+		return flipPath;
+	}
+	
+	Transform2d poseZero = new Transform2d(new Translation2d(0.0, 0.0), new Rotation2d(0.0));
+	Transform2d poseError = new Transform2d(new Translation2d(1.0, 1.0), new Rotation2d(0.0));
+
+	public Transform2d poseTest = poseZero;
+
+	public void setPoseErr() {
+		poseTest = poseError;
+	}
+
+	public void setPoseZero() {
+		poseTest = poseZero;
+	}
+
+	public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) {
+		poseEstimator.addVisionMeasurement(visionPose.plus(poseTest), timestampSeconds);
+	}
 
 	/**
 	 * Reset the estimated pose of the swerve drive on the field.
@@ -268,7 +351,7 @@ public class Chassis extends SubsystemBase {
 	 * @return The pose.
 	 */
 	public Pose2d getPose() {
-		return m_odometry.getPoseMeters();
+		return poseEstimator.getEstimatedPosition();
 	}
 
 	/**
@@ -277,14 +360,9 @@ public class Chassis extends SubsystemBase {
 	 * @param pose The pose to which to set the odometry.
 	 */
 	public void resetOdometry(Pose2d pose) {
-		m_odometry.resetPosition(
+		poseEstimator.resetPosition(
 				getRotation2d(),
-				new SwerveModulePosition[] {
-						m_frontLeft.getPosition(),
-						m_frontRight.getPosition(),
-						m_rearLeft.getPosition(),
-						m_rearRight.getPosition()
-				},
+				getModulePositions(),
 				pose);
 	}
 

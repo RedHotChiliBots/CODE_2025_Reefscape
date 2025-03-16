@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -26,6 +27,7 @@ public class Autos {
 
   // Define a chooser for autonomous commands
   private final SendableChooser<Command> chooser = new SendableChooser<>();
+  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();;
 
   RobotContainer robotContainer;
   Chassis chassis;
@@ -34,13 +36,17 @@ public class Autos {
   Coral coral;
   Climber climber;
 
-  AutonLeave autoLeave0;
-  Command autoLeave;
-  Command autoLeaveNScoreL1;
-  Command autoLeaveNScoreL4;
+  // AutonLeave autoLeave;
+  // Command autoLeave2;
+  
+  /** Example static factory for an autonomous command. */
+  // public static Command AutonLeave(Chassis chassis, Ladder ladder, Algae algae,
+  // Coral coral, Climber climber) {
+  // return Commands.sequence(new AutonLeave(chassis, ladder, algae, coral,
+  // climber));
+  // }
 
-  public Autos(RobotContainer robotContainer, Chassis chassis, Ladder ladder, Algae algae, Coral coral,
-      Climber climber) {
+  public Autos(RobotContainer robotContainer, Chassis chassis, Ladder ladder, Algae algae, Coral coral, Climber climber) {
 
     System.out.println("+++++ Starting Autos Constructor +++++");
 
@@ -79,20 +85,39 @@ public class Autos {
     //     .andThen(new WaitCommand(0.1))
     //     .andThen(robotContainer.doAction);
 
-    // ********************************************
-    // Generate Auto commands
-    // Note: Named commands used in Auto command must be defined
-    // before defining the Auto command
+    // this.autoLeave = new InstantCommand(() -> chassis.drive(0.25, 0.0, 0.0,
+    // true))
+    // .andThen(new WaitCommand(1.0))
+    // .andThen(() -> chassis.drive(0.0, 0.0, 0.0, true));
+
+    // this.autoLeaveNScoreL1 = new InstantCommand(() -> chassis.drive(0.25, 0.0,
+    //     0.0, true))
+    //     .andThen(new WaitCommand(1.0))
+    //     .alongWith(robotContainer.goL1)
+    //     .andThen(() -> chassis.drive(0.0, 0.0, 0.0, true))
+    //     .andThen(new WaitCommand(0.1))
+    //     .andThen(robotContainer.doAction);
+
+    // this.autoLeaveNScoreL4 = new InstantCommand(() -> chassis.drive(0.25, 0.0,
+    //     0.0, true))
+    //     .andThen(new WaitCommand(1.0))
+    //     .alongWith(robotContainer.goL4)
+    //     .andThen(new InstantCommand(() -> chassis.drive(0.0, 0.0, 0.0, true)))
+    //     .andThen(new WaitCommand(0.1))
+    //     .andThen(robotContainer.doAction);
 
     String temp = AutoBuilder.isConfigured() ? "IS" : "IS NOT";
     DriverStation.reportWarning("AutoBuilder " + temp + " configured", false);
     temp = AutoBuilder.isPathfindingConfigured() ? "IS" : "IS NOT";
     DriverStation.reportWarning("AutoBuilder Pathfinding " + temp + " configured", false);
 
-    // AutonShootStay autoShootStay = new AutonShootStay(chassis, intake, feeder,
-    // shooter);
-    // AutonSpeakerAmp autoSpeakerAmp = new AutonSpeakerAmp(chassis, this, vision,
-    // intake, feeder, shooter);
+    // ********************************************
+    // Generate Auto commands
+    // Note: Named commands used in Auto command must be defined
+    // before defining the Auto command
+    NamedCommands.registerCommand("Leave", autoLeave());
+    NamedCommands.registerCommand("LeaveNScoreL1", autoLeaveNScoreL1(robotContainer, chassis));
+    NamedCommands.registerCommand("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
 
     // ********************************************
     // Initialize auto command chooser with auton commands

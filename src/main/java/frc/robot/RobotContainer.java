@@ -45,26 +45,22 @@ import org.photonvision.PhotonCamera;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	// private final PhotonCamera camera1 = null;
-	// private final PhotonCamera camera2 = null;
-	// private final PhotonCamera camera3 = null;
-	// private final PhotonCamera camera4 = null;
-	// private final Vision vision = new Vision(camera1, camera2, camera3, camera4);
-	
+
+	private final PhotonCamera camera1 = new PhotonCamera("PhotonVision 1");
+	private final PhotonCamera camera2 = new PhotonCamera("PhotonVision 2");
+	private final PhotonCamera camera3 = new PhotonCamera("PhotonVision 3");
+	private final PhotonCamera camera4 = new PhotonCamera("PhotonVision 4");
+	private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3, camera4);
+
+	private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
+	cameras.get(2), cameras.get(3));
+
 	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder, algae);
 	private final Climber climber = new Climber();
-    
-	private final PhotonCamera camera1 = new PhotonCamera("Camera1");
-	private final PhotonCamera camera2 = new PhotonCamera("Camera2");
-	private final PhotonCamera camera3 = new PhotonCamera("Camera3");
-	private final PhotonCamera camera4 = new PhotonCamera("Camera4");
-	private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3, camera4);
-
-	// private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
-	// cameras.get(2), cameras.get(3));
+	private final Autos auton = new Autos(this, chassis, ladder, algae, coral, climber);
 
 	// Define HIDs
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -74,6 +70,8 @@ public class RobotContainer {
 	private final GenericHID m_operatorHID = new GenericHID(
 			OIConstants.kOperatorControllerPort);
 
+	// =====TESTING=====//
+	public final Command goBarge = new ParallelCommandGroup(
 			// =====TESTING=====//
 	public final Command goBarge = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.BARGE)),
@@ -92,6 +90,7 @@ public class RobotContainer {
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L2)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L2)));
 	public final Command goL1 = new ParallelCommandGroup(
+	public final Command goL1 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L1)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L1)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
@@ -107,6 +106,7 @@ public class RobotContainer {
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.FLOOR)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.FLOOR)));
+	public final Command goStow = new ParallelCommandGroup(
 	public final Command goStow = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STOW)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
@@ -124,6 +124,42 @@ public class RobotContainer {
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
+
+		vision.setChassis(chassis);
+
+		vision.setChassis(chassis);
+
+		// algaeTab.add("Processor3", algae.processor);
+		// algaeTab.add("Floor3", algae.floor);
+		// algaeTab.add("Intake3", algae.intake);
+		// algaeTab.add("Eject3", algae.eject);
+
+		// cmdTab.add("climberStow", climberStow);
+		// cmdTab.add("climberReady", climberReady);
+		// cmdTab.add("climberZero", climberZero);
+		// cmdTab.add("climberClimb", climberClimb);
+
+		// cmdTab.add("algaeStow", algaeStow);
+		// cmdTab.add("algaeZero", algaeZero);
+		// cmdTab.add("algaeBarge", algaeBarge);
+		// cmdTab.add("algaeProcessor", algaeProcessor);
+		// cmdTab.add("algaeFloor", algaeFloor);
+		// cmdTab.add("algaeL3", algaeL3);
+		// cmdTab.add("algaeL2", algaeL2);
+
+		// cmdTab.add("coralStow", coralStow);
+		// cmdTab.add("coralZero", coralZero);
+		// cmdTab.add("coralStation", coralStation);
+		// cmdTab.add("coralL4", coralL4);
+		// cmdTab.add("coralL3", coralL3);
+		// cmdTab.add("coralL2", coralL2);
+		// cmdTab.add("coralL1", coralL1);
+
+		// compTab.add("Chassis", chassis);
+		// compTab.add("Coral", coral);
+		// compTab.add("Algae", algae);
+		// compTab.add("Ladder", ladder);
+		// compTab.add("Climber", climber);
 
 		for (PhotonCamera camera : cameras) {
 			camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web interface
@@ -234,6 +270,11 @@ public class RobotContainer {
 		m_driverController.leftBumper()
 				.onFalse(new InstantCommand(() -> chassis.setSpdHigh()))
 				.onTrue(new InstantCommand(() -> chassis.setSpdLow()));
+
+		m_driverController.rightBumper()
+				.onFalse(new InstantCommand(() -> chassis.setPoseErr()))
+				.onTrue(new InstantCommand(() -> chassis.setPoseZero()));
+
 		// m_driverController.x().onTrue(chassis.setX);
 
 		// m_operatorController.y().onTrue(climber.stow);
