@@ -6,6 +6,10 @@ package frc.robot.subsystems;
 
 import java.util.Map;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -43,7 +47,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Chassis extends SubsystemBase {
-	
+
 	// Create MAXSwerveModules
 	private final MAXSwerveModule m_rearRight = new MAXSwerveModule(
 			CANId.kRearRightDrivingCanId,
@@ -123,7 +127,6 @@ public class Chassis extends SubsystemBase {
 	private double pitchOffset = 0.0;
 	private double rollOffset = 0.0;
 
-
 	/**************************************************************
 	 * Constructor
 	 **************************************************************/
@@ -153,29 +156,66 @@ public class Chassis extends SubsystemBase {
 
 		// // Odometry class for tracking robot pose
 		// m_odometry = new SwerveDriveOdometry(
-		// 		DriveConstants.kDriveKinematics,
-		// 		getRotation2d(),
-		// 		new SwerveModulePosition[] {
-		// 				m_frontLeft.getPosition(),
-		// 				m_frontRight.getPosition(),
-		// 				m_rearLeft.getPosition(),
-		// 				m_rearRight.getPosition()
-		// 		});
+		// DriveConstants.kDriveKinematics,
+		// getRotation2d(),
+		// new SwerveModulePosition[] {
+		// m_frontLeft.getPosition(),
+		// m_frontRight.getPosition(),
+		// m_rearLeft.getPosition(),
+		// m_rearRight.getPosition()
+		// });
 
-		// The robot pose estimator for tracking swerve odometry and applying vision data
-		poseEstimator = new SwerveDrivePoseEstimator(
-				ChassisConstants.kDriveKinematics,
-				getRotation2d(),
-				getModulePositions(),
-				new Pose2d(),
-				// more on n1 and n2 = less trust in source
-				VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), //robot position (wheel slipping) and robot heading (gyro)
-				VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); //vision errors (x,y) and rotation
+		// Load the RobotConfig from the GUI settings. You should probably
+		// store this in your Constants file
+		RobotConfig config = null;
+		try {
+			config = RobotConfig.fromGUISettings();
+		} catch (Exception e) {
+			// Handle exception as needed
+			e.printStackTrace();
+		}
 
-		m_ahrs.reset();
-		zeroYaw();
-		m_ahrs.setAngleAdjustment(0.0);
-		getPose().getRotation().getDegrees();
+		// Configure AutoBuilder last
+		AutoBuilder.configure(
+				this::getPose, // Robot pose supplier
+				this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+				this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+				(speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT
+																						// RELATIVE ChassisSpeeds. Also optionally outputs
+																						// individual module feedforwards
+				new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for
+															// holonomic drive trains
+						new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+						new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+				),
+				config, // The robot configuration
+				() -> {
+					// Boolean supplier that controls when the path will be mirrored for the red
+					// alliance
+					// This will flip the path being followed to the red side of the field.
+					// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+					var alliance = DriverStation.getAlliance();
+					if (alliance.isPresent()) {
+						return alliance.get() == DriverStation.Alliance.Red;
+					}
+					return false;
+				},
+				this // Reference to this subsystem to set requirements
+		);
+	
+	// The robot pose estimator for tracking swerve odometry and applying vision
+	// data
+	poseEstimator=new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,getRotation2d(),getModulePositions(),new Pose2d(),
+	// more on n1 and n2 = less trust in source
+	VecBuilder.fill(0.05,0.05,Units.degreesToRadians(5)), // robot position (wheel slipping) and robot heading (gyro)
+	VecBuilder.fill(0.5,0.5,Units.degreesToRadians(30))); // vision errors (x,y) and rotation
+
+	m_ahrs.reset();
+
+	zeroYaw();m_ahrs.setAngleAdjustment(0.0);
+
+	getPose().getRotation().getDegrees();
 		resetPose(getPose());
 
 		origPose.set(getPose());
@@ -207,7 +247,6 @@ public class Chassis extends SubsystemBase {
 						m_rearLeft.getPosition(),
 						m_rearRight.getPosition()
 				});
-		
 
 		currPose.set(getPose());
 
@@ -229,10 +268,49 @@ public class Chassis extends SubsystemBase {
 	 **************************************************************/
 	public Command setX = new InstantCommand(() -> setX());
 
+	public Command driveCmd(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+		return new InstantCommand(() -> this.drive(xSpeed, ySpeed, rot, fieldRelative));
+	}
 	/**************************************************************
 	 * Methods
 	 **************************************************************/
 
+	public ChassisSpeeds getRobotRelativeSpeeds() {
+		// Convert module states to chassis speeds
+		ChassisSpeeds chassisSpeeds = ChassisConstants.kDriveKinematics.toChassisSpeeds(
+				m_frontLeft.getState(), m_frontRight.getState(), m_rearLeft.getState(), m_rearRight.getState());
+
+		return chassisSpeeds;
+	}
+
+	/**
+	 * 
+	 * @param xSpeed
+	 * @param ySpeed
+	 * @param rot
+	 * @param fieldRelative
+	 * @param rateLimit
+	 */
+	public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
+		var swerveModuleStates = ChassisConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+		SwerveDriveKinematics.desaturateWheelSpeeds(
+				swerveModuleStates, ChassisConstants.kMaxSpeedMetersPerSecond);
+		m_frontLeft.setDesiredState(swerveModuleStates[0]);
+		m_frontRight.setDesiredState(swerveModuleStates[1]);
+		m_rearLeft.setDesiredState(swerveModuleStates[2]);
+		m_rearRight.setDesiredState(swerveModuleStates[3]);
+	}
+
+	private boolean flipPath = false;
+
+	public void setFlipPath(boolean fp) {
+		flipPath = fp;
+	}
+
+	public boolean getFlipPath() {
+		return flipPath;
+	}
+	
 	Transform2d poseZero = new Transform2d(new Translation2d(0.0, 0.0), new Rotation2d(0.0));
 	Transform2d poseError = new Transform2d(new Translation2d(1.0, 1.0), new Rotation2d(0.0));
 
@@ -283,10 +361,9 @@ public class Chassis extends SubsystemBase {
 	 */
 	public void resetOdometry(Pose2d pose) {
 		poseEstimator.resetPosition(
-        	getRotation2d(),
-        	getModulePositions(),
-        	pose
-    	);
+				getRotation2d(),
+				getModulePositions(),
+				pose);
 	}
 
 	public void setChannelOn() {

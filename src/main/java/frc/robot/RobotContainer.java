@@ -60,7 +60,7 @@ public class RobotContainer {
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder, algae);
 	private final Climber climber = new Climber();
-	private final Autos auton = new Autos(chassis, ladder, algae, coral, climber);
+	private final Autos auton = new Autos(this, chassis, ladder, algae, coral, climber);
 
 	// Define HIDs
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -71,49 +71,49 @@ public class RobotContainer {
 			OIConstants.kOperatorControllerPort);
 
 	// =====TESTING=====//
-	private final Command goBarge = new ParallelCommandGroup(
+	public final Command goBarge = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.BARGE)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.BARGE)));
-	private final Command goL4 = new ParallelCommandGroup(
+	public final Command goL4 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L4)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L4)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
-	private final Command goL3 = new ParallelCommandGroup(
+	public final Command goL3 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L3)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L3)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L3)));
-	private final Command goL2 = new ParallelCommandGroup(
+	public final Command goL2 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L2)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L2)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L2)));
-	private final Command goL1 = new ParallelCommandGroup(
+	public final Command goL1 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L1)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L1)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
-	private final Command goStation = new ParallelCommandGroup(
+	public final Command goStation = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STATION)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STATION)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
-	private final Command goProcessor = new ParallelCommandGroup(
+	public final Command goProcessor = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.PROCESSOR)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.PROCESSOR)));
-	private final Command goFloor = new ParallelCommandGroup(
+	public final Command goFloor = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.FLOOR)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.FLOOR)));
-	private final Command goStow = new ParallelCommandGroup(
+	public final Command goStow = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STOW)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
 
-	private final Command doAction = new ParallelCommandGroup(
+	public final Command doAction = new ParallelCommandGroup(
 			coral.doAction(),
 			algae.doAction());
 
 
-	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
+	public final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
