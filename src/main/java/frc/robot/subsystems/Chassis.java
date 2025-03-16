@@ -398,10 +398,6 @@ public class Chassis extends SubsystemBase {
 		spdMultiplier = 0.5;
 	}
 
-	public Command driveCmd(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-		return new InstantCommand(() -> this.drive(xSpeed, ySpeed, rot, fieldRelative));
-	}
-
 	/**
 	 * Method to drive the robot using joystick info.
 	 *

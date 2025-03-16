@@ -123,7 +123,7 @@ public class Autos {
     // Initialize auto command chooser with auton commands
     // chooser = AutoBuilder.buildAutoChooser();
 
-    chooser.setDefaultOption("Leave", autoLeave);
+    chooser.setDefaultOption("Leave", autoLeave());
     chooser.addOption("LeaveNScoreL1", autoLeaveNScoreL1(robotContainer, chassis));
     chooser.addOption("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
     // chooser.addOption("Shoot N Stay", autoShootStay);

@@ -70,8 +70,6 @@ public class RobotContainer {
 	private final GenericHID m_operatorHID = new GenericHID(
 			OIConstants.kOperatorControllerPort);
 
-	// =====TESTING=====//
-	public final Command goBarge = new ParallelCommandGroup(
 			// =====TESTING=====//
 	public final Command goBarge = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.BARGE)),
@@ -90,7 +88,6 @@ public class RobotContainer {
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L2)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L2)));
 	public final Command goL1 = new ParallelCommandGroup(
-	public final Command goL1 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L1)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L1)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
@@ -107,7 +104,6 @@ public class RobotContainer {
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.FLOOR)));
 	public final Command goStow = new ParallelCommandGroup(
-	public final Command goStow = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STOW)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
@@ -116,8 +112,7 @@ public class RobotContainer {
 			coral.doAction(),
 			algae.doAction());
 
-	private final Autos auton = new Autos(this, chassis, ladder, algae, coral, climber);
-			
+	
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 
 	/**
