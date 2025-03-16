@@ -64,6 +64,13 @@ public class Autos {
         .withPosition(0, 0)
         .withSize(3, 1);
 
+    // ********************************************
+    // Add Auton Command chooser to Shuffleboard
+    compTab.add("Auto Command", autoChooser)
+        .withWidget("ComboBox Chooser")
+        .withPosition(0, 3)
+        .withSize(3, 1);
+
     // this.autoLeave0 = new AutonLeave(chassis, ladder, algae, coral, climber);
 
     // this.autoLeave = new InstantCommand(() -> chassis.drive(0.25, 0.0, 0.0, true))
@@ -122,13 +129,13 @@ public class Autos {
     // ********************************************
     // Initialize auto command chooser with auton commands
     // chooser = AutoBuilder.buildAutoChooser();
+    autoChooser.setDefaultOption("Leave", autoLeave());
+    autoChooser.addOption("LeaveNScoreL1", autoLeaveNScoreL1(robotContainer, chassis));
+    autoChooser.addOption("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
 
     chooser.setDefaultOption("Leave", autoLeave());
     chooser.addOption("LeaveNScoreL1", autoLeaveNScoreL1(robotContainer, chassis));
     chooser.addOption("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
-    // chooser.addOption("Shoot N Stay", autoShootStay);
-    // chooser.addOption("Speaker Amp", autoSpeakerAmp);
-    // chooser.addOption("Auto ZigZag3Cmd", cmdAutoZigZag3m);
 
     System.out.println("----- Ending Autos Constructor -----");
   }
@@ -146,9 +153,8 @@ public class Autos {
             new InstantCommand(() -> chassis.driveCmd(0.25, 0.0, 0.0, true)),
             robotContainer.goL1)
             .withTimeout(1.0),
-        Commands.parallel(
-            new InstantCommand(() -> chassis.driveCmd(0.0, 0.0, 0.0, true)),
-            robotContainer.doAction));
+        new InstantCommand(() -> chassis.driveCmd(0.0, 0.0, 0.0, true)),
+        robotContainer.doAction);
   }
 
   public Command autoLeaveNScoreL4(RobotContainer robotContainer, Chassis chassis) {
@@ -157,9 +163,12 @@ public class Autos {
             new InstantCommand(() -> chassis.driveCmd(0.25, 0.0, 0.0, true)),
             robotContainer.goL4)
             .withTimeout(1.0),
-        Commands.parallel(
-            new InstantCommand(() -> chassis.driveCmd(0.0, 0.0, 0.0, true)),
-            robotContainer.doAction));
+        new InstantCommand(() -> chassis.driveCmd(0.0, 0.0, 0.0, true)),
+        robotContainer.doAction);
+  }
+
+  public SendableChooser<Command> getAutoChooser() {
+    return autoChooser;
   }
 
   public SendableChooser<Command> getChooser() {

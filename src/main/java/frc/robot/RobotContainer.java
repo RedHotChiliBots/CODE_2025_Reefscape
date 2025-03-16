@@ -53,14 +53,13 @@ public class RobotContainer {
 	private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3, camera4);
 
 	private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
-	cameras.get(2), cameras.get(3));
+			cameras.get(2), cameras.get(3));
 
 	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(ladder, algae);
 	private final Climber climber = new Climber();
-	private final Autos auton = new Autos(this, chassis, ladder, algae, coral, climber);
 
 	// Define HIDs
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -70,7 +69,7 @@ public class RobotContainer {
 	private final GenericHID m_operatorHID = new GenericHID(
 			OIConstants.kOperatorControllerPort);
 
-			// =====TESTING=====//
+	// =====TESTING=====//
 	public final Command goBarge = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.BARGE)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
@@ -112,15 +111,14 @@ public class RobotContainer {
 			coral.doAction(),
 			algae.doAction());
 
-	
+	private final Autos auton = new Autos(this, chassis, ladder, algae, coral, climber);
+
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
-
-		vision.setChassis(chassis);
 
 		vision.setChassis(chassis);
 
@@ -237,7 +235,7 @@ public class RobotContainer {
 		goCommands.add("Stow", goStow)
 				.withProperties(Map.of("show type", false));
 
-				ShuffleboardLayout doCommands = cmdTab
+		ShuffleboardLayout doCommands = cmdTab
 				.getLayout("Do", BuiltInLayouts.kList)
 				.withSize(3, 4)
 				.withPosition(21, 1)
