@@ -312,6 +312,6 @@ public class RobotContainer {
 	 */
 	public Command getAutonomousCommand() {
 		// return new ChassisTimedDrive(chassis, 0.25, 1.0);
-		return auton.getChooser().getSelected();
+		return auton.getAutoChooser().getSelected();
 	}
 }

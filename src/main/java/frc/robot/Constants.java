@@ -194,7 +194,7 @@ public final class Constants {
 		public static final double INTAKE = 25000.0;
 		public static final double EJECT = -25000.0;
 
-		public static final double kTiltZeroOffset = 0.6301808;
+		public static final double kTiltZeroOffset = 0.6341878;
 		public static final boolean kTiltZeroCentered = true;
 		public static final boolean kTiltMotorInverted = true;
 		public static final boolean kTiltEncoderInverted = false;
@@ -248,7 +248,7 @@ public final class Constants {
 		// define algae velocities
 		public static final double STOP = 0.0;
 
-		public static final double kTiltZeroOffset = 0.7307724;
+		public static final double kTiltZeroOffset = 0.6477655;
 		public static final boolean kTiltZeroCentered = true;
 		public static final boolean kTiltMotorInverted = false;
 		public static final boolean kTiltEncoderInverted = false;
