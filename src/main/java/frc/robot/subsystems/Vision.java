@@ -49,28 +49,28 @@ public class Vision extends SubsystemBase {
                         Units.inchesToMeters(8.5062)), // z
                         new Rotation3d(0.0, // roll
                                 Units.degreesToRadians(35.0), // pitch
-                                Units.degreesToRadians(180.0))), // yaw
+                                Units.degreesToRadians(170.0))), // yaw
                 new Transform3d(new Translation3d( // camera 2  back left
-                        Units.inchesToMeters(11.8251), // x
+                        Units.inchesToMeters(-11.8251), // x
                         Units.inchesToMeters(-12.0819), // y
                         Units.inchesToMeters(8.5062)), // z
                         new Rotation3d(0.0, // roll
                                 Units.degreesToRadians(35.0), // pitch
-                                Units.degreesToRadians(180.0))), // yaw
+                                Units.degreesToRadians(-170.0))), // yaw
                 new Transform3d(new Translation3d( // camera 3  front left
                         Units.inchesToMeters(-11.8251), // x
                         Units.inchesToMeters(12.0819), // y
                         Units.inchesToMeters(8.5062)), // z
                         new Rotation3d(0.0, // roll
                                 Units.degreesToRadians(35.0), // pitch
-                                Units.degreesToRadians(-45.0))), // yaw
+                                Units.degreesToRadians(-40.0))), // yaw
                 new Transform3d(new Translation3d( // camera 4  front right
                         Units.inchesToMeters(11.8251), // x
                         Units.inchesToMeters(12.0819), // y
                         Units.inchesToMeters(8.5062)), // z
                         new Rotation3d(0.0, // roll
                                 Units.degreesToRadians(35.0), // pitch
-                                Units.degreesToRadians(45.0))) // yaw
+                                Units.degreesToRadians(40.0))) // yaw
         };
 
         // Initialize pose estimators for each camera

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -78,6 +79,10 @@ public class RobotContainer {
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L4)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L4)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
+	public final Command goL4a = Commands.parallel(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L4)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L4)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
 	public final Command goL3 = new ParallelCommandGroup(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L3)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L3)),
@@ -90,7 +95,15 @@ public class RobotContainer {
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L1)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L1)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
+	public final Command goL1a = Commands.parallel(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L1)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L1)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
 	public final Command goStation = new ParallelCommandGroup(
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STATION)),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.STATION)),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
+	public final Command goStationa = Commands.parallel(
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STATION)),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STATION)),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
@@ -108,6 +121,9 @@ public class RobotContainer {
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOW)));
 
 	public final Command doAction = new ParallelCommandGroup(
+			coral.doAction(),
+			algae.doAction());
+	public final Command doActiona = Commands.parallel(
 			coral.doAction(),
 			algae.doAction());
 
