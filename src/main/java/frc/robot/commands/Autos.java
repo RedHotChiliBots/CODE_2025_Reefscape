@@ -122,20 +122,20 @@ public class Autos {
     // Generate Auto commands
     // Note: Named commands used in Auto command must be defined
     // before defining the Auto command
-    NamedCommands.registerCommand("Leave", autoLeave());
-    NamedCommands.registerCommand("LeaveNScoreL1", autoLeaveNScoreL1(robotContainer, chassis));
-    NamedCommands.registerCommand("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
+    // NamedCommands.registerCommand("Leave", autoLeave());
+    // NamedCommands.registerCommand("LeaveNScoreL1", autoLeaveNScoreL1(robotContainer, chassis));
+    // NamedCommands.registerCommand("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
 
     // ********************************************
     // Initialize auto command chooser with auton commands
     // chooser = AutoBuilder.buildAutoChooser();
     autoChooser.setDefaultOption("Leave", autoLeave());
     autoChooser.addOption("LeaveNScoreL1", autoLeaveNScoreL1(robotContainer, chassis));
-    autoChooser.addOption("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
+    // autoChooser.addOption("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
 
-    chooser.setDefaultOption("Leave", autoLeave());
-    chooser.addOption("LeaveNScoreL1", autoLeaveNScoreL1(robotContainer, chassis));
-    chooser.addOption("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
+    // chooser.setDefaultOption("Leave", autoLeave());
+    // chooser.addOption("LeaveNScoreL1", autoLeaveNScoreL1(robotContainer, chassis));
+    // chooser.addOption("LeaveNScoreL4", autoLeaveNScoreL4(robotContainer, chassis));
 
     System.out.println("----- Ending Autos Constructor -----");
   }
@@ -143,7 +143,7 @@ public class Autos {
   public Command autoLeave() {
     return Commands.sequence(
         new InstantCommand(() -> chassis.drive(0.25, 0.0, 0.0, true)),
-        new WaitCommand(1.0),
+        new WaitCommand(5.0),
         new InstantCommand(() -> chassis.drive(0.0, 0.0, 0.0, true)));
   }
 
@@ -152,7 +152,7 @@ public class Autos {
         Commands.parallel(
             new InstantCommand(() -> chassis.driveCmd(0.25, 0.0, 0.0, true)),
             robotContainer.goL1)
-            .withTimeout(1.0),
+            .withTimeout(5.0),
         new InstantCommand(() -> chassis.driveCmd(0.0, 0.0, 0.0, true)),
         robotContainer.doAction);
   }
@@ -162,7 +162,7 @@ public class Autos {
         Commands.parallel(
             new InstantCommand(() -> chassis.driveCmd(0.25, 0.0, 0.0, true)),
             robotContainer.goL4)
-            .withTimeout(1.0),
+            .withTimeout(5.0),
         new InstantCommand(() -> chassis.driveCmd(0.0, 0.0, 0.0, true)),
         robotContainer.doAction);
   }

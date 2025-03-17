@@ -223,11 +223,11 @@ public class Ladder extends SubsystemBase {
 	 * Commands
 	 **************************************************************/
 	public Command barge = new InstantCommand(() -> setLadderPos(LadderSP.BARGE));
-	public Command l4 = new InstantCommand(() -> setLadderPos(LadderSP.L3));
-	public Command l3 = new InstantCommand(() -> setLadderPos(LadderSP.L2));
-	public Command l2 = new InstantCommand(() -> setLadderPos(LadderSP.L3));
-	public Command l1 = new InstantCommand(() -> setLadderPos(LadderSP.L2));
-	public Command station = new InstantCommand(() -> setLadderPos(LadderSP.PROCESSOR));
+	public Command l4 = new InstantCommand(() -> setLadderPos(LadderSP.L4));
+	public Command l3 = new InstantCommand(() -> setLadderPos(LadderSP.L3));
+	public Command l2 = new InstantCommand(() -> setLadderPos(LadderSP.L2));
+	public Command l1 = new InstantCommand(() -> setLadderPos(LadderSP.L1));
+	public Command station = new InstantCommand(() -> setLadderPos(LadderSP.STATION));
 	public Command processor = new InstantCommand(() -> setLadderPos(LadderSP.PROCESSOR));
 	public Command floor = new InstantCommand(() -> setLadderPos(LadderSP.FLOOR));
 	public Command stow = new InstantCommand(() -> setLadderPos(LadderSP.STOW));
