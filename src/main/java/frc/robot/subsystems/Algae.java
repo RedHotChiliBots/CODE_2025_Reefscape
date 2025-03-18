@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import frc.robot.Constants;
+import frc.robot.commands.AlgaeIntake;
+import frc.robot.commands.CoralIntake;
 import frc.robot.utils.Library;
 
 public class Algae extends SubsystemBase {
@@ -51,16 +53,16 @@ public class Algae extends SubsystemBase {
 	private RelativeEncoder intakeEncoder = leftIntake.getEncoder();
 	private AbsoluteEncoder tiltEncoder = tilt.getAbsoluteEncoder();
 
-	private SparkLimitSwitch isLimitSwitch = leftIntake.getForwardLimitSwitch();
+	private SparkLimitSwitch limitSwitch = leftIntake.getForwardLimitSwitch();
 
 	public enum AlgaeSP {
-		STOW(109.0, 0.0),
-		ZERO(0.0, 0.0),
-		PROCESSOR(45.0, -25000),
-		BARGE(-20.0, -25000),
-		L2(-35.0, 25000),
-		L3(-35.0, 25000),
-		FLOOR(0.0, 25000);
+		STOW(90.0, Constants.Algae.STOP),
+		ZERO(0.0, Constants.Algae.STOP),
+		PROCESSOR(10.0, Constants.Algae.EJECT),
+		BARGE(-20.0, Constants.Algae.EJECT),
+		L2(-35.0, Constants.Algae.INTAKE),
+		L3(-35.0, Constants.Algae.INTAKE),
+		FLOOR(0.0, Constants.Algae.INTAKE);
 
 		private final double tilt;
 		private final double intake;
@@ -269,13 +271,15 @@ public class Algae extends SubsystemBase {
 	public Command stow = new InstantCommand(() -> setTiltPos(AlgaeSP.STOW));
 	public Command toggleExtract = new InstantCommand(() -> toggleExtract());
 
-	public Command intake = new InstantCommand(() -> setIntakeVel(algaeSP))
-			.until(() -> isLimit())
-			// .andThen(() -> setTiltPos(AlgaeSP.PROCESSOR))
-			.andThen(() -> setIntakeVel(getIntakeVel() / 4.0));
-	public Command eject = new InstantCommand(() -> setIntakeVel(algaeSP))
-			.andThen(new WaitCommand(0.5))
-			.andThen(() -> setIntakeVel(Constants.Algae.STOP));
+	public Command intake = new AlgaeIntake(this);
+	// public Command intake = new InstantCommand(() -> setIntakeVel(Constants.Algae.INTAKE))
+	// 		.until(() -> isLimit())
+	// 		// .andThen(() -> setTiltPos(AlgaeSP.PROCESSOR))
+	// 		.andThen(new InstantCommand(() -> setIntakeVel(Constants.Algae.INTAKE / 4.0)));
+	public Command eject = new InstantCommand(() -> setIntakeVel(Constants.Algae.EJECT))
+			.andThen(new WaitCommand(1.0))
+			.andThen(new InstantCommand(() -> setIntakeVel(Constants.Algae.STOP)));
+
 
 	/**************************************************************
 	 * Methods
@@ -344,7 +348,7 @@ public class Algae extends SubsystemBase {
 	}
 
 	public boolean isLimit() {
-		return isLimitSwitch.isPressed();
+		return limitSwitch.isPressed();
 	}
 
 	public void toggleExtract() {
