@@ -82,6 +82,7 @@ public class Coral extends SubsystemBase {
 		}
 	}
 
+	private Chassis chassis = null;
 	private Ladder ladder = null;
 	private Algae algae = null;
 
@@ -137,6 +138,7 @@ public class Coral extends SubsystemBase {
 	public Coral(Chassis chassis, Ladder ladder, Algae algae) {
 		System.out.println("+++++ Starting Coral Constructor +++++");
 
+		this.chassis = chassis;
 		this.ladder = ladder;
 		this.algae = algae;
 		this.pdh = chassis.getPDH();
@@ -305,10 +307,12 @@ public class Coral extends SubsystemBase {
 
 	public Command toggleSide = new InstantCommand(() -> toggleSide());
 
-	public Command intake = new CoralIntake(this);
-
-	public Command eject = new InstantCommand(() -> setIntakeVel(Constants.Coral.EJECT))
-			.andThen(new WaitCommand(1.0))
+	public Command intake = new InstantCommand(() -> setIntakeVel(coralSP))
+			.andThen(new WaitCommand(0.25))
+			.until(() -> isLimit())
+			.andThen(() -> setIntakeVel(Constants.Coral.STOP));
+	public Command eject = new InstantCommand(() -> setIntakeVel(coralSP))
+			.andThen(new WaitCommand(0.5))
 			.andThen(() -> setIntakeVel(Constants.Coral.STOP));
 
 	/**************************************************************
