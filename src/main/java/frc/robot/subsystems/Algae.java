@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import frc.robot.Constants;
+import frc.robot.commands.AlgaeEject;
 import frc.robot.commands.AlgaeIntake;
 import frc.robot.utils.Library;
 
@@ -273,9 +274,10 @@ public class Algae extends SubsystemBase {
 
 	public Command intake = new AlgaeIntake(this);
 	
-	public Command eject = new InstantCommand(() -> setIntakeVel(algaeSP))
-			.andThen(new WaitCommand(0.5))
-			.andThen(() -> setIntakeVel(Constants.Algae.STOP));
+	public Command eject = new AlgaeEject(this);
+	// new InstantCommand(() -> setIntakeVel(algaeSP))
+	// 		.andThen(new WaitCommand(0.5))
+	// 		.andThen(() -> setIntakeVel(Constants.Algae.STOP));
 
 	/**************************************************************
 	 * Methods

@@ -191,8 +191,8 @@ public final class Constants {
 
 		// define coral velocities
 		public static final double STOP = 0.0;
-		public static final double INTAKE = 500.0;
-		public static final double EJECT = -500.0;
+		public static final double INTAKE = 5000.0;
+		public static final double EJECT = -5000.0;
 
 		public static final double kTiltZeroOffset = 0.6341878;
 		public static final boolean kTiltZeroCentered = true;
@@ -236,7 +236,7 @@ public final class Constants {
 		public static final IdleMode kIntakeIdleMode = IdleMode.kBrake;
 		public static final IdleMode kTiltIdleMode = IdleMode.kBrake;
 
-		public static final double kStopCurrent = 0.25; // amps
+		public static final double kStopCurrent = 5.0; // amps
 		public static final int kLeftPDHChannel = 11; // amps
 		public static final int kRightPDHChannel = 15; // amps
 

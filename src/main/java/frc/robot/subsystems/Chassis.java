@@ -73,7 +73,7 @@ public class Chassis extends SubsystemBase {
 	// Initialize NavX AHRS board
 	// Alternatively: I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB
 	private AHRS m_ahrs = new AHRS(NavXComType.kMXP_SPI, (byte) 100);
-	private PowerDistribution m_pdh = new PowerDistribution(CANId.kPDHCanID, ModuleType.kCTRE);
+	private PowerDistribution m_pdh = new PowerDistribution(CANId.kPDHCanID, ModuleType.kRev);
 
 	SwerveDrivePoseEstimator poseEstimator = null;
 	SwerveDriveOdometry m_odometry = null;
