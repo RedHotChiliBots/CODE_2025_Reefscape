@@ -31,6 +31,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.measure.Power;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -364,6 +365,10 @@ public class Chassis extends SubsystemBase {
 				getRotation2d(),
 				getModulePositions(),
 				pose);
+	}
+
+	public PowerDistribution getPDH() {
+		return m_pdh;
 	}
 
 	public void setChannelOn() {

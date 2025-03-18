@@ -36,9 +36,9 @@ public class AutonLeaveNScoreL4 extends SequentialCommandGroup {
             robotContainer.goL4a),
         new ParallelCommandGroup(
             coral.doAction(),
-            algae.doAction()),
+            algae.doAction()));
         // robotContainer.doActiona,
-        new WaitCommand(0.2));
-    // robotContainer.goStationa);
+        // new WaitCommand(0.2),
+        // robotContainer.goStationa);
   }
 }

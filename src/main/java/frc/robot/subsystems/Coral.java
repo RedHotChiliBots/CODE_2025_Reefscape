@@ -17,6 +17,7 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -27,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.commands.CoralIntake;
 import frc.robot.utils.Library;
 
 public class Coral extends SubsystemBase {
@@ -55,13 +57,13 @@ public class Coral extends SubsystemBase {
 	private SparkLimitSwitch rightLimitSwitch = rightIntake.getForwardLimitSwitch();
 
 	public enum CoralSP {
-		STOW(90.0, 0.0), // degrees
-		STATION(55.0, 25000), // degrees
-		ZERO(0.0, 0.0),
-		L1(0.0, -25000), // degrees
-		L2(-35.0, -25000), // degrees
-		L3(-35.0, -25000), // degrees
-		L4(-45.0, -25000); // degrees
+		STOW(90.0, Constants.Coral.STOP), // degrees
+		STATION(55.0, Constants.Coral.INTAKE), // degrees
+		ZERO(0.0, Constants.Coral.STOP),
+		L1(0.0, Constants.Coral.EJECT), // degrees
+		L2(-35.0, Constants.Coral.EJECT), // degrees
+		L3(-35.0, Constants.Coral.EJECT), // degrees
+		L4(-45.0, Constants.Coral.EJECT); // degrees
 
 		private final double tilt;
 		private final double intake;
@@ -80,9 +82,12 @@ public class Coral extends SubsystemBase {
 		}
 	}
 
+	private Chassis chassis = null;
 	private Ladder ladder = null;
 	private Algae algae = null;
 
+	private PowerDistribution pdh = null
+	;
 	private CoralSP coralSP = CoralSP.ZERO;
 
 	private boolean leftCoral = true;
@@ -130,11 +135,13 @@ public class Coral extends SubsystemBase {
 	/**************************************************************
 	 * Constructor
 	 **************************************************************/
-	public Coral(Ladder ladder, Algae algae) {
+	public Coral(Chassis chassis, Ladder ladder, Algae algae) {
 		System.out.println("+++++ Starting Coral Constructor +++++");
 
+		this.chassis = chassis;
 		this.ladder = ladder;
 		this.algae = algae;
+		this.pdh = chassis.getPDH();
 
 		compTab.add("Coral Current", this)
 				.withWidget("Subsystem")
@@ -300,11 +307,12 @@ public class Coral extends SubsystemBase {
 
 	public Command toggleSide = new InstantCommand(() -> toggleSide());
 
-	public Command intake = new InstantCommand(() -> setIntakeVel(coralSP))
-			.andThen(new WaitCommand(0.25))
-			.until(() -> isLimit())
-			.andThen(() -> setIntakeVel(Constants.Coral.STOP));
-	public Command eject = new InstantCommand(() -> setIntakeVel(coralSP))
+	public Command intake = new CoralIntake(this);
+	//InstantCommand(() -> setIntakeVel(Constants.Coral.INTAKE));
+			// .andThen(new WaitCommand(0.25))
+			// .until(() -> isLimit())
+			// .andThen(() -> setIntakeVel(Constants.Coral.STOP));
+	public Command eject = new InstantCommand(() -> setIntakeVel(Constants.Coral.EJECT))
 			.andThen(new WaitCommand(0.5))
 			.andThen(() -> setIntakeVel(Constants.Coral.STOP));
 
@@ -410,9 +418,11 @@ public class Coral extends SubsystemBase {
 
 	public boolean isLimit() {
 		if (leftCoral) {
-			return getLeftIntakeVel() < 100;
+			//return getLeftIntakeVel() < 100;
+			return pdh.getCurrent(Constants.Coral.kLeftPDHChannel) > Constants.Coral.kStopCurrent;
 		} else {
-			return getRightIntakeVel() < 100;
+			//return getRightIntakeVel() < 100;
+			return pdh.getCurrent(Constants.Coral.kRightPDHChannel) > Constants.Coral.kStopCurrent;
 		}
 	}
 
