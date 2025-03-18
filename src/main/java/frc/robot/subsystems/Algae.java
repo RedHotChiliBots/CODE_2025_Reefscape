@@ -286,6 +286,12 @@ public class Algae extends SubsystemBase {
 	// SparkBase.ControlType.kMAXMotionPositionControl);
 	// }
 
+	public void holdIntakePos() {
+		leftIntake.set(0.0);
+		double pos = intakeEncoder.getPosition();
+		intakeController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
+	}
+
 	// Getting the position of the encoders
 	public double getIntakeVel() {
 		return intakeEncoder.getVelocity();

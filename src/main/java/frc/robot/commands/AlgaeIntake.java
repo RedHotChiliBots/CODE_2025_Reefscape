@@ -38,7 +38,8 @@ public class AlgaeIntake extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    algae.setIntakeVel(Constants.Coral.INTAKE / 4.0);
+    algae.holdIntakePos();
+    //algae.setIntakeVel(Constants.Coral.INTAKE / 4.0);
   }
 
   // Returns true when the command should end.

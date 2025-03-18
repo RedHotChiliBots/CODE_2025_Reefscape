@@ -320,6 +320,12 @@ public class Coral extends SubsystemBase {
 	// SparkBase.ControlType.kMAXMotionPositionControl);
 	// }
 
+	public void holdIntakePos() {
+		leftIntake.set(0.0);
+		double pos = leftEncoder.getPosition();
+		leftController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
+	}
+
 	// Getting the position of the encoders
 	public double getLeftIntakeVel() {
 		return leftEncoder.getVelocity();
