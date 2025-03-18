@@ -56,7 +56,8 @@ public class Algae extends SubsystemBase {
 	private SparkLimitSwitch limitSwitch = leftIntake.getForwardLimitSwitch();
 
 	public enum AlgaeSP {
-		STOW(90.0, Constants.Algae.STOP),
+		STOWUP(90.0, Constants.Algae.STOP),
+		STOWDN(-75.0, Constants.Algae.STOP),
 		ZERO(0.0, Constants.Algae.STOP),
 		PROCESSOR(10.0, Constants.Algae.EJECT),
 		BARGE(-20.0, Constants.Algae.EJECT),
@@ -213,7 +214,9 @@ public class Algae extends SubsystemBase {
 				.withProperties(Map.of("show type", false));
 		algaeCommands.add("Floor", this.floor)
 				.withProperties(Map.of("show type", false));
-		algaeCommands.add("Stow", this.stow)
+		algaeCommands.add("StowUP", this.stowup)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("StowDN", this.stowdn)
 				.withProperties(Map.of("show type", false));
 		algaeCommands.add("Intake", this.intake)
 				.withProperties(Map.of("show type", false));
@@ -268,7 +271,8 @@ public class Algae extends SubsystemBase {
 	public Command processor = new InstantCommand(() -> setTiltPos(AlgaeSP.PROCESSOR));
 	public Command floor = new InstantCommand(() -> setTiltPos(AlgaeSP.FLOOR));
 	public Command zero = new InstantCommand(() -> setTiltPos(AlgaeSP.ZERO));
-	public Command stow = new InstantCommand(() -> setTiltPos(AlgaeSP.STOW));
+	public Command stowup = new InstantCommand(() -> setTiltPos(AlgaeSP.STOWUP));
+	public Command stowdn = new InstantCommand(() -> setTiltPos(AlgaeSP.STOWDN));
 
 	public Command toggleExtract = new InstantCommand(() -> toggleExtract());
 

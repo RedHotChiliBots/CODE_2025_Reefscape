@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.commands.AlgaeEject;
 import frc.robot.commands.CoralEject;
 import frc.robot.commands.CoralIntake;
 import frc.robot.utils.Library;
@@ -54,9 +53,6 @@ public class Coral extends SubsystemBase {
 	private RelativeEncoder leftEncoder = leftIntake.getEncoder();
 	private RelativeEncoder rightEncoder = rightIntake.getEncoder();
 	private AbsoluteEncoder tiltEncoder = tilt.getAbsoluteEncoder();
-
-	private SparkLimitSwitch leftLimitSwitch = leftIntake.getForwardLimitSwitch();
-	private SparkLimitSwitch rightLimitSwitch = rightIntake.getForwardLimitSwitch();
 
 	public enum CoralSP {
 		STOW(90.0, Constants.Coral.STOP), // degrees
