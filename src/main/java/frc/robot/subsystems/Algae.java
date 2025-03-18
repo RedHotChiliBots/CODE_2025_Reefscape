@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import frc.robot.Constants;
 import frc.robot.commands.AlgaeIntake;
-import frc.robot.commands.CoralIntake;
 import frc.robot.utils.Library;
 
 public class Algae extends SubsystemBase {
@@ -269,13 +268,11 @@ public class Algae extends SubsystemBase {
 	public Command floor = new InstantCommand(() -> setTiltPos(AlgaeSP.FLOOR));
 	public Command zero = new InstantCommand(() -> setTiltPos(AlgaeSP.ZERO));
 	public Command stow = new InstantCommand(() -> setTiltPos(AlgaeSP.STOW));
+
 	public Command toggleExtract = new InstantCommand(() -> toggleExtract());
 
 	public Command intake = new AlgaeIntake(this);
-	// public Command intake = new InstantCommand(() -> setIntakeVel(Constants.Algae.INTAKE))
-	// 		.until(() -> isLimit())
-	// 		// .andThen(() -> setTiltPos(AlgaeSP.PROCESSOR))
-	// 		.andThen(new InstantCommand(() -> setIntakeVel(Constants.Algae.INTAKE / 4.0)));
+
 	public Command eject = new InstantCommand(() -> setIntakeVel(Constants.Algae.EJECT))
 			.andThen(new WaitCommand(1.0))
 			.andThen(new InstantCommand(() -> setIntakeVel(Constants.Algae.STOP)));

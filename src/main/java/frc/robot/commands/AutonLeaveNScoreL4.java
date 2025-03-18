@@ -4,11 +4,8 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Chassis;
@@ -22,11 +19,8 @@ import frc.robot.subsystems.Ladder;
 public class AutonLeaveNScoreL4 extends SequentialCommandGroup {
   /** Creates a new AutonShootLeave. */
 
-  private RobotContainer robotContainer;
-
   public AutonLeaveNScoreL4(RobotContainer robotContainer, Chassis chassis, Ladder ladder, Algae algae, Coral coral,
       Climber climber) {
-    this.robotContainer = robotContainer;
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
