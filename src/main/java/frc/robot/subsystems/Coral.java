@@ -102,7 +102,7 @@ public class Coral extends SubsystemBase {
 	private final GenericEntry sbDblTiltSP = compTab.addPersistent("Coral Tilt SP (deg)", 0)
 			.withWidget("Text View").withPosition(11, 3).withSize(2, 1).getEntry();
 	private final GenericEntry sbTiltPos = compTab.addPersistent("Coral Tilt Pos", 0)
-			.withWidget("Text View").withPosition(11, 4).withSize(2, 1).getEntry();
+			.withWidget("Text View").withPosition(11, 4).withSize(2, 2).getEntry();
 
 	private final GenericEntry sbLeftInOnTgt = compTab.addPersistent("Coral Intake OnTgt", false)
 			.withWidget("Boolean Box").withPosition(11, 6).withSize(2, 1).getEntry();
@@ -288,13 +288,13 @@ public class Coral extends SubsystemBase {
 	/**************************************************************
 	 * Commands
 	 **************************************************************/
-	public Command l4 = new InstantCommand(() -> setTiltPos(CoralSP.L4));
-	public Command l3 = new InstantCommand(() -> setTiltPos(CoralSP.L3));
-	public Command l2 = new InstantCommand(() -> setTiltPos(CoralSP.L2));
-	public Command l1 = new InstantCommand(() -> setTiltPos(CoralSP.L1));
-	public Command station = new InstantCommand(() -> setTiltPos(CoralSP.STATION));
-	public Command zero = new InstantCommand(() -> setTiltPos(CoralSP.ZERO));
-	public Command stow = new InstantCommand(() -> setTiltPos(CoralSP.STOW));
+	public Command l4 = new InstantCommand(() -> setTiltPos(CoralSP.L4), this);
+	public Command l3 = new InstantCommand(() -> setTiltPos(CoralSP.L3), this);
+	public Command l2 = new InstantCommand(() -> setTiltPos(CoralSP.L2), this);
+	public Command l1 = new InstantCommand(() -> setTiltPos(CoralSP.L1), this);
+	public Command station = new InstantCommand(() -> setTiltPos(CoralSP.STATION), this);
+	public Command zero = new InstantCommand(() -> setTiltPos(CoralSP.ZERO), this);
+	public Command stow = new InstantCommand(() -> setTiltPos(CoralSP.STOW), this);
 
 	public Command toggleSide = new InstantCommand(() -> toggleSide());
 

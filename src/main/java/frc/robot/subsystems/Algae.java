@@ -103,7 +103,7 @@ public class Algae extends SubsystemBase {
 	private final GenericEntry sbDblTiltSP = compTab.addPersistent("Algae Tilt SP (deg)", 0)
 			.withWidget("Text View").withPosition(9, 3).withSize(2, 1).getEntry();
 	private final GenericEntry sbTiltPos = compTab.addPersistent("Algae Tilt Pos (deg)", 0)
-			.withWidget("Text View").withPosition(9, 4).withSize(2, 1).getEntry();
+			.withWidget("Text View").withPosition(9, 4).withSize(2, 2).getEntry();
 
 	private final GenericEntry sbIntakeOnTgt = compTab.addPersistent("Algae Intake OnTgt", false)
 			.withWidget("Boolean Box").withPosition(9, 6).withSize(2, 1).getEntry();
@@ -265,14 +265,14 @@ public class Algae extends SubsystemBase {
 	/**************************************************************
 	 * Commands
 	 **************************************************************/
-	public Command barge = new InstantCommand(() -> setTiltPos(AlgaeSP.BARGE));
-	public Command l3 = new InstantCommand(() -> setTiltPos(AlgaeSP.L3));
-	public Command l2 = new InstantCommand(() -> setTiltPos(AlgaeSP.L2));
-	public Command processor = new InstantCommand(() -> setTiltPos(AlgaeSP.PROCESSOR));
-	public Command floor = new InstantCommand(() -> setTiltPos(AlgaeSP.FLOOR));
-	public Command zero = new InstantCommand(() -> setTiltPos(AlgaeSP.ZERO));
-	public Command stowup = new InstantCommand(() -> setTiltPos(AlgaeSP.STOWUP));
-	public Command stowdn = new InstantCommand(() -> setTiltPos(AlgaeSP.STOWDN));
+	public Command barge = new InstantCommand(() -> setTiltPos(AlgaeSP.BARGE), this);
+	public Command l3 = new InstantCommand(() -> setTiltPos(AlgaeSP.L3), this);
+	public Command l2 = new InstantCommand(() -> setTiltPos(AlgaeSP.L2), this);
+	public Command processor = new InstantCommand(() -> setTiltPos(AlgaeSP.PROCESSOR), this);
+	public Command floor = new InstantCommand(() -> setTiltPos(AlgaeSP.FLOOR), this);
+	public Command zero = new InstantCommand(() -> setTiltPos(AlgaeSP.ZERO), this);
+	public Command stowup = new InstantCommand(() -> setTiltPos(AlgaeSP.STOWUP), this);
+	public Command stowdn = new InstantCommand(() -> setTiltPos(AlgaeSP.STOWDN), this);
 
 	public Command toggleExtract = new InstantCommand(() -> toggleExtract());
 
