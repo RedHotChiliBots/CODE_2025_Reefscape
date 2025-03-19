@@ -112,9 +112,9 @@ public class Algae extends SubsystemBase {
 	private final GenericEntry sbIntakeVel = compTab.addPersistent("Algae Intake (vel))", 0)
 			.withWidget("Text View").withPosition(9, 8).withSize(2, 1).getEntry();
 
-	private final GenericEntry sbLimit = compTab.addPersistent("Limit", false)
+	private final GenericEntry sbExtract = compTab.addPersistent("Extract", false)
 			.withWidget("Boolean Box").withPosition(9, 10).withSize(2, 1).getEntry();
-	private final GenericEntry sbExtract = compTab.addPersistent("Expel", false)
+	private final GenericEntry sbLimit = compTab.addPersistent("Limit", false)
 			.withWidget("Boolean Box").withPosition(9, 11).withSize(2, 1).getEntry();
 
 	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Algae Moving", "")

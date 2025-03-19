@@ -22,7 +22,7 @@ public class Autos {
   private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
   // Define a chooser for autonomous commands
-  private final SendableChooser<Command> chooser = new SendableChooser<>();
+  // private final SendableChooser<Command> chooser = new SendableChooser<>();
   private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();;
 
   RobotContainer robotContainer;
@@ -56,16 +56,16 @@ public class Autos {
 
     // ********************************************
     // Add Auton Command chooser to Shuffleboard
-    compTab.add("Auton Command", chooser)
-        .withWidget("ComboBox Chooser")
-        .withPosition(0, 0)
-        .withSize(3, 1);
+    // compTab.add("Auton Command", chooser)
+    //     .withWidget("ComboBox Chooser")
+    //     .withPosition(0, 0)
+    //     .withSize(3, 1);
 
     // ********************************************
     // Add Auton Command chooser to Shuffleboard
     compTab.add("Auto Command", autoChooser)
         .withWidget("ComboBox Chooser")
-        .withPosition(0, 3)
+        .withPosition(0, 0)
         .withSize(3, 1);
 
     this.autonLeave = new AutonLeave(chassis, ladder, algae, coral, climber);
@@ -170,7 +170,7 @@ public class Autos {
     return autoChooser;
   }
 
-  public SendableChooser<Command> getChooser() {
-    return chooser;
-  }
+  // public SendableChooser<Command> getChooser() {
+  //   return chooser;
+  // }
 }

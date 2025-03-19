@@ -338,9 +338,9 @@ public class Coral extends SubsystemBase {
 
 	public double getIntakeVel() {
 		if (leftCoral) {
-			return leftEncoder.getVelocity();
+			return getLeftIntakeVel();
 		} else {
-			return rightEncoder.getVelocity();
+			return getRightIntakeVel();
 		}
 	}
 
@@ -383,9 +383,9 @@ public class Coral extends SubsystemBase {
 	public void setIntakeVel(CoralSP sp) {
 		setCoralSP(sp);
 		if (leftCoral) {
-			leftController.setReference(sp.getIntake(), SparkBase.ControlType.kMAXMotionVelocityControl);
+			setLeftIntakeVel(sp);
 		} else {
-			rightController.setReference(sp.getIntake(), SparkBase.ControlType.kMAXMotionVelocityControl);
+			setRightIntakeVel(sp);
 		}
 	}
 
@@ -405,9 +405,9 @@ public class Coral extends SubsystemBase {
 
 	public void setIntakeVel(double sp) {
 		if (leftCoral) {
-			leftController.setReference(sp, SparkBase.ControlType.kMAXMotionVelocityControl);
+			setLeftIntakeVel(sp);
 		} else {
-			rightController.setReference(sp, SparkBase.ControlType.kMAXMotionVelocityControl);
+			setRightIntakeVel(sp);
 		}
 	}
 
@@ -443,9 +443,9 @@ public class Coral extends SubsystemBase {
 
 	public boolean onIntakeTarget() {
 		if (leftCoral) {
-			return Math.abs(getLeftIntakeVel() - getCoralSP().getIntake()) < Constants.Coral.kIntakeTollerance;
+			return onLeftIntakeTarget();
 		} else {
-			return Math.abs(getRightIntakeVel() - getCoralSP().getIntake()) < Constants.Coral.kIntakeTollerance;
+			return onRightIntakeTarget();
 		}
 	}
 
