@@ -8,7 +8,6 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import java.util.Map;
@@ -61,7 +60,7 @@ public class Coral extends SubsystemBase {
 		L1(0.0, Constants.Coral.EJECT), // degrees
 		L2(-35.0, Constants.Coral.EJECT), // degrees
 		L3(-35.0, Constants.Coral.EJECT), // degrees
-		L4(-45.0, Constants.Coral.EJECT); // degrees
+		L4(-40.0, Constants.Coral.EJECT); // degrees
 
 		private final double tilt;
 		private final double intake;
