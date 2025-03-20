@@ -49,15 +49,15 @@ import org.photonvision.PhotonCamera;
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	// TEST
-	// private final PhotonCamera camera1 = new PhotonCamera("PhotonVision 1");
-	// private final PhotonCamera camera2 = new PhotonCamera("PhotonVision 2");
-	// private final PhotonCamera camera3 = new PhotonCamera("PhotonVision 3");
-	// private final PhotonCamera camera4 = new PhotonCamera("PhotonVision 4");
-	// private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3,
-	// camera4);
+	private final PhotonCamera camera1 = new PhotonCamera("PhotonVision 1");
+	private final PhotonCamera camera2 = new PhotonCamera("PhotonVision 2");
+	private final PhotonCamera camera3 = new PhotonCamera("PhotonVision 3");
+	private final PhotonCamera camera4 = new PhotonCamera("PhotonVision 4");
+	private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3,
+			camera4);
 
-	// private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
-	// cameras.get(2), cameras.get(3));
+	private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
+			cameras.get(2), cameras.get(3));
 
 	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
@@ -150,7 +150,7 @@ public class RobotContainer {
 	 */
 	public RobotContainer() {
 		// TEST
-		// vision.setChassis(chassis);
+		vision.setChassis(chassis);
 
 		// algaeTab.add("Processor3", algae.processor);
 		// algaeTab.add("Floor3", algae.floor);
@@ -184,10 +184,9 @@ public class RobotContainer {
 		// compTab.add("Ladder", ladder);
 		// compTab.add("Climber", climber);
 		// TEST
-		// for (PhotonCamera camera : cameras) {
-		// camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web
-		// interface
-		// }
+		for (PhotonCamera camera : cameras) {
+			camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web interface
+		}
 
 		// Configure the trigger bindings
 		configureBindings();
