@@ -73,7 +73,7 @@ public class Chassis extends SubsystemBase {
 	// Initialize NavX AHRS board
 	// Alternatively: I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB
 	private AHRS m_ahrs = new AHRS(NavXComType.kMXP_SPI, (byte) 100);
-	private PowerDistribution m_pdh = new PowerDistribution(CANId.kPDHCanID, ModuleType.kCTRE);
+	private PowerDistribution m_pdh = new PowerDistribution(CANId.kPDHCanID, ModuleType.kRev);
 
 	SwerveDrivePoseEstimator poseEstimator = null;
 	SwerveDriveOdometry m_odometry = null;
@@ -118,11 +118,11 @@ public class Chassis extends SubsystemBase {
 			.withPosition(13, 11)
 			.withProperties(Map.of("Label position", "Hidden"));
 
-	private final ShuffleboardLayout chassisData = compTab
-			.getLayout("Chassis", BuiltInLayouts.kList)
-			.withSize(2, 5)
-			.withPosition(12, 10)
-			.withProperties(Map.of("Label position", "Top"));
+	// private final ShuffleboardLayout chassisData = compTab
+	// .getLayout("Chassis", BuiltInLayouts.kList)
+	// .withSize(2, 5)
+	// .withPosition(12, 10)
+	// .withProperties(Map.of("Label position", "Top"));
 
 	private double pitchOffset = 0.0;
 	private double rollOffset = 0.0;
@@ -203,19 +203,22 @@ public class Chassis extends SubsystemBase {
 				},
 				this // Reference to this subsystem to set requirements
 		);
-	
-	// The robot pose estimator for tracking swerve odometry and applying vision
-	// data
-	poseEstimator=new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics,getRotation2d(),getModulePositions(),new Pose2d(),
-	// more on n1 and n2 = less trust in source
-	VecBuilder.fill(0.05,0.05,Units.degreesToRadians(5)), // robot position (wheel slipping) and robot heading (gyro)
-	VecBuilder.fill(0.5,0.5,Units.degreesToRadians(30))); // vision errors (x,y) and rotation
 
-	m_ahrs.reset();
+		// The robot pose estimator for tracking swerve odometry and applying vision
+		// data
+		poseEstimator = new SwerveDrivePoseEstimator(ChassisConstants.kDriveKinematics, getRotation2d(),
+				getModulePositions(), new Pose2d(),
+				// more on n1 and n2 = less trust in source
+				VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)), // robot position (wheel slipping) and robot heading
+																							// (gyro)
+				VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))); // vision errors (x,y) and rotation
 
-	zeroYaw();m_ahrs.setAngleAdjustment(0.0);
+		m_ahrs.reset();
 
-	getPose().getRotation().getDegrees();
+		zeroYaw();
+		m_ahrs.setAngleAdjustment(0.0);
+
+		getPose().getRotation().getDegrees();
 		resetPose(getPose());
 
 		origPose.set(getPose());
@@ -225,7 +228,7 @@ public class Chassis extends SubsystemBase {
 		chassisCommands.add("setX", this.setX)
 				.withProperties(Map.of("show type", false));
 
-		chassisData.add("Heading", this.getHeading());
+		// chassisData.add("Heading", this.getHeading());
 
 		pitchOffset = -getRawPitch();
 		rollOffset = -getRawRoll();
@@ -271,6 +274,7 @@ public class Chassis extends SubsystemBase {
 	public Command driveCmd(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
 		return new InstantCommand(() -> this.drive(xSpeed, ySpeed, rot, fieldRelative));
 	}
+
 	/**************************************************************
 	 * Methods
 	 **************************************************************/
@@ -310,7 +314,7 @@ public class Chassis extends SubsystemBase {
 	public boolean getFlipPath() {
 		return flipPath;
 	}
-	
+
 	Transform2d poseZero = new Transform2d(new Translation2d(0.0, 0.0), new Rotation2d(0.0));
 	Transform2d poseError = new Transform2d(new Translation2d(1.0, 1.0), new Rotation2d(0.0));
 
@@ -364,6 +368,10 @@ public class Chassis extends SubsystemBase {
 				getRotation2d(),
 				getModulePositions(),
 				pose);
+	}
+
+	public PowerDistribution getPDH() {
+		return m_pdh;
 	}
 
 	public void setChannelOn() {

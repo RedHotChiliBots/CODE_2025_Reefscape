@@ -9,12 +9,6 @@
           "data": {
             "pathName": "LeaveNScoreL1"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreCoral"
-          }
         }
       ]
     }

@@ -191,8 +191,8 @@ public final class Constants {
 
 		// define coral velocities
 		public static final double STOP = 0.0;
-		public static final double INTAKE = 25000.0;
-		public static final double EJECT = -25000.0;
+		public static final double INTAKE = 5000.0;
+		public static final double EJECT = -5000.0;
 
 		public static final double kTiltZeroOffset = 0.6341878;
 		public static final boolean kTiltZeroCentered = true;
@@ -223,8 +223,8 @@ public final class Constants {
 		public static final double kIntakeVelMaxAccel = 20000.0;
 		public static final double kIntakeVelAllowedErr = 1.0;
 
-		public static final double kTiltPosP = 0.002;
-		public static final double kTiltPosI = 0.000001;
+		public static final double kTiltPosP = 0.0022;
+		public static final double kTiltPosI = 0.0000000015;
 		public static final double kTiltPosD = 0.0;
 		public static final double kTiltPosMinOutput = -1.0;
 		public static final double kTiltPosMaxOutput = 1.0;
@@ -235,6 +235,10 @@ public final class Constants {
 
 		public static final IdleMode kIntakeIdleMode = IdleMode.kBrake;
 		public static final IdleMode kTiltIdleMode = IdleMode.kBrake;
+
+		public static final double kStopCurrent = 5.0; // amps
+		public static final int kLeftPDHChannel = 11; // amps
+		public static final int kRightPDHChannel = 15; // amps
 
 		public static final int kLeftCurrentLimit = 20; // amps
 		public static final int kTiltCurrentLimit = 20; // amps
@@ -247,11 +251,13 @@ public final class Constants {
 
 		// define algae velocities
 		public static final double STOP = 0.0;
+		public static final double INTAKE = 5000.0;
+		public static final double EJECT = -5000.0;
 
 		public static final double kTiltZeroOffset = 0.6477655;
 		public static final boolean kTiltZeroCentered = true;
-		public static final boolean kTiltMotorInverted = false;
-		public static final boolean kTiltEncoderInverted = false;
+		public static final boolean kTiltMotorInverted = true;
+		public static final boolean kTiltEncoderInverted = true;
 
 		public static final boolean kRightMotorInverted = true;
 		public static final boolean kLeftMotorInverted = false;
@@ -277,8 +283,8 @@ public final class Constants {
 		public static final double kIntakeVelMaxAccel = 20000.0;
 		public static final double kIntakeVelAllowedErr = 1.0;
 
-		public static final double kTiltPosP = 0.002;
-		public static final double kTiltPosI = 0.000001;
+		public static final double kTiltPosP = 0.0022;
+		public static final double kTiltPosI = 0.00000000015;
 		public static final double kTiltPosD = 0.0;
 		public static final double kTiltPosMinOutput = -1.0;
 		public static final double kTiltPosMaxOutput = 1.0;
@@ -342,12 +348,12 @@ public final class Constants {
 
 		public static final double kTollerance = 0.5; // degrees
 
-		public static final double kLeftZeroOffset = 0.0145794;
+		public static final double kLeftZeroOffset = 0.5297125;
 		public static final boolean kLeftZeroCentered = true;
 		public static final boolean kLeftMotorInverted = true;
 		public static final boolean kLeftEncoderInverted = true;
 
-		public static final double kRightZeroOffset = 0.3814066;
+		public static final double kRightZeroOffset = 0.8341073;
 		public static final boolean kRightZeroCentered = true;
 		public static final boolean kRightMotorInverted = true;
 		public static final boolean kRightEncoderInverted = true;

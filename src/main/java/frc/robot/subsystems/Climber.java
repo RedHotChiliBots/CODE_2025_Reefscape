@@ -84,7 +84,7 @@ public class Climber extends SubsystemBase {
 			.withSize(2, 1).getEntry();
 	private final GenericEntry sbLeftPos = compTab.addPersistent("Climber Pos", 0)
 			.withWidget("Text View").withPosition(7, 4)
-			.withSize(2, 1).getEntry();
+			.withSize(2, 2).getEntry();
 	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Climb Moving", "")
 			.withWidget("Single Color View")
 			.withPosition(7, 0)
@@ -210,10 +210,10 @@ public class Climber extends SubsystemBase {
 	 * Commands
 	 **************************************************************/
 
-	public Command stow = new InstantCommand(() -> setClimberPos(ClimberSP.STOW));
-	public Command zero = new InstantCommand(() -> setClimberPos(ClimberSP.ZERO));
-	public Command ready = new InstantCommand(() -> setClimberPos(ClimberSP.READY));
-	public Command climb = new InstantCommand(() -> setClimberPos(ClimberSP.CLIMB));
+	public Command stow = new InstantCommand(() -> setClimberPos(ClimberSP.STOW), this);
+	public Command zero = new InstantCommand(() -> setClimberPos(ClimberSP.ZERO), this);
+	public Command ready = new InstantCommand(() -> setClimberPos(ClimberSP.READY), this);
+	public Command climb = new InstantCommand(() -> setClimberPos(ClimberSP.CLIMB), this);
 
 	/**************************************************************
 	 * Methods

@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import frc.robot.Constants;
+import frc.robot.commands.AlgaeEject;
+import frc.robot.commands.AlgaeIntake;
 import frc.robot.utils.Library;
 
 public class Algae extends SubsystemBase {
@@ -51,16 +53,17 @@ public class Algae extends SubsystemBase {
 	private RelativeEncoder intakeEncoder = leftIntake.getEncoder();
 	private AbsoluteEncoder tiltEncoder = tilt.getAbsoluteEncoder();
 
-	private SparkLimitSwitch isLimitSwitch = leftIntake.getForwardLimitSwitch();
+	private SparkLimitSwitch limitSwitch = leftIntake.getForwardLimitSwitch();
 
 	public enum AlgaeSP {
-		STOW(109.0, 0.0),
-		ZERO(0.0, 0.0),
-		PROCESSOR(45.0, -25000),
-		BARGE(-20.0, -25000),
-		L2(-35.0, 25000),
-		L3(-35.0, 25000),
-		FLOOR(0.0, 25000);
+		STOWUP(90.0, Constants.Algae.STOP),
+		STOWDN(-75.0, Constants.Algae.STOP),
+		ZERO(0.0, Constants.Algae.STOP),
+		PROCESSOR(10.0, Constants.Algae.EJECT),
+		BARGE(-20.0, Constants.Algae.EJECT),
+		L2(-35.0, Constants.Algae.INTAKE),
+		L3(-35.0, Constants.Algae.INTAKE),
+		FLOOR(0.0, Constants.Algae.INTAKE);
 
 		private final double tilt;
 		private final double intake;
@@ -100,7 +103,7 @@ public class Algae extends SubsystemBase {
 	private final GenericEntry sbDblTiltSP = compTab.addPersistent("Algae Tilt SP (deg)", 0)
 			.withWidget("Text View").withPosition(9, 3).withSize(2, 1).getEntry();
 	private final GenericEntry sbTiltPos = compTab.addPersistent("Algae Tilt Pos (deg)", 0)
-			.withWidget("Text View").withPosition(9, 4).withSize(2, 1).getEntry();
+			.withWidget("Text View").withPosition(9, 4).withSize(2, 2).getEntry();
 
 	private final GenericEntry sbIntakeOnTgt = compTab.addPersistent("Algae Intake OnTgt", false)
 			.withWidget("Boolean Box").withPosition(9, 6).withSize(2, 1).getEntry();
@@ -109,9 +112,9 @@ public class Algae extends SubsystemBase {
 	private final GenericEntry sbIntakeVel = compTab.addPersistent("Algae Intake (vel))", 0)
 			.withWidget("Text View").withPosition(9, 8).withSize(2, 1).getEntry();
 
-	private final GenericEntry sbLimit = compTab.addPersistent("Limit", false)
+	private final GenericEntry sbExtract = compTab.addPersistent("Extract", false)
 			.withWidget("Boolean Box").withPosition(9, 10).withSize(2, 1).getEntry();
-	private final GenericEntry sbExtract = compTab.addPersistent("Expel", false)
+	private final GenericEntry sbLimit = compTab.addPersistent("Limit", false)
 			.withWidget("Boolean Box").withPosition(9, 11).withSize(2, 1).getEntry();
 
 	private final SimpleWidget sbMovingWidget = compTab.addPersistent("Algae Moving", "")
@@ -211,7 +214,9 @@ public class Algae extends SubsystemBase {
 				.withProperties(Map.of("show type", false));
 		algaeCommands.add("Floor", this.floor)
 				.withProperties(Map.of("show type", false));
-		algaeCommands.add("Stow", this.stow)
+		algaeCommands.add("StowUP", this.stowup)
+				.withProperties(Map.of("show type", false));
+		algaeCommands.add("StowDN", this.stowdn)
 				.withProperties(Map.of("show type", false));
 		algaeCommands.add("Intake", this.intake)
 				.withProperties(Map.of("show type", false));
@@ -221,7 +226,7 @@ public class Algae extends SubsystemBase {
 				.withProperties(Map.of("show type", false));
 
 
-		setAlgaeSP(AlgaeSP.ZERO);
+		setAlgaeSP(AlgaeSP.STOWUP);
 		setIntakeVel(getAlgaeSP());
 		setTiltPos(getAlgaeSP());
 
@@ -260,22 +265,23 @@ public class Algae extends SubsystemBase {
 	/**************************************************************
 	 * Commands
 	 **************************************************************/
-	public Command barge = new InstantCommand(() -> setTiltPos(AlgaeSP.BARGE));
-	public Command l3 = new InstantCommand(() -> setTiltPos(AlgaeSP.L3));
-	public Command l2 = new InstantCommand(() -> setTiltPos(AlgaeSP.L2));
-	public Command processor = new InstantCommand(() -> setTiltPos(AlgaeSP.PROCESSOR));
-	public Command floor = new InstantCommand(() -> setTiltPos(AlgaeSP.FLOOR));
-	public Command zero = new InstantCommand(() -> setTiltPos(AlgaeSP.ZERO));
-	public Command stow = new InstantCommand(() -> setTiltPos(AlgaeSP.STOW));
+	public Command barge = new InstantCommand(() -> setTiltPos(AlgaeSP.BARGE), this);
+	public Command l3 = new InstantCommand(() -> setTiltPos(AlgaeSP.L3), this);
+	public Command l2 = new InstantCommand(() -> setTiltPos(AlgaeSP.L2), this);
+	public Command processor = new InstantCommand(() -> setTiltPos(AlgaeSP.PROCESSOR), this);
+	public Command floor = new InstantCommand(() -> setTiltPos(AlgaeSP.FLOOR), this);
+	public Command zero = new InstantCommand(() -> setTiltPos(AlgaeSP.ZERO), this);
+	public Command stowup = new InstantCommand(() -> setTiltPos(AlgaeSP.STOWUP), this);
+	public Command stowdn = new InstantCommand(() -> setTiltPos(AlgaeSP.STOWDN), this);
+
 	public Command toggleExtract = new InstantCommand(() -> toggleExtract());
 
-	public Command intake = new InstantCommand(() -> setIntakeVel(algaeSP))
-			.until(() -> isLimit())
-			// .andThen(() -> setTiltPos(AlgaeSP.PROCESSOR))
-			.andThen(() -> setIntakeVel(getIntakeVel() / 4.0));
-	public Command eject = new InstantCommand(() -> setIntakeVel(algaeSP))
-			.andThen(new WaitCommand(0.5))
-			.andThen(() -> setIntakeVel(Constants.Algae.STOP));
+	public Command intake = new AlgaeIntake(this);
+	
+	public Command eject = new AlgaeEject(this);
+	// new InstantCommand(() -> setIntakeVel(algaeSP))
+	// 		.andThen(new WaitCommand(0.5))
+	// 		.andThen(() -> setIntakeVel(Constants.Algae.STOP));
 
 	/**************************************************************
 	 * Methods
@@ -285,6 +291,12 @@ public class Algae extends SubsystemBase {
 	// tiltController.setReference(getTiltPos() + pos,
 	// SparkBase.ControlType.kMAXMotionPositionControl);
 	// }
+
+	public void holdIntakePos() {
+		leftIntake.set(0.0);
+		double pos = intakeEncoder.getPosition();
+		intakeController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
+	}
 
 	// Getting the position of the encoders
 	public double getIntakeVel() {
@@ -344,7 +356,7 @@ public class Algae extends SubsystemBase {
 	}
 
 	public boolean isLimit() {
-		return isLimitSwitch.isPressed();
+		return limitSwitch.isPressed();
 	}
 
 	public void toggleExtract() {

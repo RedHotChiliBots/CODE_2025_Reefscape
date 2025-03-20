@@ -46,11 +46,11 @@ public class Ladder extends SubsystemBase {
 
 	// define ladder positions
 	public enum LadderSP {
-		BARGE((-8.0 * 12.0) - 5.0),
+		BARGE((-8.0 * 12.0) + 2.5),
 		L4(-6.0 * 12.0),
 		L3((-3.0 * 12.0) - 11.625),
 		L2((-2.0 * 12.0) - 7.825),
-		L1((-1.0 * 12.0) - 2.0),
+		L1((-1.0 * 12.0) - 6.0),
 		STATION((-3.0 * 12.0) - 1.5),
 		PROCESSOR(0.0 - 7.0),
 		FLOOR(-0.5 * 12.0),
@@ -72,6 +72,7 @@ public class Ladder extends SubsystemBase {
 
 	private boolean firstPeriod = true;
 	private boolean zeroingLadder = false;
+	private boolean ladderZeroed = false;
 
 	private Library lib = new Library();
 
@@ -92,7 +93,7 @@ public class Ladder extends SubsystemBase {
 			.withSize(2, 1).getEntry();
 	private final GenericEntry sbLadderPos = compTab.addPersistent("Ladder Pos", 0)
 			.withWidget("Text View").withPosition(13, 4)
-			.withSize(2, 1).getEntry();
+			.withSize(2, 2).getEntry();
 
 	private final GenericEntry sbLimit = compTab.addPersistent("Ladder Limit", false)
 			.withWidget("Boolean Box").withPosition(13, 6)
@@ -180,7 +181,6 @@ public class Ladder extends SubsystemBase {
 		ladderCommands.add("Stow", this.stow)
 				.withProperties(Map.of("show type", false));
 
-
 		// Initialize intake start positions
 		leftEncoder.setPosition(ladderSP.getValue());
 		setLadderPos(ladderSP);
@@ -222,15 +222,15 @@ public class Ladder extends SubsystemBase {
 	/**************************************************************
 	 * Commands
 	 **************************************************************/
-	public Command barge = new InstantCommand(() -> setLadderPos(LadderSP.BARGE));
-	public Command l4 = new InstantCommand(() -> setLadderPos(LadderSP.L4));
-	public Command l3 = new InstantCommand(() -> setLadderPos(LadderSP.L3));
-	public Command l2 = new InstantCommand(() -> setLadderPos(LadderSP.L2));
-	public Command l1 = new InstantCommand(() -> setLadderPos(LadderSP.L1));
-	public Command station = new InstantCommand(() -> setLadderPos(LadderSP.STATION));
-	public Command processor = new InstantCommand(() -> setLadderPos(LadderSP.PROCESSOR));
-	public Command floor = new InstantCommand(() -> setLadderPos(LadderSP.FLOOR));
-	public Command stow = new InstantCommand(() -> setLadderPos(LadderSP.STOW));
+	public Command barge = new InstantCommand(() -> setLadderPos(LadderSP.BARGE), this);
+	public Command l4 = new InstantCommand(() -> setLadderPos(LadderSP.L4), this);
+	public Command l3 = new InstantCommand(() -> setLadderPos(LadderSP.L3), this);
+	public Command l2 = new InstantCommand(() -> setLadderPos(LadderSP.L2), this);
+	public Command l1 = new InstantCommand(() -> setLadderPos(LadderSP.L1), this);
+	public Command station = new InstantCommand(() -> setLadderPos(LadderSP.STATION), this);
+	public Command processor = new InstantCommand(() -> setLadderPos(LadderSP.PROCESSOR), this);
+	public Command floor = new InstantCommand(() -> setLadderPos(LadderSP.FLOOR), this);
+	public Command stow = new InstantCommand(() -> setLadderPos(LadderSP.STOW), this);
 
 	/**************************************************************
 	 * Methods
@@ -248,7 +248,12 @@ public class Ladder extends SubsystemBase {
 			leftEncoder.setPosition(LadderSP.START.getValue());
 			setLadderPos(LadderSP.STOW);
 			zeroingLadder = false;
+			ladderZeroed = true;
 		}
+	}
+
+	public boolean isLadderZeroed() {
+		return ladderZeroed;
 	}
 
 	public boolean onTarget() {
