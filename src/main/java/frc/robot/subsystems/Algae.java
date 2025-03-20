@@ -226,7 +226,7 @@ public class Algae extends SubsystemBase {
 				.withProperties(Map.of("show type", false));
 
 
-		setAlgaeSP(AlgaeSP.ZERO);
+		setAlgaeSP(AlgaeSP.STOWUP);
 		setIntakeVel(getAlgaeSP());
 		setTiltPos(getAlgaeSP());
 

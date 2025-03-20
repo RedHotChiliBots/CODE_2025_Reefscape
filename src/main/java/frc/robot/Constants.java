@@ -348,12 +348,12 @@ public final class Constants {
 
 		public static final double kTollerance = 0.5; // degrees
 
-		public static final double kLeftZeroOffset = 0.0145794;
+		public static final double kLeftZeroOffset = 0.5297125;
 		public static final boolean kLeftZeroCentered = true;
 		public static final boolean kLeftMotorInverted = true;
 		public static final boolean kLeftEncoderInverted = true;
 
-		public static final double kRightZeroOffset = 0.3814066;
+		public static final double kRightZeroOffset = 0.8341073;
 		public static final boolean kRightZeroCentered = true;
 		public static final boolean kRightMotorInverted = true;
 		public static final boolean kRightEncoderInverted = true;

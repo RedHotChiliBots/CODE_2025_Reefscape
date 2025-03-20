@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Chassis;
@@ -27,12 +28,12 @@ public class AutonLeaveNScoreL1 extends SequentialCommandGroup {
     addCommands(
         new ParallelCommandGroup(
             new ChassisTimedDrive(chassis, 0.25, 1.0),
-            robotContainer.goL1a),
+            robotContainer.goL1),
         new ParallelCommandGroup(
             coral.doAction(),
             algae.doAction()));
-        // robotContainer.doActiona,
-        // new WaitCommand(0.2),
-        // robotContainer.goStationa);
+    // robotContainer.doActiona,
+    // new WaitCommand(0.2),
+    // robotContainer.goStationa);
   }
 }

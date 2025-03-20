@@ -236,7 +236,7 @@ public class Coral extends SubsystemBase {
 		coralCommands.add("Zero", this.zero)
 				.withProperties(Map.of("show type", false));
 
-		setCoralSP(CoralSP.ZERO);
+		setCoralSP(CoralSP.STOW);
 		setLeftIntakeVel(getCoralSP());
 		setRightIntakeVel(getCoralSP());
 		setTiltPos(getCoralSP());

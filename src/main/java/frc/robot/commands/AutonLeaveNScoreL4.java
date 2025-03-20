@@ -27,7 +27,7 @@ public class AutonLeaveNScoreL4 extends SequentialCommandGroup {
     addCommands(
         new ParallelCommandGroup(
             new ChassisTimedDrive(chassis, 0.25, 1.0),
-            robotContainer.goL4a),
+            robotContainer.goL4),
         new ParallelCommandGroup(
             coral.doAction(),
             algae.doAction()));

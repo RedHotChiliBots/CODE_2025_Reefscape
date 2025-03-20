@@ -46,7 +46,7 @@ public class Ladder extends SubsystemBase {
 
 	// define ladder positions
 	public enum LadderSP {
-		BARGE((-8.0 * 12.0) - 5.0),
+		BARGE((-8.0 * 12.0) + 2.5),
 		L4(-6.0 * 12.0),
 		L3((-3.0 * 12.0) - 11.625),
 		L2((-2.0 * 12.0) - 7.825),
@@ -72,6 +72,7 @@ public class Ladder extends SubsystemBase {
 
 	private boolean firstPeriod = true;
 	private boolean zeroingLadder = false;
+	private boolean ladderZeroed = false;
 
 	private Library lib = new Library();
 
@@ -180,7 +181,6 @@ public class Ladder extends SubsystemBase {
 		ladderCommands.add("Stow", this.stow)
 				.withProperties(Map.of("show type", false));
 
-
 		// Initialize intake start positions
 		leftEncoder.setPosition(ladderSP.getValue());
 		setLadderPos(ladderSP);
@@ -248,7 +248,12 @@ public class Ladder extends SubsystemBase {
 			leftEncoder.setPosition(LadderSP.START.getValue());
 			setLadderPos(LadderSP.STOW);
 			zeroingLadder = false;
+			ladderZeroed = true;
 		}
+	}
+
+	public boolean isLadderZeroed() {
+		return ladderZeroed;
 	}
 
 	public boolean onTarget() {
