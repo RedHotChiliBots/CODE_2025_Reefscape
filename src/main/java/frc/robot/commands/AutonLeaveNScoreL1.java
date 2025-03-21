@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
@@ -23,6 +24,8 @@ public class AutonLeaveNScoreL1 extends SequentialCommandGroup {
   public AutonLeaveNScoreL1(RobotContainer robotContainer, Chassis chassis, Ladder ladder, Algae algae, Coral coral,
       Climber climber) {
 
+    System.out.println("Starting AutonLeaveNScoreL1");
+
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
@@ -30,10 +33,12 @@ public class AutonLeaveNScoreL1 extends SequentialCommandGroup {
             new ChassisTimedDrive(chassis, 0.25, 1.0),
             robotContainer.goL1),
         new ParallelCommandGroup(
-            coral.doAction(),
-            algae.doAction()));
+            new InstantCommand(() -> coral.doAction()),
+            new InstantCommand(() -> algae.doAction())));
     // robotContainer.doActiona,
     // new WaitCommand(0.2),
     // robotContainer.goStationa);
+
+    System.out.println("Finishing AutonLeaveNScoreL1");
   }
 }

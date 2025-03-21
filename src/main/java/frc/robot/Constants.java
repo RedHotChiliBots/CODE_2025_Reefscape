@@ -241,6 +241,7 @@ public final class Constants {
 		public static final int kRightPDHChannel = 15; // amps
 
 		public static final int kLeftCurrentLimit = 20; // amps
+		public static final int kRightCurrentLimit = 20; // amps
 		public static final int kTiltCurrentLimit = 20; // amps
 	}
 
@@ -340,20 +341,20 @@ public final class Constants {
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
 		public static final IdleMode kRightIdleMode = IdleMode.kBrake;
 
-		public static final int kLeftCurrentLimit = 20; // amps
-		public static final int kRightCurrentLimit = 20; // amps
+		public static final int kLeftCurrentLimit = 40; // amps
+		public static final int kRightCurrentLimit = 40; // amps
 	}
 
 	public static final class Climber {
 
 		public static final double kTollerance = 0.5; // degrees
 
-		public static final double kLeftZeroOffset = 0.5297125;
+		public static final double kLeftZeroOffset = 0.7228662;
 		public static final boolean kLeftZeroCentered = true;
 		public static final boolean kLeftMotorInverted = true;
 		public static final boolean kLeftEncoderInverted = true;
 
-		public static final double kRightZeroOffset = 0.8341073;
+		public static final double kRightZeroOffset = 0.8273262;
 		public static final boolean kRightZeroCentered = true;
 		public static final boolean kRightMotorInverted = true;
 		public static final boolean kRightEncoderInverted = true;
@@ -365,9 +366,9 @@ public final class Constants {
 																				// 360.0; // degrees
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // degrees per second
 
-		public static final double kTiltPosP = 0.002;
-		public static final double kTiltPosI = 0.000001;
-		public static final double kTiltPosD = 0.0;
+		// public static final double kTiltPosP = 0.002;
+		// public static final double kTiltPosI = 0.000001;
+		// public static final double kTiltPosD = 0.0;
 		
 		public static final double kPosP = 0.025;
 		public static final double kPosI = 0.0;
@@ -382,7 +383,7 @@ public final class Constants {
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
 		public static final IdleMode kRightIdleMode = IdleMode.kBrake;
 
-		public static final int kLeftCurrentLimit = 20; // amps
-		public static final int kRightCurrentLimit = 20; // amps
+		public static final int kLeftCurrentLimit = 40; // amps
+		public static final int kRightCurrentLimit = 40; // amps
 	}
 }

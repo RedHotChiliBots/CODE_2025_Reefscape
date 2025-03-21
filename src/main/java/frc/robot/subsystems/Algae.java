@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.commands.AlgaeEject;
 import frc.robot.commands.AlgaeIntake;
+import frc.robot.subsystems.Ladder.LadderSP;
 import frc.robot.utils.Library;
 
 public class Algae extends SubsystemBase {
@@ -65,8 +66,8 @@ public class Algae extends SubsystemBase {
 		L3(-35.0, Constants.Algae.INTAKE),
 		FLOOR(0.0, Constants.Algae.INTAKE);
 
-		private final double tilt;
-		private final double intake;
+		private double tilt;
+		private double intake;
 
 		AlgaeSP(double tilt, double intake) {
 			this.tilt = tilt;
@@ -279,6 +280,37 @@ public class Algae extends SubsystemBase {
 	public Command intake = new AlgaeIntake(this);
 	
 	public Command eject = new AlgaeEject(this);
+
+	/**
+	 * doAction - performs Algea action based on Ladder position
+	 */
+	public Command doAction() {
+		Command cmd = null;
+		LadderSP sp = ladder.getLadderSP();
+
+		System.out.println("Algae Ladder SP: " + sp.toString());
+
+		switch (sp) {
+			case BARGE:
+			case PROCESSOR:
+				cmd = this.eject;
+				break;
+			case L3:
+			case L2:
+				if (extractAlgae) {
+					cmd = this.intake;
+				}
+				break;
+			case FLOOR:
+				cmd = this.intake;
+				break;
+			default:
+				cmd = new WaitCommand(0.25);
+		}
+
+		return cmd;
+	}
+
 	// new InstantCommand(() -> setIntakeVel(algaeSP))
 	// 		.andThen(new WaitCommand(0.5))
 	// 		.andThen(() -> setIntakeVel(Constants.Algae.STOP));
@@ -365,32 +397,5 @@ public class Algae extends SubsystemBase {
 
 	public boolean getExtract() {
 		return extractAlgae;
-	}
-
-	/**
-	 * doAction - performs Algea action based on Ladder position
-	 */
-	public Command doAction() {
-		Command cmd = null;
-
-		switch (ladder.getLadderSP()) {
-			case BARGE:
-			case PROCESSOR:
-				cmd = this.eject;
-				break;
-			case L3:
-			case L2:
-				if (extractAlgae) {
-					cmd = this.intake;
-				}
-				break;
-			case FLOOR:
-				cmd = this.intake;
-				break;
-			default:
-				cmd = new WaitCommand(0.25);
-		}
-
-		return cmd;
 	}
 }

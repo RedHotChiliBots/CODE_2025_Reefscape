@@ -46,7 +46,7 @@ public class Ladder extends SubsystemBase {
 
 	// define ladder positions
 	public enum LadderSP {
-		BARGE((-8.0 * 12.0) + 2.5),
+		BARGE((-8.0 * 12.0) + 2.5),	// 93.5"  Max Height for Ladder
 		L4(-6.0 * 12.0),
 		L3((-3.0 * 12.0) - 11.625),
 		L2((-2.0 * 12.0) - 7.825),
@@ -57,9 +57,9 @@ public class Ladder extends SubsystemBase {
 		STOW(-0.5 * 12.0),
 		START(0.0);
 
-		private final double sp;
+		private double sp;
 
-		LadderSP(final double sp) {
+		LadderSP(double sp) {
 			this.sp = sp;
 		}
 
@@ -182,8 +182,8 @@ public class Ladder extends SubsystemBase {
 				.withProperties(Map.of("show type", false));
 
 		// Initialize intake start positions
-		leftEncoder.setPosition(ladderSP.getValue());
-		setLadderPos(ladderSP);
+		// leftEncoder.setPosition(ladderSP.getValue());
+		// setLadderPos(ladderSP);
 
 		System.out.println("----- Ending Ladder Constructor -----");
 	}

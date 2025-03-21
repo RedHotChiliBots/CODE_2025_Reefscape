@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.commands.CoralEject;
 import frc.robot.commands.CoralIntake;
+import frc.robot.subsystems.Ladder.LadderSP;
 import frc.robot.utils.Library;
 
 public class Coral extends SubsystemBase {
@@ -62,8 +63,8 @@ public class Coral extends SubsystemBase {
 		L3(-35.0, Constants.Coral.EJECT), // degrees
 		L4(-40.0, Constants.Coral.EJECT); // degrees
 
-		private final double tilt;
-		private final double intake;
+		private double tilt;
+		private double intake;
 
 		CoralSP(double tilt, double intake) {
 			this.tilt = tilt;
@@ -169,7 +170,7 @@ public class Coral extends SubsystemBase {
 		rightConfig
 				.inverted(Constants.Coral.kLeftMotorInverted)
 				.idleMode(Constants.Coral.kIntakeIdleMode)
-				.smartCurrentLimit(Constants.Coral.kLeftCurrentLimit);
+				.smartCurrentLimit(Constants.Coral.kRightCurrentLimit);
 		rightConfig.encoder
 				.positionConversionFactor(Constants.Coral.kIntakePositionFactor)
 				.velocityConversionFactor(Constants.Coral.kIntakeVelocityFactor);
@@ -301,9 +302,30 @@ public class Coral extends SubsystemBase {
 	public Command intake = new CoralIntake(this);
 
 	public Command eject = new CoralEject(this);
-	// new InstantCommand(() -> setIntakeVel(coralSP))
-	// .andThen(new WaitCommand(0.5))
-	// .andThen(() -> setIntakeVel(Constants.Coral.STOP));
+
+	public Command doAction() {
+		Command cmd = null;
+		LadderSP sp = ladder.getLadderSP();
+
+		System.out.println("Coral Ladder SP: " + sp.toString());
+
+		switch (sp) {
+			case L4:
+			case L3:
+			case L2:
+			case L1:
+				cmd = this.eject;
+				break;
+			case STATION:
+				cmd = this.intake;
+				break;
+			default:
+				cmd = new WaitCommand(0.25);
+		}
+
+		return cmd;
+	}
+
 
 	/**************************************************************
 	 * Methods
@@ -455,25 +477,5 @@ public class Coral extends SubsystemBase {
 
 	public boolean onRightIntakeTarget() {
 		return Math.abs(getRightIntakeVel() - getCoralSP().getIntake()) < Constants.Coral.kIntakeTollerance;
-	}
-
-	public Command doAction() {
-		Command cmd = null;
-
-		switch (ladder.getLadderSP()) {
-			case L4:
-			case L3:
-			case L2:
-			case L1:
-				cmd = this.eject;
-				break;
-			case STATION:
-				cmd = this.intake;
-				break;
-			default:
-				cmd = new WaitCommand(0.25);
-		}
-
-		return cmd;
 	}
 }
