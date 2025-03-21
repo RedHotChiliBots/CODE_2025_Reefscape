@@ -305,6 +305,8 @@ public final class Constants {
 
 	public static final class Ladder {
 
+		public static final double kMaxLadderHeight = 93.5;	// inches
+
 		// define ladder zeroing speeds
 		public static final double DOWN = 0.10;
 		public static final double STOP = 0.0;

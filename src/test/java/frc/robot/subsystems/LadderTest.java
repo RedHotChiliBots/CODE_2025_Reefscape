@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import frc.robot.Constants;
 import frc.robot.subsystems.Ladder.LadderSP;
 
 
@@ -14,9 +15,8 @@ public class LadderTest {
 
 	@Test
 	public void testMaxHeight() {
-		double maxHeight = 93.5;
 		for (LadderSP height : LadderSP.values()) {
-			assertTrue(height.getValue() <= maxHeight);
+			assertTrue(height.getValue() <= Constants.Ladder.kMaxLadderHeight);
 		}
 	}
 }
