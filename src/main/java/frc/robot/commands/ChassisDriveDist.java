@@ -4,46 +4,49 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.Chassis;
 
-public class AlgaeEject extends Command {
+public class ChassisDriveDist extends Command {
   /** Creates a new ChassisDrive. */
 
-  private Algae algae = null;
-  private final Timer timer = new Timer();
+  private Chassis chassis = null;
+  private Translation2d initTrans = null;
+  private double dist = 0.0;
+  private double vel = 0.0;
 
-  public AlgaeEject(Algae algae) {
-    this.algae = algae;
+  public ChassisDriveDist(Chassis chassis, double vel, double dist) {
+    this.chassis = chassis;
+    this.dist = dist;
+    this.vel = vel;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    //addRequirements(algae);
+    addRequirements(chassis);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    timer.start();
-    timer.reset();
-    algae.setIntakeVel(Constants.Coral.EJECT);
+    initTrans = chassis.getPose().getTranslation();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    chassis.drive(vel, 0.0, 0.0, true);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    algae.setIntakeVel(Constants.Coral.STOP);
+    chassis.drive(0.0, 0.0, 0.0, true);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(1.0) ;
+    double currDist = chassis.getPose().getTranslation().getDistance(initTrans);
+    return currDist >= dist;
   }
 }

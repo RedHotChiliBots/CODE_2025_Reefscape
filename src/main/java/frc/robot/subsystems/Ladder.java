@@ -46,20 +46,21 @@ public class Ladder extends SubsystemBase {
 
 	// define ladder positions
 	public enum LadderSP {
-		BARGE((-8.0 * 12.0) + 2.5),
-		L4(-6.0 * 12.0),
-		L3((-3.0 * 12.0) - 11.625),
-		L2((-2.0 * 12.0) - 7.825),
-		L1((-1.0 * 12.0) - 6.0),
-		STATION((-3.0 * 12.0) - 1.5),
-		PROCESSOR(0.0 - 7.0),
-		FLOOR(-0.5 * 12.0),
+		BARGE((-8.0 * 12.0) + 1.0),	// 93.5"  Max Height for Ladder
+		L4((-6.0 * 12.0) + 0.5),
+		L35((-5.0 * 12.0) - 3.375 + 2.5),
+		L3((-3.0 * 12.0) - 11.625 + 2.5),
+		L2((-2.0 * 12.0) - 7.825 + 3.5),
+		L1((-1.0 * 12.0) - 6.0 - 1.5),
+		STATION((-3.0 * 12.0) - 1.5 + 18.0),
+		PROCESSOR(0.0 - 7.0 + 1.5),
+		FLOOR((-0.25 * 12.0)),
 		STOW(-0.5 * 12.0),
 		START(0.0);
 
-		private final double sp;
+		private double sp;
 
-		LadderSP(final double sp) {
+		LadderSP(double sp) {
 			this.sp = sp;
 		}
 
@@ -166,6 +167,8 @@ public class Ladder extends SubsystemBase {
 				.withProperties(Map.of("show type", false));
 		ladderCommands.add("L4", this.l4)
 				.withProperties(Map.of("show type", false));
+		ladderCommands.add("L35", this.l35)
+				.withProperties(Map.of("show type", false));
 		ladderCommands.add("L3", this.l3)
 				.withProperties(Map.of("show type", false));
 		ladderCommands.add("L2", this.l2)
@@ -182,8 +185,8 @@ public class Ladder extends SubsystemBase {
 				.withProperties(Map.of("show type", false));
 
 		// Initialize intake start positions
-		leftEncoder.setPosition(ladderSP.getValue());
-		setLadderPos(ladderSP);
+		// leftEncoder.setPosition(ladderSP.getValue());
+		// setLadderPos(ladderSP);
 
 		System.out.println("----- Ending Ladder Constructor -----");
 	}
@@ -224,6 +227,7 @@ public class Ladder extends SubsystemBase {
 	 **************************************************************/
 	public Command barge = new InstantCommand(() -> setLadderPos(LadderSP.BARGE), this);
 	public Command l4 = new InstantCommand(() -> setLadderPos(LadderSP.L4), this);
+	public Command l35 = new InstantCommand(() -> setLadderPos(LadderSP.L35), this);
 	public Command l3 = new InstantCommand(() -> setLadderPos(LadderSP.L3), this);
 	public Command l2 = new InstantCommand(() -> setLadderPos(LadderSP.L2), this);
 	public Command l1 = new InstantCommand(() -> setLadderPos(LadderSP.L1), this);

@@ -19,7 +19,7 @@ public class AlgaeIntake extends Command {
     this.algae = algae;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(algae);
+    //addRequirements(algae);
   }
 
   // Called when the command is initially scheduled.
@@ -38,8 +38,8 @@ public class AlgaeIntake extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    algae.holdIntakePos();
-    //algae.setIntakeVel(Constants.Coral.INTAKE / 4.0);
+    //algae.holdIntakePos();
+    algae.setIntakeVel(Constants.Coral.INTAKE / 2.0);
   }
 
   // Returns true when the command should end.

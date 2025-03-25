@@ -4,15 +4,19 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
+
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Ladder;
+import frc.robot.subsystems.Coral.IntakeEject;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -25,15 +29,18 @@ public class AutonLeaveNScoreL1 extends SequentialCommandGroup {
 
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(
-        new ParallelCommandGroup(
-            new ChassisTimedDrive(chassis, 0.25, 1.0),
-            robotContainer.goL1),
-        new ParallelCommandGroup(
-            coral.doAction(),
-            algae.doAction()));
-    // robotContainer.doActiona,
-    // new WaitCommand(0.2),
-    // robotContainer.goStationa);
+    // addCommands(
+    //     new ParallelCommandGroup(
+    //         new ChassisTimedDrive(chassis, 0.25, 1.0),
+    //         robotContainer.goL1,
+    //         new InstantCommand(() -> coral.doAction())),
+    //     new WaitUntilCommand(() -> coral.onTiltTarget()),
+    //     new ParallelCommandGroup(
+    //         new CoralEject(coral).onlyIf(() -> coral.getIntakeEject() == Coral.IntakeEject.EJECT),
+    //         new CoralIntake(coral).onlyIf(() -> coral.getIntakeEject() == Coral.IntakeEject.INTAKE),
+    //         new AlgaeEject(algae).onlyIf(() -> algae.getIntakeEject() == Algae.IntakeEject.EJECT),
+    //         new AlgaeIntake(algae).onlyIf(() -> algae.getIntakeEject() == Algae.IntakeEject.INTAKE)),
+    //     new InstantCommand(() -> algae.setIntakeEject(Algae.IntakeEject.STOP)),
+    //     new InstantCommand(() -> coral.setIntakeEject(Coral.IntakeEject.STOP)));
   }
 }
