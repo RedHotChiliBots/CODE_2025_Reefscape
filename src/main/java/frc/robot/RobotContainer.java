@@ -21,7 +21,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.AlgaeEject;
+import frc.robot.commands.AlgaeIntake;
 import frc.robot.commands.Autos;
+import frc.robot.commands.CoralEject;
+import frc.robot.commands.CoralIntake;
 import frc.robot.subsystems.Algae;
 import frc.robot.subsystems.Algae.AlgaeSP;
 import frc.robot.subsystems.Chassis;
@@ -49,15 +53,15 @@ import org.photonvision.PhotonCamera;
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	// TEST
-	// private final PhotonCamera camera1 = new PhotonCamera("PhotonVision 1");
-	// private final PhotonCamera camera2 = new PhotonCamera("PhotonVision 2");
-	// private final PhotonCamera camera3 = new PhotonCamera("PhotonVision 3");
-	// private final PhotonCamera camera4 = new PhotonCamera("PhotonVision 4");
-	// private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3,
-	// 		camera4);
+	private final PhotonCamera camera1 = new PhotonCamera("PhotonVision 1");
+	private final PhotonCamera camera2 = new PhotonCamera("PhotonVision 2");
+	private final PhotonCamera camera3 = new PhotonCamera("PhotonVision 3");
+	private final PhotonCamera camera4 = new PhotonCamera("PhotonVision 4");
+	private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3,
+	camera4);
 
-	// private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
-	// 		cameras.get(2), cameras.get(3));
+	private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
+	cameras.get(2), cameras.get(3));
 
 	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
@@ -85,61 +89,78 @@ public class RobotContainer {
 			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L4), ladder),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOWDN), algae),
-			new WaitCommand(0.5),
+			new WaitCommand(0.75),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L4), coral));
+
+	public final Command goL35 = new SequentialCommandGroup(
+			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L35), ladder),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L35), algae),
+			new WaitCommand(0.75),
+			new InstantCommand(() -> coral.setTiltPos(CoralSP.L35), coral));
 
 	public final Command goL3 = new SequentialCommandGroup(
 			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L3), ladder),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L3), algae),
-			new WaitCommand(0.5),
+			new WaitCommand(0.75),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L3), coral));
 
 	public final Command goL2 = new SequentialCommandGroup(
 			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L2), ladder),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.L2), algae),
-			new WaitCommand(0.5),
+			new WaitCommand(0.75),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L2), coral));
 
 	public final Command goL1 = new SequentialCommandGroup(
 			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.L1), ladder),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOWDN), algae),
-			new WaitCommand(0.5),
+			new WaitCommand(0.75),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.L1), coral));
 
 	public final Command goStation = new SequentialCommandGroup(
 			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STATION), ladder),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOWDN), algae),
-			new WaitCommand(0.5),
+			new WaitCommand(0.75),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STATION), coral));
 
 	public final Command goProcessor = new SequentialCommandGroup(
 			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.PROCESSOR), ladder),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW), coral),
-			new WaitCommand(0.5),
+			new WaitCommand(0.75),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.PROCESSOR), algae));
 
 	public final Command goFloor = new SequentialCommandGroup(
 			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
-			new InstantCommand(() -> ladder.setLadderPos(LadderSP.FLOOR), ladder),
+			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.FLOOR), algae),
+			new WaitCommand(0.75),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW), coral),
-			new WaitCommand(0.5),
-			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.FLOOR), algae));
+			new InstantCommand(() -> ladder.setLadderPos(LadderSP.FLOOR), ladder));
 
 	public final Command goStow = new SequentialCommandGroup(
 			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new WaitCommand(0.1),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOWUP)),
+			new WaitCommand(0.75),		
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STOW)));
 
-	public final Command doAction = new ParallelCommandGroup(
-			new InstantCommand(() -> coral.doAction(), coral),
-			new InstantCommand(() -> algae.doAction(), algae));
+	public final Command doAction = new SequentialCommandGroup(
+			new WaitUntilCommand(() -> ladder.onTarget()),
+			new ParallelCommandGroup(
+					new InstantCommand(() -> coral.doAction(), coral),
+					new InstantCommand(() -> algae.doAction(), algae)),
+			new ParallelCommandGroup(
+					new CoralEject(coral).onlyIf(() -> coral.getIntakeEject() == Coral.IntakeEject.EJECT),
+					new CoralIntake(coral).onlyIf(() -> coral.getIntakeEject() == Coral.IntakeEject.INTAKE),
+					new AlgaeEject(algae).onlyIf(() -> algae.getIntakeEject() == Algae.IntakeEject.EJECT),
+					new AlgaeIntake(algae).onlyIf(() -> algae.getIntakeEject() == Algae.IntakeEject.INTAKE)),
+			new InstantCommand(() -> algae.setIntakeEject(Algae.IntakeEject.STOP)),
+			new InstantCommand(() -> coral.setIntakeEject(Coral.IntakeEject.STOP)));
 
 	private final Autos auton = new Autos(this, chassis, ladder, algae, coral, climber);
 
@@ -185,7 +206,8 @@ public class RobotContainer {
 		// compTab.add("Climber", climber);
 		// TEST
 		// for (PhotonCamera camera : cameras) {
-		// 	camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web interface
+		// camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web
+		// interface
 		// }
 
 		// Configure the trigger bindings
@@ -232,11 +254,19 @@ public class RobotContainer {
 		// OIConstants.kDriveDeadband)),
 		// algae));
 
+		Shuffleboard.getTab("Automomous")
+		.addCamera("PhotonVision 2", "PhotonVision 2",
+		"mjpg:http://10.44.53:1185/?action=stream")
+		.withProperties(Map.of("showControls", false))
+		.withPosition(0,0)
+		.withSize(6,6);
+
 		ShuffleboardLayout toggleCommands = cmdTab
 				.getLayout("Toggle", BuiltInLayouts.kList)
 				.withSize(3, 4)
 				.withPosition(13, 7)
 				.withProperties(Map.of("Label position", "Hidden"));
+
 		toggleCommands.add("Algae Extract", algae.toggleExtract);
 		toggleCommands.add("Coral Left-Right", coral.toggleSide);
 
@@ -249,6 +279,8 @@ public class RobotContainer {
 		goCommands.add("Barge", goBarge)
 				.withProperties(Map.of("show type", false));
 		goCommands.add("L4", goL4)
+				.withProperties(Map.of("show type", false));
+		goCommands.add("L35", goL35)
 				.withProperties(Map.of("show type", false));
 		goCommands.add("L3", goL3)
 				.withProperties(Map.of("show type", false));
@@ -314,20 +346,24 @@ public class RobotContainer {
 		// new POVButton(m_operatorHID, 180).onTrue(algae.floor);
 
 		m_operatorController.y().onTrue(this.goL4);
-		m_operatorController.b().onTrue(this.goL3);
-		m_operatorController.a().onTrue(this.goL2);
-		m_operatorController.x().onTrue(this.goL1);
+		m_operatorController.x().onTrue(this.goL3);
+		m_operatorController.b().onTrue(this.goL2);
+		m_operatorController.a().onTrue(this.goL1);
 
 		new POVButton(m_operatorHID, 0).onTrue(this.goBarge);
 		new POVButton(m_operatorHID, 90).onTrue(this.goStation);
 		new POVButton(m_operatorHID, 270).onTrue(this.goProcessor);
 		new POVButton(m_operatorHID, 180).onTrue(this.goFloor);
 
-		m_operatorController.start().onTrue(climber.ready);
+		// m_operatorController.start().onTrue(climber.ready);
 		m_operatorController.back().onTrue(this.goStow);
+		m_operatorController.start().onTrue(climber.climb);
 
-		m_operatorController.leftBumper().onTrue(climber.climb);
+		m_operatorController.leftBumper().onTrue(this.goL35);
 		m_operatorController.rightBumper().onTrue(this.doAction);
+
+		m_operatorController.rightStick().onTrue(algae.toggleExtract);
+		m_operatorController.leftStick().onTrue(coral.intake);
 
 	}
 

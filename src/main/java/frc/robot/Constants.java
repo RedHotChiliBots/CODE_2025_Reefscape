@@ -223,14 +223,24 @@ public final class Constants {
 		public static final double kIntakeVelMaxAccel = 20000.0;
 		public static final double kIntakeVelAllowedErr = 1.0;
 
-		public static final double kTiltPosP = 0.0022;
-		public static final double kTiltPosI = 0.0000000015;
+		// public static final double kTiltPosP = 0.005; // 0.0022;
+		// public static final double kTiltPosI = 0.0; // 0.00000000015;
+		// public static final double kTiltPosD = 0.02; // 0.1;
+		// public static final double kTiltPosMinOutput = -1.0;
+		// public static final double kTiltPosMaxOutput = 1.0;
+
+		// public static final double kTiltPosMaxVel = 10000.0;
+		// public static final double kTiltPosMaxAccel = 30000.0;
+		// public static final double kTiltPosAllowedErr = 0.1;
+
+		public static final double kTiltPosP = 0.0015;
+		public static final double kTiltPosI = 0.0;
 		public static final double kTiltPosD = 0.0;
 		public static final double kTiltPosMinOutput = -1.0;
 		public static final double kTiltPosMaxOutput = 1.0;
 
-		public static final double kTiltPosMaxVel = 10000.0;
-		public static final double kTiltPosMaxAccel = 30000.0;
+		public static final double kTiltPosMaxVel = 8000.0;	//30000.0;
+		public static final double kTiltPosMaxAccel = 24000.0;	//40000.0;
 		public static final double kTiltPosAllowedErr = 0.1;
 
 		public static final IdleMode kIntakeIdleMode = IdleMode.kBrake;
@@ -255,7 +265,7 @@ public final class Constants {
 		public static final double INTAKE = 5000.0;
 		public static final double EJECT = -5000.0;
 
-		public static final double kTiltZeroOffset = 0.6477655;
+		public static final double kTiltZeroOffset = 0.3248151;
 		public static final boolean kTiltZeroCentered = true;
 		public static final boolean kTiltMotorInverted = true;
 		public static final boolean kTiltEncoderInverted = true;
@@ -284,14 +294,14 @@ public final class Constants {
 		public static final double kIntakeVelMaxAccel = 20000.0;
 		public static final double kIntakeVelAllowedErr = 1.0;
 
-		public static final double kTiltPosP = 0.0022;
-		public static final double kTiltPosI = 0.00000000015;
-		public static final double kTiltPosD = 0.0;
+		public static final double kTiltPosP = 0.005;	//0.0022;
+		public static final double kTiltPosI = 0.0;	//0.00000000015;
+		public static final double kTiltPosD = 0.02;	//0.1;
 		public static final double kTiltPosMinOutput = -1.0;
 		public static final double kTiltPosMaxOutput = 1.0;
 
-		public static final double kTiltPosMaxVel = 20000.0;
-		public static final double kTiltPosMaxAccel = 20000.0;
+		public static final double kTiltPosMaxVel = 10000.0;
+		public static final double kTiltPosMaxAccel = 30000.0;
 		public static final double kTiltPosAllowedErr = 0.1;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
@@ -330,21 +340,21 @@ public final class Constants {
 				* kStage3perStage1;
 		public static final double kLiftVelocityFactor = kLiftPostionFactor / 60.0;
 
-		public static final double kPosP = 0.0275;
+		public static final double kPosP = 0.1;
 		public static final double kPosI = 0.0;
-		public static final double kPosD = 0.0;
+		public static final double kPosD = 0.0022;
 		public static final double kPosMinOutput = -1.0;
 		public static final double kPosMaxOutput = 1.0;
 
-		public static final double kMaxVel = 5000;	//3000.0;
-		public static final double kMaxAccel = 3000.0;
-		public static final double kAllowedErr = 0.1;
+		public static final double kMaxVel = 5500;	//3000.0; //100000
+		public static final double kMaxAccel = 12000; // 17000
+		public static final double kAllowedErr = 0.2;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
 		public static final IdleMode kRightIdleMode = IdleMode.kBrake;
 
-		public static final int kLeftCurrentLimit = 40; // amps
-		public static final int kRightCurrentLimit = 40; // amps
+		public static final int kLeftCurrentLimit = 50; // amps
+		public static final int kRightCurrentLimit = 50; // amps
 	}
 
 	public static final class Climber {
@@ -378,14 +388,14 @@ public final class Constants {
 		public static final double kPosMinOutput = -1.0;
 		public static final double kPosMaxOutput = 1.0;
 
-		public static final double kPosMaxVel = 10000.0;	//5000.0
-		public static final double kPosMaxAccel = 10000.0;	//5000.0
+		public static final double kPosMaxVel = 100000.0;	//5000.0
+		public static final double kPosMaxAccel = 40000.0;	//5000.0
 		public static final double kPosAllowedErr = 0.1;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
 		public static final IdleMode kRightIdleMode = IdleMode.kBrake;
 
-		public static final int kLeftCurrentLimit = 40; // amps
-		public static final int kRightCurrentLimit = 40; // amps
+		public static final int kLeftCurrentLimit = 50; // amps
+		public static final int kRightCurrentLimit = 50; // amps
 	}
 }

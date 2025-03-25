@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+
 import frc.robot.Constants;
 import frc.robot.commands.CoralEject;
 import frc.robot.commands.CoralIntake;
@@ -54,14 +54,21 @@ public class Coral extends SubsystemBase {
 	private RelativeEncoder rightEncoder = rightIntake.getEncoder();
 	private AbsoluteEncoder tiltEncoder = tilt.getAbsoluteEncoder();
 
+	public enum IntakeEject {
+		INTAKE,
+		EJECT,
+		STOP;
+	}
+
 	public enum CoralSP {
-		STOW(90.0, Constants.Coral.STOP), // degrees
-		STATION(55.0, Constants.Coral.INTAKE), // degrees
+		STOW(80.0, Constants.Coral.STOP), // degrees
+		STATION(40.0, Constants.Coral.INTAKE), // degrees
 		ZERO(0.0, Constants.Coral.STOP),
-		L1(0.0, Constants.Coral.EJECT), // degrees
+		L1(-35.0, Constants.Coral.EJECT), // degrees
 		L2(-35.0, Constants.Coral.EJECT), // degrees
 		L3(-35.0, Constants.Coral.EJECT), // degrees
-		L4(-40.0, Constants.Coral.EJECT); // degrees
+		L35(90.0, Constants.Coral.STOP), // degrees
+		L4(-45.0, Constants.Coral.EJECT); // degrees
 
 		private double tilt;
 		private double intake;
@@ -79,6 +86,8 @@ public class Coral extends SubsystemBase {
 			return intake;
 		}
 	}
+
+	IntakeEject intakeEject = IntakeEject.STOP;
 
 	private Ladder ladder = null;
 	private Algae algae = null;
@@ -119,6 +128,9 @@ public class Coral extends SubsystemBase {
 
 	private final GenericEntry sbSide = compTab.addPersistent("Side", "")
 			.withWidget("Text View").withPosition(11, 10).withSize(2, 1).getEntry();
+
+	private final GenericEntry sbInEj = compTab.addPersistent("Coral 33In-Ej", "")
+			.withWidget("Text View").withPosition(11, 14).withSize(2, 1).getEntry();
 
 	private final ShuffleboardLayout coralCommands = cmdTab
 			.getLayout("Coral", BuiltInLayouts.kList)
@@ -220,6 +232,8 @@ public class Coral extends SubsystemBase {
 
 		coralCommands.add("L4", this.l4)
 				.withProperties(Map.of("show type", false));
+		coralCommands.add("L35", this.l35)
+				.withProperties(Map.of("show type", false));
 		coralCommands.add("L3", this.l3)
 				.withProperties(Map.of("show type", false));
 		coralCommands.add("L2", this.l2)
@@ -272,6 +286,8 @@ public class Coral extends SubsystemBase {
 			sbSide.setString("Right");
 		}
 
+		sbInEj.setString(getIntakeEject().toString());
+
 		// sbLeftLimit.setBoolean(isLeftLimit());
 		// sbRightLimit.setBoolean(isRightLimit());
 
@@ -290,6 +306,7 @@ public class Coral extends SubsystemBase {
 	 * Commands
 	 **************************************************************/
 	public Command l4 = new InstantCommand(() -> setTiltPos(CoralSP.L4), this);
+	public Command l35 = new InstantCommand(() -> setTiltPos(CoralSP.L35), this);
 	public Command l3 = new InstantCommand(() -> setTiltPos(CoralSP.L3), this);
 	public Command l2 = new InstantCommand(() -> setTiltPos(CoralSP.L2), this);
 	public Command l1 = new InstantCommand(() -> setTiltPos(CoralSP.L1), this);
@@ -303,29 +320,28 @@ public class Coral extends SubsystemBase {
 
 	public Command eject = new CoralEject(this);
 
-	public Command doAction() {
-		Command cmd = null;
-		LadderSP sp = ladder.getLadderSP();
+	// public Command doAction() {
+	// 	Command cmd = null;
+	// 	LadderSP sp = ladder.getLadderSP();
 
-		System.out.println("Coral Ladder SP: " + sp.toString());
+	// 	System.out.println("Coral Ladder SP: " + sp.toString());
 
-		switch (sp) {
-			case L4:
-			case L3:
-			case L2:
-			case L1:
-				cmd = this.eject;
-				break;
-			case STATION:
-				cmd = this.intake;
-				break;
-			default:
-				cmd = new WaitCommand(0.25);
-		}
+	// 	switch (sp) {
+	// 		case L4:
+	// 		case L3:
+	// 		case L2:
+	// 		case L1:
+	// 			cmd = new CoralEject(this);
+	// 			break;
+	// 		case STATION:
+	// 			cmd = new CoralIntake(this);
+	// 			break;
+	// 		default:
+	// 			cmd = new WaitCommand(0.25);
+	// 	}
 
-		return cmd;
-	}
-
+	// 	return cmd;
+	// }
 
 	/**************************************************************
 	 * Methods
@@ -335,18 +351,45 @@ public class Coral extends SubsystemBase {
 	// tiltController.setReference(getTiltPos() + pos,
 	// SparkBase.ControlType.kMAXMotionPositionControl);
 	// }
+	public void doAction() {
+		LadderSP sp = ladder.getLadderSP();
+
+		System.out.println("Coral Ladder SP: " + sp.toString());
+
+		switch (sp) {
+			case L4:
+			case L3:
+			case L2:
+			case L1:
+				setIntakeEject(Coral.IntakeEject.EJECT);
+				break;
+			case STATION:
+				setIntakeEject(Coral.IntakeEject.INTAKE);
+				break;
+			default:
+				setIntakeEject(Coral.IntakeEject.STOP);
+		}
+	}
+
+	public IntakeEject getIntakeEject() {
+		return intakeEject;
+	}
+
+	public void setIntakeEject(IntakeEject state) {
+		intakeEject = state;
+	}
 
 	public void holdIntakePos() {
-		if (leftCoral) {
+		//if (leftCoral) {
 			leftIntake.set(0.0);
-			double pos = leftEncoder.getPosition();
-			leftController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
+			double posL = leftEncoder.getPosition();
+			leftController.setReference(posL, SparkBase.ControlType.kMAXMotionPositionControl);
 
-		} else {
+		//} else {
 			rightIntake.set(0.0);
-			double pos = rightEncoder.getPosition();
-			rightController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
-		}
+			double posR = rightEncoder.getPosition();
+			rightController.setReference(posR, SparkBase.ControlType.kMAXMotionPositionControl);
+		//}
 	}
 
 	// Getting the position of the encoders
@@ -404,11 +447,11 @@ public class Coral extends SubsystemBase {
 
 	public void setIntakeVel(CoralSP sp) {
 		setCoralSP(sp);
-		if (leftCoral) {
+		//if (leftCoral) {
 			setLeftIntakeVel(sp);
-		} else {
+		//} else {
 			setRightIntakeVel(sp);
-		}
+		//}
 	}
 
 	public void setIntakeVel() {
@@ -426,11 +469,11 @@ public class Coral extends SubsystemBase {
 	}
 
 	public void setIntakeVel(double sp) {
-		if (leftCoral) {
+		//if (leftCoral) {
 			setLeftIntakeVel(sp);
-		} else {
+		//} else {
 			setRightIntakeVel(sp);
-		}
+		//}
 	}
 
 	public void setLeftIntakeVel(double sp) {
@@ -442,13 +485,14 @@ public class Coral extends SubsystemBase {
 	}
 
 	public boolean isLimit() {
-		if (leftCoral) {
+		// if (leftCoral) {
 			// return getLeftIntakeVel() < 100;
-			return pdh.getCurrent(Constants.Coral.kLeftPDHChannel) > Constants.Coral.kStopCurrent;
-		} else {
+			return (pdh.getCurrent(Constants.Coral.kLeftPDHChannel) > Constants.Coral.kStopCurrent) || 
+					(pdh.getCurrent(Constants.Coral.kRightPDHChannel) > Constants.Coral.kStopCurrent);
+		//} else {
 			// return getRightIntakeVel() < 100;
-			return pdh.getCurrent(Constants.Coral.kRightPDHChannel) > Constants.Coral.kStopCurrent;
-		}
+			
+		//}
 	}
 
 	public void toggleSide() {

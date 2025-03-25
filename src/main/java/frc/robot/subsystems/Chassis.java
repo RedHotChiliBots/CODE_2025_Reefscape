@@ -406,6 +406,30 @@ public class Chassis extends SubsystemBase {
 		spdMultiplier = 0.5;
 	}
 
+	private final double COLLISION_THRESHOLD_DELTA_G = 0.5;
+	private double last_world_linear_accel_x = 0.0;
+	private double last_world_linear_accel_y = 0.0;
+	
+	public boolean isJerk() {
+		boolean collisionDetected = false;
+
+		double curr_world_linear_accel_x = m_ahrs.getWorldLinearAccelX();
+		double currentJerkX = curr_world_linear_accel_x - last_world_linear_accel_x;
+		last_world_linear_accel_x = curr_world_linear_accel_x;
+		double curr_world_linear_accel_y = m_ahrs.getWorldLinearAccelY();
+		double currentJerkY = curr_world_linear_accel_y - last_world_linear_accel_y;
+		last_world_linear_accel_y = curr_world_linear_accel_y;
+
+		if ((Math.abs(currentJerkX) > COLLISION_THRESHOLD_DELTA_G) ||
+			(Math.abs(currentJerkY) > COLLISION_THRESHOLD_DELTA_G)) {
+			collisionDetected = true;
+		} else {
+			collisionDetected = false;
+		}
+
+		return collisionDetected;
+	}
+
 	/**
 	 * Method to drive the robot using joystick info.
 	 *

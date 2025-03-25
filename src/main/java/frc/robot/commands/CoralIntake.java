@@ -19,7 +19,7 @@ public class CoralIntake extends Command {
     this.coral = coral;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(coral);
+    //addRequirements(coral);
   }
 
   // Called when the command is initially scheduled.

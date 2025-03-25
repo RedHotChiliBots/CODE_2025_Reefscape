@@ -6,20 +6,23 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.subsystems.Algae;
+import frc.robot.subsystems.Chassis;
 
-public class AlgaeEject extends Command {
+public class ChassisDriveTime extends Command {
   /** Creates a new ChassisDrive. */
 
-  private Algae algae = null;
+  private Chassis chassis = null;
+  private double sec = 0.0;
+  private double vel = 0.0;
   private final Timer timer = new Timer();
 
-  public AlgaeEject(Algae algae) {
-    this.algae = algae;
+  public ChassisDriveTime(Chassis chassis, double vel, double sec) {
+    this.chassis = chassis;
+    this.sec = sec;
+    this.vel = vel;
 
     // Use addRequirements() here to declare subsystem dependencies.
-    //addRequirements(algae);
+    addRequirements(chassis);
   }
 
   // Called when the command is initially scheduled.
@@ -27,23 +30,23 @@ public class AlgaeEject extends Command {
   public void initialize() {
     timer.start();
     timer.reset();
-    algae.setIntakeVel(Constants.Coral.EJECT);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    chassis.drive(vel, 0.0, 0.0, true);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    algae.setIntakeVel(Constants.Coral.STOP);
+    chassis.drive(0.0, 0.0, 0.0, true);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(1.0) ;
+    return timer.hasElapsed(sec);
   }
 }
