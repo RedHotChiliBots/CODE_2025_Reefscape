@@ -233,11 +233,11 @@ public final class Constants {
 		// public static final double kTiltPosMaxAccel = 30000.0;
 		// public static final double kTiltPosAllowedErr = 0.1;
 
-		public static final double kTiltPosP = 0.0015;
-		public static final double kTiltPosI = 0.0;
-		public static final double kTiltPosD = 0.0;
-		public static final double kTiltPosMinOutput = -1.0;
-		public static final double kTiltPosMaxOutput = 1.0;
+		public static final double kTiltPosP = 0.01;	// MaxMotion 0.0015;
+		public static final double kTiltPosI = 0.000001;	// MaxMotion 0.0;
+		public static final double kTiltPosD = 0.0;	// MaxMotion 0.0;
+		public static final double kTiltPosMinOutput = -8.5; // MaxMotion 1.0;
+		public static final double kTiltPosMaxOutput = 8.5; // MaxMotion 1.0;
 
 		public static final double kTiltPosMaxVel = 8000.0;	//30000.0;
 		public static final double kTiltPosMaxAccel = 24000.0;	//40000.0;
@@ -265,7 +265,7 @@ public final class Constants {
 		public static final double INTAKE = 5000.0;
 		public static final double EJECT = -5000.0;
 
-		public static final double kTiltZeroOffset = 0.3248151;
+		public static final double kTiltZeroOffset = 0.3209006;
 		public static final boolean kTiltZeroCentered = true;
 		public static final boolean kTiltMotorInverted = true;
 		public static final boolean kTiltEncoderInverted = true;

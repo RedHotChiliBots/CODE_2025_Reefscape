@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -29,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.CoralEject;
 import frc.robot.commands.CoralIntake;
-import frc.robot.subsystems.Ladder.LadderSP;
 import frc.robot.utils.Library;
 
 public class Coral extends SubsystemBase {
@@ -221,11 +219,11 @@ public class Coral extends SubsystemBase {
 				.d(Constants.Coral.kTiltPosD)
 				.outputRange(Constants.Coral.kTiltPosMinOutput, Constants.Coral.kTiltPosMaxOutput)
 				.positionWrappingEnabled(Constants.Coral.kTiltEncodeWrapping);
-		tiltConfig.closedLoop.maxMotion
-				.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-				.maxVelocity(Constants.Coral.kTiltPosMaxVel)
-				.maxAcceleration(Constants.Coral.kTiltPosMaxAccel)
-				.allowedClosedLoopError(Constants.Coral.kTiltPosAllowedErr);
+		// tiltConfig.closedLoop.maxMotion
+		// 		.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+		// 		.maxVelocity(Constants.Coral.kTiltPosMaxVel)
+		// 		.maxAcceleration(Constants.Coral.kTiltPosMaxAccel)
+		// 		.allowedClosedLoopError(Constants.Coral.kTiltPosAllowedErr);
 
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -351,12 +349,10 @@ public class Coral extends SubsystemBase {
 	// tiltController.setReference(getTiltPos() + pos,
 	// SparkBase.ControlType.kMAXMotionPositionControl);
 	// }
+
 	public void doAction() {
-		LadderSP sp = ladder.getLadderSP();
 
-		System.out.println("Coral Ladder SP: " + sp.toString());
-
-		switch (sp) {
+		switch (ladder.getLadderSP()) {
 			case L4:
 			case L3:
 			case L2:
@@ -383,13 +379,15 @@ public class Coral extends SubsystemBase {
 		//if (leftCoral) {
 			leftIntake.set(0.0);
 			double posL = leftEncoder.getPosition();
-			leftController.setReference(posL, SparkBase.ControlType.kMAXMotionPositionControl);
+			// leftController.setReference(posL, SparkBase.ControlType.kMAXMotionPositionControl);
+			leftController.setReference(posL, SparkBase.ControlType.kPosition);
 
 		//} else {
 			rightIntake.set(0.0);
 			double posR = rightEncoder.getPosition();
-			rightController.setReference(posR, SparkBase.ControlType.kMAXMotionPositionControl);
-		//}
+			// rightController.setReference(posR, SparkBase.ControlType.kMAXMotionPositionControl);
+			rightController.setReference(posR, SparkBase.ControlType.kPosition);
+			//}
 	}
 
 	// Getting the position of the encoders
@@ -431,7 +429,8 @@ public class Coral extends SubsystemBase {
 
 	public void setTiltPos(CoralSP sp) {
 		setCoralSP(sp);
-		tiltController.setReference(sp.getTilt(), SparkBase.ControlType.kMAXMotionPositionControl);
+		// tiltController.setReference(sp.getTilt(), SparkBase.ControlType.kMAXMotionPositionControl);
+		tiltController.setReference(sp.getTilt(), SparkBase.ControlType.kPosition);
 	}
 
 	public void setTiltPos() {
@@ -441,7 +440,8 @@ public class Coral extends SubsystemBase {
 	public void setTiltAfterAlgaePos(CoralSP sp) {
 		if (algae.isLimit()) {
 			setCoralSP(sp);
-			tiltController.setReference(sp.getTilt(), SparkBase.ControlType.kMAXMotionPositionControl);
+			// tiltController.setReference(sp.getTilt(), SparkBase.ControlType.kMAXMotionPositionControl);
+			tiltController.setReference(sp.getTilt(), SparkBase.ControlType.kPosition);
 		}
 	}
 

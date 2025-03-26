@@ -268,9 +268,9 @@ public class Ladder extends SubsystemBase {
 		return leftEncoder.getPosition();
 	}
 
-	public void setLadderPos(LadderSP pos) {
-		setLadderSP(pos);
-		leftController.setReference(pos.getValue(),
+	public void setLadderPos(LadderSP sp) {
+		setLadderSP(sp);
+		leftController.setReference(sp.getValue(),
 				SparkBase.ControlType.kMAXMotionPositionControl);
 	}
 

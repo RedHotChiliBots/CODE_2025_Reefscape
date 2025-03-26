@@ -128,11 +128,11 @@ public class Climber extends SubsystemBase {
 				.d(Constants.Climber.kPosD)
 				.outputRange(Constants.Climber.kPosMinOutput, Constants.Climber.kPosMaxOutput)
 				.positionWrappingEnabled(Constants.Climber.kLeftEncodeWrapping);
-		leftConfig.closedLoop.maxMotion
-				.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-				.maxVelocity(Constants.Climber.kPosMaxVel)
-				.maxAcceleration(Constants.Climber.kPosMaxAccel)
-				.allowedClosedLoopError(Constants.Climber.kPosAllowedErr);
+		// leftConfig.closedLoop.maxMotion
+		// 		.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+		// 		.maxVelocity(Constants.Climber.kPosMaxVel)
+		// 		.maxAcceleration(Constants.Climber.kPosMaxAccel)
+		// 		.allowedClosedLoopError(Constants.Climber.kPosAllowedErr);
 
 		leftClimber.configure(leftConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -219,13 +219,12 @@ public class Climber extends SubsystemBase {
 	 * Methods
 	 **************************************************************/
 
-	private double sp = getClimberPos();
-
-	public void moveClimber(double pos) {
-		sp = sp + (pos / 2.5);
-		leftController.setReference(sp,
-				SparkBase.ControlType.kMAXMotionPositionControl);
-	}
+	// private double sp = getClimberPos();
+	// public void moveClimber(double pos) {
+	// 	sp = sp + (pos / 2.5);
+	// 	leftController.setReference(sp,
+	// 			SparkBase.ControlType.kMAXMotionPositionControl);
+	// }
 
 	public double getClimberPos() {
 		return leftEncoder.getPosition();
@@ -237,8 +236,10 @@ public class Climber extends SubsystemBase {
 
 	public void setClimberPos(ClimberSP pos) {
 		setClimberSP(pos);
+		// leftController.setReference(pos.getValue(),
+		// 		SparkBase.ControlType.kMAXMotionPositionControl);
 		leftController.setReference(pos.getValue(),
-				SparkBase.ControlType.kMAXMotionPositionControl);
+				SparkBase.ControlType.kPosition);
 	}
 
 	public void setClimberPos() {

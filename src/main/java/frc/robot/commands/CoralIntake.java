@@ -45,6 +45,6 @@ public class CoralIntake extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return timer.hasElapsed(0.5) && coral.isLimit();
+    return timer.hasElapsed(0.25) && coral.isLimit();
   }
 }
