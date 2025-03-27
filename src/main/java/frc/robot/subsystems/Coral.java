@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -8,9 +10,6 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-import java.util.Map;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 
@@ -59,7 +58,7 @@ public class Coral extends SubsystemBase {
 	}
 
 	public enum CoralSP {
-		STOW(80.0, Constants.Coral.STOP), // degrees
+		STOW(90.0, Constants.Coral.STOP), // degrees
 		STATION(40.0, Constants.Coral.INTAKE), // degrees
 		ZERO(0.0, Constants.Coral.STOP),
 		L1(-35.0, Constants.Coral.EJECT), // degrees

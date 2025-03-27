@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -194,7 +195,7 @@ public final class Constants {
 		public static final double INTAKE = 5000.0;
 		public static final double EJECT = -5000.0;
 
-		public static final double kTiltZeroOffset = 0.6341878;
+		public static final double kTiltZeroOffset = 0.6310901;
 		public static final boolean kTiltZeroCentered = true;
 		public static final boolean kTiltMotorInverted = true;
 		public static final boolean kTiltEncoderInverted = false;
@@ -236,8 +237,8 @@ public final class Constants {
 		public static final double kTiltPosP = 0.01;	// MaxMotion 0.0015;
 		public static final double kTiltPosI = 0.000001;	// MaxMotion 0.0;
 		public static final double kTiltPosD = 0.0;	// MaxMotion 0.0;
-		public static final double kTiltPosMinOutput = -8.5; // MaxMotion 1.0;
-		public static final double kTiltPosMaxOutput = 8.5; // MaxMotion 1.0;
+		public static final double kTiltPosMinOutput = -0.85; // MaxMotion 1.0;
+		public static final double kTiltPosMaxOutput = 0.85; // MaxMotion 1.0;
 
 		public static final double kTiltPosMaxVel = 8000.0;	//30000.0;
 		public static final double kTiltPosMaxAccel = 24000.0;	//40000.0;
@@ -265,7 +266,7 @@ public final class Constants {
 		public static final double INTAKE = 5000.0;
 		public static final double EJECT = -5000.0;
 
-		public static final double kTiltZeroOffset = 0.3209006;
+		public static final double kTiltZeroOffset = 0.1599263;
 		public static final boolean kTiltZeroCentered = true;
 		public static final boolean kTiltMotorInverted = true;
 		public static final boolean kTiltEncoderInverted = true;
@@ -294,11 +295,12 @@ public final class Constants {
 		public static final double kIntakeVelMaxAccel = 20000.0;
 		public static final double kIntakeVelAllowedErr = 1.0;
 
-		public static final double kTiltPosP = 0.005;	//0.0022;
-		public static final double kTiltPosI = 0.0;	//0.00000000015;
-		public static final double kTiltPosD = 0.02;	//0.1;
-		public static final double kTiltPosMinOutput = -1.0;
-		public static final double kTiltPosMaxOutput = 1.0;
+
+		public static final double kTiltPosP = 0.019;	//01; // MaxMotion 0.005;
+		public static final double kTiltPosI = 0.0;	//00001; // MaxMotion 0.0;
+		public static final double kTiltPosD = 0.0; // MaxMotion 0.02;
+		public static final double kTiltPosMinOutput = -0.5; // MaxMotion 1.0;
+		public static final double kTiltPosMaxOutput = 0.5; // MaxMotion 1.0;
 
 		public static final double kTiltPosMaxVel = 10000.0;
 		public static final double kTiltPosMaxAccel = 30000.0;
