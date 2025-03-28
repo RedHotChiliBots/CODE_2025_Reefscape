@@ -342,11 +342,11 @@ public final class Constants {
 				* kStage3perStage1;
 		public static final double kLiftVelocityFactor = kLiftPostionFactor / 60.0;
 
-		public static final double kPosP = 0.1;
-		public static final double kPosI = 0.0;
-		public static final double kPosD = 0.0022;
-		public static final double kPosMinOutput = -1.0;
-		public static final double kPosMaxOutput = 1.0;
+		public static final double kPosP = 0.055;	// maxmotion 0.1;
+		public static final double kPosI = 0.00001;	// maxmotion 0.0;
+		public static final double kPosD = 0.0;	// maxmotion 0.0022;
+		public static final double kPosMinOutput = -0.5;	// maxmotion -1.0;
+		public static final double kPosMaxOutput = 0.5; // maxmotion 1.0;
 
 		public static final double kMaxVel = 5500;	//3000.0; //100000
 		public static final double kMaxAccel = 12000; // 17000
@@ -376,6 +376,7 @@ public final class Constants {
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;
 
+
 		public static final double kTiltPositionFactor = 360; // 1.0 / (GearBox.Max9 * GearBox.Max5 * GearBox.Max5) *
 																				// 360.0; // degrees
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // degrees per second
@@ -384,11 +385,11 @@ public final class Constants {
 		// public static final double kTiltPosI = 0.000001;
 		// public static final double kTiltPosD = 0.0;
 		
-		public static final double kPosP = 0.025;
-		public static final double kPosI = 0.0;
-		public static final double kPosD = 0.0;
-		public static final double kPosMinOutput = -1.0;
-		public static final double kPosMaxOutput = 1.0;
+		public static final double kPosP = 0.01;	// maxmotion 0.025;
+		public static final double kPosI = 0.0; // maxmotion 0.0
+		public static final double kPosD = 0.0; // maxmotion 0.0
+		public static final double kPosMinOutput = -0.5; // maxmotion -1.0
+		public static final double kPosMaxOutput = 0.5; // maxmotion 1.0
 
 		public static final double kPosMaxVel = 100000.0;	//5000.0
 		public static final double kPosMaxAccel = 40000.0;	//5000.0
