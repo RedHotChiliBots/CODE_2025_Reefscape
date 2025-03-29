@@ -47,7 +47,7 @@ public class Climber extends SubsystemBase {
 
 	public enum ClimberSP {
 		STOW(160.0), // degrees - up and out of way
-		STAGE(80.0), // degrees - up and out of way
+		STAGE(70.0), // degrees - up and out of way
 		READY(23.0), // degrees - touch cage but don't climb
 		ZERO(0.0), // degrees - for zeroing absolute encoder
 		CLIMB(-23.0); // degrees - full climb

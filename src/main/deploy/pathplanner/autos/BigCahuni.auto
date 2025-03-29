@@ -1,0 +1,62 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "1-Leave-CL4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ScoreL4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2-EA-AB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3-EA"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4-EA-AB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5-EA"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "6-EA-AP"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -376,7 +376,6 @@ public final class Constants {
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;
 
-
 		public static final double kTiltPositionFactor = 360; // 1.0 / (GearBox.Max9 * GearBox.Max5 * GearBox.Max5) *
 																				// 360.0; // degrees
 		public static final double kTiltVelocityFactor = kTiltPositionFactor / 60.0; // degrees per second
@@ -384,15 +383,15 @@ public final class Constants {
 		// public static final double kTiltPosP = 0.002;
 		// public static final double kTiltPosI = 0.000001;
 		// public static final double kTiltPosD = 0.0;
-		
-		public static final double kPosP = 0.01;	// maxmotion 0.025;
+
+		public static final double kPosP = 0.01; // maxmotion 0.025;
 		public static final double kPosI = 0.0; // maxmotion 0.0
 		public static final double kPosD = 0.0; // maxmotion 0.0
 		public static final double kPosMinOutput = -0.5; // maxmotion -1.0
 		public static final double kPosMaxOutput = 0.5; // maxmotion 1.0
 
-		public static final double kPosMaxVel = 100000.0;	//5000.0
-		public static final double kPosMaxAccel = 40000.0;	//5000.0
+		public static final double kPosMaxVel = 100000.0; //5000.0
+		public static final double kPosMaxAccel = 40000.0; //5000.0
 		public static final double kPosAllowedErr = 0.1;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
@@ -400,5 +399,24 @@ public final class Constants {
 
 		public static final int kLeftCurrentLimit = 50; // amps
 		public static final int kRightCurrentLimit = 50; // amps
+	}
+	
+	public static final class Vision {
+		public static final double kXP = 0.6;
+		public static final double kXI = 0.0;
+		public static final double kXD = 0.0;
+		public static final double kXTollerance = 0.1;
+
+		public static final double kYP = 0.6;
+		public static final double kYI = 0.0;
+		public static final double kYD = 0.0;
+		public static final double kYTollerance = 0.1;
+
+		public static final double kRP = 0.03;
+		public static final double kRI = 0.0;
+		public static final double kRD = 0.0;
+		public static final double kRTollerance = 0.1;
+		public static final double kRMin = 0.0;
+		public static final double kRMax = 360.0;
 	}
 }

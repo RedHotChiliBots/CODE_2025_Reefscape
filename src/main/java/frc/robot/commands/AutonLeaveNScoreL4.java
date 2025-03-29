@@ -7,7 +7,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Algae;
@@ -37,7 +36,7 @@ public class AutonLeaveNScoreL4 extends SequentialCommandGroup {
                 new WaitUntilCommand(() -> ladder.isLadderZeroed()),
                 new InstantCommand(() -> ladder.setLadderPos(LadderSP.L4), ladder),
                 new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOWDN), algae),
-                new WaitCommand(0.75),
+                new WaitUntilCommand(() -> algae.onTiltTarget()),
                 new InstantCommand(() -> coral.setTiltPos(CoralSP.L4), coral))),
         new WaitUntilCommand(() -> ladder.onTarget()),
         new InstantCommand(() -> coral.doAction()),

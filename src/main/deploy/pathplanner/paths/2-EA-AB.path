@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.2273544520547945,
-        "y": 6.489212328767123
+        "x": 6.1,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.521147260273973,
-        "y": 6.489212328767123
+        "x": 6.550770547945206,
+        "y": 4.0
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.491095890410959,
-        "y": 6.489212328767123
+        "x": 7.8,
+        "y": 4.8
       },
       "prevControl": {
-        "x": 7.257405821917808,
-        "y": 6.474186643835616
+        "x": 6.192181500380883,
+        "y": 4.8
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,26 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "ScoreL4",
+      "waypointRelativePos": 0.5,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "ExtractAlgaeL35",
+      "waypointRelativePos": 0.5,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "ScoreAlgae",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -48,7 +67,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -179.46496474595418
   },
   "useDefaultConstraints": true
 }
