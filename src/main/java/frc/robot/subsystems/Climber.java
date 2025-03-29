@@ -62,6 +62,8 @@ public class Climber extends SubsystemBase {
 		}
 	}
 
+	private LEDs leds = null;
+	
 	private ClimberSP climberSP = Climber.ClimberSP.STOW;
 
 	private Library lib = new Library();
@@ -102,9 +104,10 @@ public class Climber extends SubsystemBase {
 	/**************************************************************
 	 * Constructor
 	 **************************************************************/
-	public Climber() {
+	public Climber(LEDs leds) {
 		System.out.println("+++++ Starting Climber Constructor +++++");
-
+		this.leds = leds;
+		
 		compTab.add("Climber Current", this)
 				.withWidget("Subsystem")
 				.withPosition(22, 10)
@@ -213,7 +216,7 @@ public class Climber extends SubsystemBase {
 	public Command stow = new InstantCommand(() -> setClimberPos(ClimberSP.STOW), this);
 	public Command zero = new InstantCommand(() -> setClimberPos(ClimberSP.ZERO), this);
 	public Command ready = new InstantCommand(() -> setClimberPos(ClimberSP.READY), this);
-	public Command climb = new InstantCommand(() -> setClimberPos(ClimberSP.CLIMB), this);
+	public Command climb = new InstantCommand(() -> setClimberPos(ClimberSP.CLIMB), this).alongWith(leds.runPattern(leds.setClimb()));
 
 	/**************************************************************
 	 * Methods

@@ -62,6 +62,10 @@ public final class Constants {
 		public static final int kLadderRightCanId = 51;
 	}
 
+	public static final class PWMId {
+		public static final int kLEDs = 0;
+	}
+
 	public static final class MotorConstants {
 		public static final double kVortexFreeSpeedRpm = 6784;
 		public static final double kNeoFreeSpeedRpm = 5676;

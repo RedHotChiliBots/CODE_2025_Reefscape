@@ -32,6 +32,7 @@ import frc.robot.subsystems.Chassis;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Coral.CoralSP;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Ladder;
 import frc.robot.subsystems.Ladder.LadderSP;
 import frc.robot.subsystems.Vision;
@@ -61,13 +62,14 @@ public class RobotContainer {
 	camera4);
 
 	private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
-	cameras.get(2), cameras.get(3));
+			cameras.get(2), cameras.get(3));
 
+	private final LEDs leds = new LEDs();
 	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(chassis, ladder, algae);
-	private final Climber climber = new Climber();
+	private final Climber climber = new Climber(leds);
 
 	// Define HIDs
 	private final CommandXboxController m_driverController = new CommandXboxController(
