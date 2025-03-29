@@ -289,6 +289,8 @@ public class Algae extends SubsystemBase {
 	public Command stowdn = new InstantCommand(() -> setTiltPos(AlgaeSP.STOWDN), this);
 
 	public Command toggleExtract = new InstantCommand(() -> toggleExtract());
+	public Command setExtractTrue = new InstantCommand(() -> setExtract(true));
+	public Command setExtractFalse = new InstantCommand(() -> setExtract(false));
 
 	public Command intake = new AlgaeIntake(this);
 
@@ -445,5 +447,9 @@ public class Algae extends SubsystemBase {
 
 	public boolean getExtract() {
 		return extractAlgae;
+	}
+
+	public void setExtract(boolean b) {
+		extractAlgae = b;
 	}
 }

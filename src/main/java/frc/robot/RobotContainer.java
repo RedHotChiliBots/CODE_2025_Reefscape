@@ -162,6 +162,21 @@ public class RobotContainer {
 			new InstantCommand(() -> algae.setIntakeEject(Algae.IntakeEject.STOP)),
 			new InstantCommand(() -> coral.setIntakeEject(Coral.IntakeEject.STOP)));
 
+	public final Command doAutonAction = new SequentialCommandGroup(
+			new WaitCommand(0.1),
+			new WaitUntilCommand(() -> ladder.onTarget()),
+			new ParallelCommandGroup(
+					new InstantCommand(() -> coral.doAction(), coral),
+					new InstantCommand(() -> algae.doAction(), algae)),
+			new ParallelCommandGroup(
+					new CoralEject(coral).onlyIf(() -> coral.getIntakeEject() == Coral.IntakeEject.EJECT),
+					new CoralIntake(coral).onlyIf(() -> coral.getIntakeEject() == Coral.IntakeEject.INTAKE),
+					new AlgaeEject(algae).onlyIf(() -> algae.getIntakeEject() == Algae.IntakeEject.EJECT),
+					new AlgaeIntake(algae).onlyIf(() -> algae.getIntakeEject() == Algae.IntakeEject.INTAKE)),
+			new InstantCommand(() -> algae.setIntakeEject(Algae.IntakeEject.STOP)),
+			new InstantCommand(() -> coral.setIntakeEject(Coral.IntakeEject.STOP)),
+			new WaitCommand(0.1));
+
 	private final Autos auton = new Autos(this, chassis, ladder, algae, coral, climber);
 
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
