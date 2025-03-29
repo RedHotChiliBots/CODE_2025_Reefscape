@@ -23,7 +23,7 @@ public class Autos {
 
   // Define a chooser for autonomous commands
   // private final SendableChooser<Command> chooser = new SendableChooser<>();
-  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();;
+  private SendableChooser<Command> autoChooser = null;
 
   RobotContainer robotContainer;
   Chassis chassis;
@@ -127,8 +127,8 @@ public class Autos {
 
     // ********************************************
     // Initialize auto command chooser with auton commands
-    // chooser = AutoBuilder.buildAutoChooser();
-    autoChooser.setDefaultOption("Leave", autonLeave);
+    autoChooser = AutoBuilder.buildAutoChooser("BigKahuna");
+    autoChooser.addOption("Leave", autonLeave);
     autoChooser.addOption("LeaveNScoreL1", autonLeaveNScoreL1);
     autoChooser.addOption("LeaveNScoreL4", autonLeaveNScoreL4);
 
