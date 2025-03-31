@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import java.util.Map;
@@ -30,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.commands.AlgaeEject;
 import frc.robot.commands.AlgaeIntake;
-import frc.robot.subsystems.Ladder.LadderSP;
 import frc.robot.utils.Library;
 
 public class Algae extends SubsystemBase {
@@ -62,7 +60,7 @@ public class Algae extends SubsystemBase {
 	}
 
 	public enum AlgaeSP {
-		STOWUP(80.0, Constants.Algae.STOP),
+		STOWUP(90.0, Constants.Algae.STOP),
 		STOWDN(-75.0, Constants.Algae.STOP),
 		ZERO(0.0, Constants.Algae.STOP),
 		PROCESSOR(10.0, Constants.Algae.EJECT),
@@ -206,12 +204,12 @@ public class Algae extends SubsystemBase {
 				.i(Constants.Algae.kTiltPosI)
 				.d(Constants.Algae.kTiltPosD)
 				.outputRange(Constants.Algae.kTiltPosMinOutput, Constants.Algae.kTiltPosMaxOutput)
-				.positionWrappingEnabled(Constants.Algae.kIntakeEncodeWrapping);
-		tiltConfig.closedLoop.maxMotion
-				.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-				.maxVelocity(Constants.Algae.kTiltPosMaxVel)
-				.maxAcceleration(Constants.Algae.kTiltPosMaxAccel)
-				.allowedClosedLoopError(Constants.Algae.kTiltPosAllowedErr);
+				.positionWrappingEnabled(Constants.Algae.kTiltEncodeWrapping);
+		// tiltConfig.closedLoop.maxMotion
+		// .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+		// .maxVelocity(Constants.Algae.kTiltPosMaxVel)
+		// .maxAcceleration(Constants.Algae.kTiltPosMaxAccel)
+		// .allowedClosedLoopError(Constants.Algae.kTiltPosAllowedErr);
 
 		tilt.configure(tiltConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -340,22 +338,19 @@ public class Algae extends SubsystemBase {
 	// }
 
 	public void doAction() {
-		LadderSP sp = ladder.getLadderSP();
 
-		System.out.println("Algae Ladder SP: " + sp.toString());
-
-		switch (sp) {
+		switch (ladder.getLadderSP()) {
 			case BARGE:
 			case PROCESSOR:
 				setIntakeEject(Algae.IntakeEject.EJECT);
+				break;
+			case L35:
+				setIntakeEject(Algae.IntakeEject.INTAKE);
 				break;
 			case L3:
 				if (extractAlgae) {
 					setIntakeEject(Algae.IntakeEject.INTAKE);
 				}
-				break;
-			case L35:
-				setIntakeEject(Algae.IntakeEject.INTAKE);
 				break;
 			case FLOOR:
 				setIntakeEject(Algae.IntakeEject.INTAKE);
@@ -376,7 +371,9 @@ public class Algae extends SubsystemBase {
 	public void holdIntakePos() {
 		leftIntake.set(0.0);
 		double pos = intakeEncoder.getPosition();
-		intakeController.setReference(pos, SparkBase.ControlType.kMAXMotionPositionControl);
+		// intakeController.setReference(pos,
+		// SparkBase.ControlType.kMAXMotionPositionControl);
+		intakeController.setReference(pos, SparkBase.ControlType.kPosition);
 	}
 
 	// Getting the position of the encoders
@@ -407,7 +404,9 @@ public class Algae extends SubsystemBase {
 	// Sets the position of the encoders
 	public void setTiltPos(AlgaeSP sp) {
 		setAlgaeSP(sp);
-		tiltController.setReference(sp.getTilt(), SparkBase.ControlType.kMAXMotionPositionControl);
+		// tiltController.setReference(sp.getTilt(),
+		// SparkBase.ControlType.kMAXMotionPositionControl);
+		tiltController.setReference(sp.getTilt(), SparkBase.ControlType.kPosition);
 	}
 
 	// Sets the position of the encoders

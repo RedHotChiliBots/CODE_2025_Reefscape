@@ -46,7 +46,8 @@ public class Climber extends SubsystemBase {
 	private SparkLimitSwitch isLimitSwitch = leftClimber.getForwardLimitSwitch();
 
 	public enum ClimberSP {
-		STOW(90.0), // degrees - up and out of way
+		STOW(160.0), // degrees - up and out of way
+		STAGE(80.0), // degrees - up and out of way
 		READY(23.0), // degrees - touch cage but don't climb
 		ZERO(0.0), // degrees - for zeroing absolute encoder
 		CLIMB(-23.0); // degrees - full climb
@@ -128,11 +129,11 @@ public class Climber extends SubsystemBase {
 				.d(Constants.Climber.kPosD)
 				.outputRange(Constants.Climber.kPosMinOutput, Constants.Climber.kPosMaxOutput)
 				.positionWrappingEnabled(Constants.Climber.kLeftEncodeWrapping);
-		leftConfig.closedLoop.maxMotion
-				.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-				.maxVelocity(Constants.Climber.kPosMaxVel)
-				.maxAcceleration(Constants.Climber.kPosMaxAccel)
-				.allowedClosedLoopError(Constants.Climber.kPosAllowedErr);
+		// leftConfig.closedLoop.maxMotion
+		// 		.positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+		// 		.maxVelocity(Constants.Climber.kPosMaxVel)
+		// 		.maxAcceleration(Constants.Climber.kPosMaxAccel)
+		// 		.allowedClosedLoopError(Constants.Climber.kPosAllowedErr);
 
 		leftClimber.configure(leftConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -171,11 +172,13 @@ public class Climber extends SubsystemBase {
 				.withProperties(Map.of("show type", false));
 		climberCommands.add("Zero", this.zero)
 				.withProperties(Map.of("show type", false));
+		climberCommands.add("Stage", this.stage)
+				.withProperties(Map.of("show type", false));
 		climberCommands.add("Stow", this.stow)
 				.withProperties(Map.of("show type", false));
 
 		// Initialize intake start positions
-		setClimberSP(climberSP);
+		setClimberPos(climberSP);
 
 		System.out.println("----- Ending Climber Constructor -----");
 	}
@@ -211,6 +214,7 @@ public class Climber extends SubsystemBase {
 	 **************************************************************/
 
 	public Command stow = new InstantCommand(() -> setClimberPos(ClimberSP.STOW), this);
+	public Command stage = new InstantCommand(() -> setClimberPos(ClimberSP.STAGE), this);
 	public Command zero = new InstantCommand(() -> setClimberPos(ClimberSP.ZERO), this);
 	public Command ready = new InstantCommand(() -> setClimberPos(ClimberSP.READY), this);
 	public Command climb = new InstantCommand(() -> setClimberPos(ClimberSP.CLIMB), this);
@@ -219,13 +223,12 @@ public class Climber extends SubsystemBase {
 	 * Methods
 	 **************************************************************/
 
-	private double sp = getClimberPos();
-
-	public void moveClimber(double pos) {
-		sp = sp + (pos / 2.5);
-		leftController.setReference(sp,
-				SparkBase.ControlType.kMAXMotionPositionControl);
-	}
+	// private double sp = getClimberPos();
+	// public void moveClimber(double pos) {
+	// 	sp = sp + (pos / 2.5);
+	// 	leftController.setReference(sp,
+	// 			SparkBase.ControlType.kMAXMotionPositionControl);
+	// }
 
 	public double getClimberPos() {
 		return leftEncoder.getPosition();
@@ -237,8 +240,10 @@ public class Climber extends SubsystemBase {
 
 	public void setClimberPos(ClimberSP pos) {
 		setClimberSP(pos);
+		// leftController.setReference(pos.getValue(),
+		// 		SparkBase.ControlType.kMAXMotionPositionControl);
 		leftController.setReference(pos.getValue(),
-				SparkBase.ControlType.kMAXMotionPositionControl);
+				SparkBase.ControlType.kPosition);
 	}
 
 	public void setClimberPos() {

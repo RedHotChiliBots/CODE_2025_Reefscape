@@ -145,10 +145,10 @@ public class Ladder extends SubsystemBase {
 				.d(Constants.Ladder.kPosD)
 				.outputRange(Constants.Ladder.kPosMinOutput, Constants.Ladder.kPosMaxOutput)
 				.positionWrappingEnabled(Constants.Ladder.kLeftEncodeWrapping);
-		leftConfig.closedLoop.maxMotion
-				.maxVelocity(Constants.Ladder.kMaxVel)
-				.maxAcceleration(Constants.Ladder.kMaxAccel)
-				.allowedClosedLoopError(Constants.Ladder.kAllowedErr);
+		// leftConfig.closedLoop.maxMotion
+		// 		.maxVelocity(Constants.Ladder.kMaxVel)
+		// 		.maxAcceleration(Constants.Ladder.kMaxAccel)
+		// 		.allowedClosedLoopError(Constants.Ladder.kAllowedErr);
 
 		leftLadder.configure(leftConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -268,10 +268,12 @@ public class Ladder extends SubsystemBase {
 		return leftEncoder.getPosition();
 	}
 
-	public void setLadderPos(LadderSP pos) {
-		setLadderSP(pos);
-		leftController.setReference(pos.getValue(),
-				SparkBase.ControlType.kMAXMotionPositionControl);
+	public void setLadderPos(LadderSP sp) {
+		setLadderSP(sp);
+		// leftController.setReference(sp.getValue(),
+		// 		SparkBase.ControlType.kMAXMotionPositionControl);
+		leftController.setReference(sp.getValue(),
+				SparkBase.ControlType.kPosition);
 	}
 
 	public void setLadderPos() {

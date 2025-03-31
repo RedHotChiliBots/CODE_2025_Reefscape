@@ -58,10 +58,10 @@ public class RobotContainer {
 	private final PhotonCamera camera3 = new PhotonCamera("PhotonVision 3");
 	private final PhotonCamera camera4 = new PhotonCamera("PhotonVision 4");
 	private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3,
-	camera4);
+			camera4);
 
 	private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
-	cameras.get(2), cameras.get(3));
+			cameras.get(2), cameras.get(3));
 
 	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
@@ -146,7 +146,7 @@ public class RobotContainer {
 			new InstantCommand(() -> coral.setTiltPos(CoralSP.STOW)),
 			new WaitCommand(0.1),
 			new InstantCommand(() -> algae.setTiltPos(AlgaeSP.STOWUP)),
-			new WaitCommand(0.75),		
+			new WaitCommand(0.75),
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.STOW)));
 
 	public final Command doAction = new SequentialCommandGroup(
@@ -171,7 +171,7 @@ public class RobotContainer {
 	 */
 	public RobotContainer() {
 		// TEST
-		// vision.setChassis(chassis);
+		vision.setChassis(chassis);
 
 		// algaeTab.add("Processor3", algae.processor);
 		// algaeTab.add("Floor3", algae.floor);
@@ -205,10 +205,9 @@ public class RobotContainer {
 		// compTab.add("Ladder", ladder);
 		// compTab.add("Climber", climber);
 		// TEST
-		// for (PhotonCamera camera : cameras) {
-		// camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web
-		// interface
-		// }
+		for (PhotonCamera camera : cameras) {
+			camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web interface
+		}
 
 		// Configure the trigger bindings
 		configureBindings();
@@ -255,11 +254,11 @@ public class RobotContainer {
 		// algae));
 
 		Shuffleboard.getTab("Automomous")
-		.addCamera("PhotonVision 2", "PhotonVision 2",
-		"mjpg:http://10.44.53:1185/?action=stream")
-		.withProperties(Map.of("showControls", false))
-		.withPosition(0,0)
-		.withSize(6,6);
+				.addCamera("PhotonVision 2", "PhotonVision 2",
+						"mjpg:http://10.44.53:1185/?action=stream")
+				.withProperties(Map.of("showControls", false))
+				.withPosition(0, 0)
+				.withSize(6, 6);
 
 		ShuffleboardLayout toggleCommands = cmdTab
 				.getLayout("Toggle", BuiltInLayouts.kList)
