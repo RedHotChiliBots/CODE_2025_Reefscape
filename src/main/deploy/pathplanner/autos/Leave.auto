@@ -1,0 +1,56 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "resetPose"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "resetOdo"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ExtractTrue"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Leave"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "goL3"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "doAutonAction"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": null,
+  "choreoAuto": false
+}

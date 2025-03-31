@@ -13,12 +13,6 @@
         {
           "type": "named",
           "data": {
-            "name": "resetOdo"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "ExtractTrue"
           }
         },
@@ -29,7 +23,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "1-Leave-C"
+                  "pathName": "1-Leave-CL3"
                 }
               },
               {
@@ -44,7 +38,7 @@
         {
           "type": "named",
           "data": {
-            "name": "doAutonAction"
+            "name": "doAction"
           }
         },
         {
@@ -69,7 +63,7 @@
         {
           "type": "named",
           "data": {
-            "name": "doAutonAction"
+            "name": "doAction"
           }
         },
         {
@@ -85,7 +79,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "goL35"
+                  "name": "go35"
                 }
               }
             ]
@@ -94,7 +88,7 @@
         {
           "type": "named",
           "data": {
-            "name": "doAutonAction"
+            "name": "doAction"
           }
         },
         {
@@ -119,7 +113,7 @@
         {
           "type": "named",
           "data": {
-            "name": "doAutonAction"
+            "name": "doAction"
           }
         },
         {
@@ -135,7 +129,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "goL35"
+                  "name": "go35"
                 }
               }
             ]
@@ -144,7 +138,7 @@
         {
           "type": "named",
           "data": {
-            "name": "doAutonAction"
+            "name": "doAction"
           }
         },
         {
@@ -169,7 +163,7 @@
         {
           "type": "named",
           "data": {
-            "name": "doAutonAction"
+            "name": "doAction"
           }
         }
       ]

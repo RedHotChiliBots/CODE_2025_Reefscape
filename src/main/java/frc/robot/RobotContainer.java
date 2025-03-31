@@ -175,7 +175,7 @@ public class RobotContainer {
 					new AlgaeIntake(algae).onlyIf(() -> algae.getIntakeEject() == Algae.IntakeEject.INTAKE)),
 			new InstantCommand(() -> algae.setIntakeEject(Algae.IntakeEject.STOP)),
 			new InstantCommand(() -> coral.setIntakeEject(Coral.IntakeEject.STOP)),
-			new WaitCommand(0.1));
+			new WaitCommand(0.15));
 
 	private final Autos auton = new Autos(this, chassis, ladder, algae, coral, climber);
 
