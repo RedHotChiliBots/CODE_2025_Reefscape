@@ -7,18 +7,6 @@
         {
           "type": "named",
           "data": {
-            "name": "resetPose"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "resetOdo"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "ExtractTrue"
           }
         },
@@ -33,9 +21,34 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "goL3"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "algaeZero"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.25
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "coralIntake"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "goL3"
+                      }
+                    }
+                  ]
                 }
               }
             ]

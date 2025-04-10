@@ -33,9 +33,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "goL3"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "goL3"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.0
+                      }
+                    }
+                  ]
                 }
               }
             ]

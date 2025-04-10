@@ -60,7 +60,7 @@ public class Algae extends SubsystemBase {
 	}
 
 	public enum AlgaeSP {
-		STOWUP(80.0, Constants.Algae.STOP),
+		STOWUP(70.0, Constants.Algae.STOP),
 		STOWDN(-75.0, Constants.Algae.STOP),
 		ZERO(0.0, Constants.Algae.STOP),
 		PROCESSOR(10.0, Constants.Algae.EJECT),

@@ -46,14 +46,14 @@ public class Ladder extends SubsystemBase {
 
 	// define ladder positions
 	public enum LadderSP {
-		BARGE((-8.0 * 12.0) + 1.0),	// 93.5"  Max Height for Ladder
-		L4((-6.0 * 12.0) + 0.5),
+		BARGE((-8.0 * 12.0) + 1.0), // 93.5" Max Height for Ladder
+		L4((-6.0 * 12.0) + 3.5),
 		L35((-5.0 * 12.0) - 3.375 + 2.5),
-		L3((-3.0 * 12.0) - 11.625 + 2.5),
-		L2((-2.0 * 12.0) - 7.825 + 3.5),
+		L3((-3.0 * 12.0) - 11.625 + 6.5),
+		L2((-2.0 * 12.0) - 7.825 + 7.5),
 		L1((-1.0 * 12.0) - 6.0 - 1.5),
 		STATION((-3.0 * 12.0) - 1.5 + 18.0),
-		PROCESSOR(0.0 - 7.0 + 1.5),
+		PROCESSOR(0.0 - 9.0 - 3.0),
 		FLOOR((-0.25 * 12.0)),
 		STOW(-0.5 * 12.0),
 		START(0.0);
@@ -118,7 +118,6 @@ public class Ladder extends SubsystemBase {
 			.withPosition(9, 1)
 			.withProperties(Map.of("Label position", "Hidden"));
 
-
 	/**************************************************************
 	 * Constructor
 	 **************************************************************/
@@ -145,10 +144,10 @@ public class Ladder extends SubsystemBase {
 				.d(Constants.Ladder.kPosD)
 				.outputRange(Constants.Ladder.kPosMinOutput, Constants.Ladder.kPosMaxOutput)
 				.positionWrappingEnabled(Constants.Ladder.kLeftEncodeWrapping);
-		// leftConfig.closedLoop.maxMotion
-		// 		.maxVelocity(Constants.Ladder.kMaxVel)
-		// 		.maxAcceleration(Constants.Ladder.kMaxAccel)
-		// 		.allowedClosedLoopError(Constants.Ladder.kAllowedErr);
+		leftConfig.closedLoop.maxMotion
+				.maxVelocity(Constants.Ladder.kMaxVel)
+				.maxAcceleration(Constants.Ladder.kMaxAccel)
+				.allowedClosedLoopError(Constants.Ladder.kAllowedErr);
 
 		leftLadder.configure(leftConfig,
 				ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -235,6 +234,9 @@ public class Ladder extends SubsystemBase {
 	public Command processor = new InstantCommand(() -> setLadderPos(LadderSP.PROCESSOR), this);
 	public Command floor = new InstantCommand(() -> setLadderPos(LadderSP.FLOOR), this);
 	public Command stow = new InstantCommand(() -> setLadderPos(LadderSP.STOW), this);
+	// new InstantCommand(() -> setZeroingLadder())
+	// 		.until(() -> isLadderZeroed())
+	// 		.andThen(new InstantCommand(() -> setLadderPos(LadderSP.STOW), this));
 
 	/**************************************************************
 	 * Methods
@@ -260,6 +262,10 @@ public class Ladder extends SubsystemBase {
 		return ladderZeroed;
 	}
 
+	public void setZeroingLadder() {
+		zeroingLadder = true;
+	}
+
 	public boolean onTarget() {
 		return Math.abs(getLeftPos() - getLadderSP().getValue()) < Constants.Ladder.kTollerance;
 	}
@@ -270,10 +276,10 @@ public class Ladder extends SubsystemBase {
 
 	public void setLadderPos(LadderSP sp) {
 		setLadderSP(sp);
-		// leftController.setReference(sp.getValue(),
-		// 		SparkBase.ControlType.kMAXMotionPositionControl);
 		leftController.setReference(sp.getValue(),
-				SparkBase.ControlType.kPosition);
+		SparkBase.ControlType.kMAXMotionPositionControl);
+		// leftController.setReference(sp.getValue(),
+		// 		SparkBase.ControlType.kPosition);
 	}
 
 	public void setLadderPos() {

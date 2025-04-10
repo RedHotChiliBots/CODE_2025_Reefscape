@@ -37,12 +37,13 @@ public class Autos {
   Coral coral;
   Climber climber;
 
-  AutonLeave autonLeave;
-  AutonLeaveNScoreL1 autonLeaveNScoreL1;
-  AutonLeaveNScoreL4 autonLeaveNScoreL4;
+  // AutonLeave autonLeave;
+  // AutonLeaveNScoreL1 autonLeaveNScoreL1;
+  // AutonLeaveNScoreL4 autonLeaveNScoreL4;
   Pose2d startPose;
   Command resetPose;
   Command resetOdo;
+  Command autoLeave;
 
   /** Example static factory for an autonomous command. */
   // public static Command AutonLeave(Chassis chassis, Ladder ladder, Algae algae,
@@ -68,13 +69,15 @@ public class Autos {
     temp = AutoBuilder.isPathfindingConfigured() ? "IS" : "IS NOT";
     DriverStation.reportWarning("AutoBuilder Pathfinding " + temp + " configured", false);
 
-    this.autonLeave = new AutonLeave(chassis, ladder, algae, coral, climber);
-    this.autonLeaveNScoreL1 = new AutonLeaveNScoreL1(robotContainer, chassis, ladder, algae, coral, climber);
-    this.autonLeaveNScoreL4 = new AutonLeaveNScoreL4(robotContainer, chassis, ladder, algae, coral, climber);
+    // this.autonLeave = new AutonLeave(chassis, ladder, algae, coral, climber);
+    // this.autonLeaveNScoreL1 = new AutonLeaveNScoreL1(robotContainer, chassis, ladder, algae, coral, climber);
+    // this.autonLeaveNScoreL4 = new AutonLeaveNScoreL4(robotContainer, chassis, ladder, algae, coral, climber);
 
     this.startPose = new Pose2d(new Translation2d(7.3, 4.0), Rotation2d.fromDegrees(180));
     this.resetPose = new InstantCommand(() -> chassis.resetPose(startPose));
     this.resetOdo = new InstantCommand(() -> chassis.resetOdometry(startPose));
+
+    this.autoLeave = new ChassisDriveDist(chassis, -0.5, 1.0);
 
     // ********************************************
     // Generate Auto commands
@@ -88,11 +91,14 @@ public class Autos {
     NamedCommands.registerCommand("goBarge", robotContainer.goBarge);
     NamedCommands.registerCommand("goProcessor", robotContainer.goProcessor);
     NamedCommands.registerCommand("doAutonAction", robotContainer.doAutonAction);
+    NamedCommands.registerCommand("coralIntake", coral.intake);
+    NamedCommands.registerCommand("algaeZero", algae.zero);
 
     // ********************************************
     // Initialize auto command chooser with auton commands
     autoChooser = AutoBuilder.buildAutoChooser("BigKahuna");
-
+    autoChooser.addOption("AUTOLEAVE", autoLeave);
+        
     // ********************************************
     // Add Auton Command chooser to Shuffleboard
     compTab.add("Auto Command", autoChooser)

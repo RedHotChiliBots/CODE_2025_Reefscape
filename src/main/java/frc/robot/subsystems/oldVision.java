@@ -11,6 +11,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.Pair;
 
@@ -24,7 +26,7 @@ import org.littletonrobotics.junction.Logger;
 import java.util.List;
 import java.util.Optional;
 
-public class Vision extends SubsystemBase {
+public class oldVision extends SubsystemBase {
     private Chassis chassis;
     private final PhotonCamera[] cameras; // Array of cameras
     private final Transform3d[] cameraToRobotTransforms; // Array of camera-to-robot transforms
@@ -36,45 +38,62 @@ public class Vision extends SubsystemBase {
     private final GenericEntry[] robotRotationWidgets;
     private final GenericEntry[] numTargetsWidgets;
     private final GenericEntry[] hasTargetsWidgets;
+    private final GenericEntry[] isConnectedWidgets;
+
+    private final StructPublisher<Pose2d> visionPose = NetworkTableInstance.getDefault()
+            .getStructTopic("visionPose", Pose2d.struct).publish();
+
+    private final PhotonCamera camera4 = new PhotonCamera("PhotonVision_4"); //changed to match PhotonVision web API naming
+    private final PhotonCamera camera1 = new PhotonCamera("PhotonVision_1");
+    private final PhotonCamera camera2 = new PhotonCamera("PhotonVision_2");
+    private final PhotonCamera camera3 = new PhotonCamera("PhotonVision_3");
 
     public void setChassis(Chassis chassis) {
         this.chassis = chassis;
     }
 
-    public Vision(PhotonCamera camera1, PhotonCamera camera2, PhotonCamera camera3, PhotonCamera camera4) {
-        this.cameras = new PhotonCamera[] { camera1, camera2, camera3, camera4 };
+    // public Vision(PhotonCamera camera1, PhotonCamera camera2, PhotonCamera
+    // camera3, PhotonCamera camera4) {
+
+    public oldVision() {
+        this.cameras = new PhotonCamera[] { this.camera1, this.camera2, this.camera3, this.camera4 };
 
         // Define the camera-to-robot transforms for each camera (adjust for the robot)
         this.cameraToRobotTransforms = new Transform3d[] {
                 new Transform3d(new Translation3d( // camera 1 back right
-                        Units.inchesToMeters(11.8251), // x
-                        Units.inchesToMeters(-12.0819), // y
-                        Units.inchesToMeters(8.5062)), // z
+                        Units.inchesToMeters(11.771), // x
+                        Units.inchesToMeters(-12.703), // y
+                        Units.inchesToMeters(8.659)), // z
                         new Rotation3d(0.0, // roll
-                                Units.degreesToRadians(35.0), // pitch
-                                Units.degreesToRadians(170.0))), // yaw
+                                Units.degreesToRadians(15.0), // pitch
+                                Units.degreesToRadians(10))), // yaw
                 new Transform3d(new Translation3d( // camera 2 back left
-                        Units.inchesToMeters(-11.8251), // x
-                        Units.inchesToMeters(-12.0819), // y
-                        Units.inchesToMeters(8.5062)), // z
+                        Units.inchesToMeters(-11.771), // x
+                        Units.inchesToMeters(-12.703), // y
+                        Units.inchesToMeters(8.659)), // z
                         new Rotation3d(0.0, // roll
-                                Units.degreesToRadians(35.0), // pitch
-                                Units.degreesToRadians(-170.0))), // yaw
+                                Units.degreesToRadians(15), // pitch
+                                Units.degreesToRadians(10))), // yaw
                 new Transform3d(new Translation3d( // camera 3 front left
-                        Units.inchesToMeters(-11.8251), // x
-                        Units.inchesToMeters(12.0819), // y
-                        Units.inchesToMeters(8.5062)), // z
+                        Units.inchesToMeters(-11.204), // x
+                        Units.inchesToMeters(12.603), // y
+                        Units.inchesToMeters(8.659)), // z
                         new Rotation3d(0.0, // roll
                                 Units.degreesToRadians(15.0), // pitch
                                 Units.degreesToRadians(-30.0))), // yaw
                 new Transform3d(new Translation3d( // camera 4 front right
-                        Units.inchesToMeters(11.8251), // x
-                        Units.inchesToMeters(12.0819), // y
-                        Units.inchesToMeters(8.5062)), // z
+                        Units.inchesToMeters(11.204), // x
+                        Units.inchesToMeters(12.603), // y
+                        Units.inchesToMeters(8.659)), // z
                         new Rotation3d(0.0, // roll
                                 Units.degreesToRadians(15.0), // pitch
                                 Units.degreesToRadians(30.0))) // yaw
         };
+
+        // default pipeline set up in PhotonVision web interface
+        for (PhotonCamera camera : cameras) {
+            camera.setPipelineIndex(0);
+        }
 
         // Initialize pose estimators for each camera
         this.poseEstimators = new PhotonPoseEstimator[cameras.length];
@@ -91,8 +110,10 @@ public class Vision extends SubsystemBase {
         this.robotPoseYWidgets = new GenericEntry[cameras.length];
         this.robotPoseZWidgets = new GenericEntry[cameras.length];
         this.robotRotationWidgets = new GenericEntry[cameras.length]; // ngl the dent bothers me
+
         this.numTargetsWidgets = new GenericEntry[cameras.length];
         this.hasTargetsWidgets = new GenericEntry[cameras.length];
+        this.isConnectedWidgets = new GenericEntry[cameras.length];
 
         for (int i = 0; i < cameras.length; i++) {
             String cameraName = "Cameras";
@@ -107,7 +128,13 @@ public class Vision extends SubsystemBase {
                     .add("Has Tgts " + i, false)
                     .withWidget(BuiltInWidgets.kBooleanBox)
                     .withPosition(2 * i, 2)
-                    .withSize(2, 2)
+                    .withSize(2, 1)
+                    .getEntry();
+            isConnectedWidgets[i] = Shuffleboard.getTab(cameraName)
+                    .add("isConnected " + i, false)
+                    .withWidget(BuiltInWidgets.kBooleanBox)
+                    .withPosition(2 * i, 3)
+                    .withSize(2, 1)
                     .getEntry();
             numTargetsWidgets[i] = Shuffleboard.getTab(cameraName)
                     .add("Num Tgts " + i, 0)
@@ -144,6 +171,12 @@ public class Vision extends SubsystemBase {
                     .withPosition(2 * i, 12)
                     .withSize(2, 2)
                     .getEntry();
+            robotRotationWidgets[i] = Shuffleboard.getTab(cameraName)
+                    .add("Vision Pose " + i, "N/A")
+                    .withWidget(BuiltInWidgets.kField)
+                    .withPosition(2 * i, 12)
+                    .withSize(2, 2)
+                    .getEntry();
         }
     }
 
@@ -153,46 +186,72 @@ public class Vision extends SubsystemBase {
 
         // Process data for all cameras
         for (int i = 0; i < cameras.length; i++) {
+            this.robotNameWidgets[i].setString(cameras[i].getName());
+            this.isConnectedWidgets[i].setBoolean(cameras[i].isConnected());
+
             Optional<Pair<Pose3d, Double>> poseAndTimestamp = processCamera(cameras[i], poseEstimators[i], i + 1);
+
             if (poseAndTimestamp.isPresent()) {
+                System.out.println(cameras[i].getName() + "poseAndTimestamp: isPresent");
+
                 Pose3d pose3d = poseAndTimestamp.get().getFirst();
                 double timestamp = poseAndTimestamp.get().getSecond();
 
-                this.robotNameWidgets[i].setString(cameras[i].getName());
+                System.out.println("Camera " + cameras[i].getName() + " ++++++++");
                 this.robotPoseXWidgets[i].setDouble(pose3d.getX());
                 this.robotPoseYWidgets[i].setDouble(pose3d.getY());
                 this.robotPoseZWidgets[i].setDouble(pose3d.getZ());
                 this.robotRotationWidgets[i].setDouble(pose3d.getRotation().getAngle());
 
-                List<PhotonPipelineResult> results = cameras[i].getAllUnreadResults();
-                PhotonPipelineResult latestResult = getNewestResult(results);
-                this.numTargetsWidgets[i].setDouble(latestResult.getTargets().size());
-                this.hasTargetsWidgets[i].setBoolean(latestResult.hasTargets());
+                // List<PhotonPipelineResult> results = cameras[i].getAllUnreadResults();
+                // PhotonPipelineResult latestResult = getNewestResult(results);
 
-                Pose2d pose2d = getVisionPose2d(pose3d);
+                // Pose2d visonPose = getVisionPose2d(pose3d);
+                Pose2d pose2d = pose3d.toPose2d();
+
+                visionPose.set(pose2d);
+
                 chassis.addVisionMeasurement(pose2d, timestamp); // Use PhotonVision's timestamp
+            } else {
+
+                System.out.println(cameras[i].getName() + "poseAndTimestamp: isNOTPresent");
             }
         }
     }
 
     private Optional<Pair<Pose3d, Double>> processCamera(PhotonCamera camera, PhotonPoseEstimator poseEstimator,
             int cameraNumber) {
+        if (camera.isConnected()) {
+            System.out.println("Camera " + camera.getName() + " is Connected");
+        } else {
+            System.out.println("Camera " + camera.getName() + " is NOT Connected");
+        }
+
         List<PhotonPipelineResult> results = camera.getAllUnreadResults();
         int widgetIndex = cameraNumber - 1; // Convert cameraNumber (1-4) to index (0-3)
 
+        String cameraKey = "Vision/Camera" + cameraNumber + "/";
+
         if (results.isEmpty()) {
             // No new results; clear data and exit
-            String cameraKey = "Vision/Camera" + cameraNumber + "/";
+            System.out.println(cameraKey + "Results: empty");
             Logger.recordOutput(cameraKey + "HasTargets", false);
             clearShuffleboardData(widgetIndex);
             return Optional.empty();
         }
 
         PhotonPipelineResult latestResult = getNewestResult(results);
+        
+        if ((latestResult != null) && (latestResult.hasTargets())) {
+            this.hasTargetsWidgets[widgetIndex].setBoolean(latestResult.hasTargets());
+            this.numTargetsWidgets[widgetIndex].setInteger(latestResult.getTargets().size());
 
-        if (latestResult.hasTargets()) {
+            System.out.println(cameraKey + "HasTargets: true");
+
             Optional<EstimatedRobotPose> estimatedPose = poseEstimator.update(latestResult);
             if (estimatedPose.isPresent()) {
+                System.out.println(cameraKey + " pose: isPresent");
+
                 Pose3d robotPose3d = estimatedPose.get().estimatedPose;
                 logAndUpdateShuffleboard(cameraNumber, widgetIndex, robotPose3d, latestResult.getTargets().size());
                 return Optional.of(new Pair<>(robotPose3d, latestResult.getTimestampSeconds())); // Return pose and
@@ -200,16 +259,16 @@ public class Vision extends SubsystemBase {
 
             } else {
                 // Pose estimation failed
-                String cameraKey = "Vision/Camera" + cameraNumber + "/";
                 Logger.recordOutput(cameraKey + "PoseEstimationFailed", true);
+                System.out.println(cameraKey + "pose: PoseEstimationFailed");
                 clearShuffleboardData(widgetIndex);
                 return Optional.empty();
             }
 
         } else {
             // No targets detected
-            String cameraKey = "Vision/Camera" + cameraNumber + "/";
             Logger.recordOutput(cameraKey + "HasTargets", false);
+            System.out.println(cameraKey + "HasTargets: false");
             clearShuffleboardData(widgetIndex);
         }
 

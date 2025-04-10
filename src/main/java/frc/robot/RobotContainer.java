@@ -24,6 +24,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AlgaeEject;
 import frc.robot.commands.AlgaeIntake;
 import frc.robot.commands.Autos;
+import frc.robot.commands.ChassisDriveDist;
 import frc.robot.commands.CoralEject;
 import frc.robot.commands.CoralIntake;
 import frc.robot.subsystems.Algae;
@@ -34,12 +35,12 @@ import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Coral.CoralSP;
 import frc.robot.subsystems.Ladder;
 import frc.robot.subsystems.Ladder.LadderSP;
-import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.oldVision;
 
-import java.util.List;
 import java.util.Map;
-
-import org.photonvision.PhotonCamera;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -53,16 +54,17 @@ import org.photonvision.PhotonCamera;
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	// TEST
-	private final PhotonCamera camera1 = new PhotonCamera("PhotonVision 1");
-	private final PhotonCamera camera2 = new PhotonCamera("PhotonVision 2");
-	private final PhotonCamera camera3 = new PhotonCamera("PhotonVision 3");
-	private final PhotonCamera camera4 = new PhotonCamera("PhotonVision 4");
-	private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3,
-			camera4);
+	// private final PhotonCamera camera1 = new PhotonCamera("PhotonVision 1");
+	// private final PhotonCamera camera2 = new PhotonCamera("PhotonVision 2");
+	// private final PhotonCamera camera3 = new PhotonCamera("PhotonVision 3");
+	// private final PhotonCamera camera4 = new PhotonCamera("PhotonVision 4");
+	// private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3,
+	// camera4);
 
-	private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
-			cameras.get(2), cameras.get(3));
+	// private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
+	// cameras.get(2), cameras.get(3));
 
+	// private final Vision vision;
 	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
 	private final Algae algae = new Algae(ladder);
@@ -77,7 +79,7 @@ public class RobotContainer {
 	private final GenericHID m_operatorHID = new GenericHID(
 			OIConstants.kOperatorControllerPort);
 
-	// =====TESTING=====//
+
 	public final Command goBarge = new SequentialCommandGroup(
 			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
 			new InstantCommand(() -> ladder.setLadderPos(LadderSP.BARGE), ladder),
@@ -186,7 +188,12 @@ public class RobotContainer {
 	 */
 	public RobotContainer() {
 		// TEST
-		vision.setChassis(chassis);
+		// vision = new Vision(
+		// chassis::addVisionMeasurement,
+		// new VisionIOPhotonVision(VisionConstants.camera0Name,
+		// VisionConstants.robotToCamera0),
+		// new VisionIOPhotonVision(VisionConstants.camera1Name,
+		// VisionConstants.robotToCamera1));
 
 		// algaeTab.add("Processor3", algae.processor);
 		// algaeTab.add("Floor3", algae.floor);
@@ -220,9 +227,10 @@ public class RobotContainer {
 		// compTab.add("Ladder", ladder);
 		// compTab.add("Climber", climber);
 		// TEST
-		for (PhotonCamera camera : cameras) {
-			camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web interface
-		}
+		// for (PhotonCamera camera : cameras) {
+		// camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web
+		// interface
+		// }
 
 		// Configure the trigger bindings
 		configureBindings();
@@ -268,12 +276,12 @@ public class RobotContainer {
 		// OIConstants.kDriveDeadband)),
 		// algae));
 
-		Shuffleboard.getTab("Automomous")
-				.addCamera("PhotonVision 2", "PhotonVision 2",
-						"mjpg:http://10.44.53:1185/?action=stream")
-				.withProperties(Map.of("showControls", false))
-				.withPosition(0, 0)
-				.withSize(6, 6);
+		// Shuffleboard.getTab("Automomous")
+		// .addCamera("PhotonVision 2", "PhotonVision 2",
+		// "mjpg:http://10.44.53:1185/?action=stream")
+		// .withProperties(Map.of("showControls", false))
+		// .withPosition(0, 0)
+		// .withSize(6, 6);
 
 		ShuffleboardLayout toggleCommands = cmdTab
 				.getLayout("Toggle", BuiltInLayouts.kList)
@@ -362,7 +370,7 @@ public class RobotContainer {
 		m_operatorController.y().onTrue(this.goL4);
 		m_operatorController.x().onTrue(this.goL3);
 		m_operatorController.b().onTrue(this.goL2);
-		m_operatorController.a().onTrue(this.goL1);
+		m_operatorController.a().onTrue(algae.intake);
 
 		new POVButton(m_operatorHID, 0).onTrue(this.goBarge);
 		new POVButton(m_operatorHID, 90).onTrue(this.goStation);
@@ -374,9 +382,9 @@ public class RobotContainer {
 		m_operatorController.start().onTrue(climber.climb);
 
 		m_operatorController.leftBumper().onTrue(this.goL35);
-		m_operatorController.rightBumper().onTrue(this.doAction);
+		m_operatorController.rightBumper().onTrue(this.coral.eject); //was doAction 10:35 AM
 
-		m_operatorController.rightStick().onTrue(algae.toggleExtract);
+		m_operatorController.rightStick().onTrue(algae.eject);
 		m_operatorController.leftStick().onTrue(coral.intake);
 
 	}
