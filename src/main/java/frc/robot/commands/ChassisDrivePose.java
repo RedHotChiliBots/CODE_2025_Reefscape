@@ -15,7 +15,6 @@ public class ChassisDrivePose extends Command {
 
   private Chassis chassis = null;
   private Pose2d currPose = null;
-  private Pose2d initPose = null;
   private Pose2d tgtPose = null;
   private double tgtRot = 0.0;
   private double currRot = 0.0;
@@ -42,7 +41,6 @@ public class ChassisDrivePose extends Command {
     rotCont.setTolerance(Vision.kRTollerance);
     rotCont.enableContinuousInput(Vision.kRMin, Vision.kRMax);
      
-    initPose = chassis.getPose();
     tgtRot = tgtPose.getRotation().getRadians();
   }
 

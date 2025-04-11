@@ -24,7 +24,6 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AlgaeEject;
 import frc.robot.commands.AlgaeIntake;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ChassisDriveDist;
 import frc.robot.commands.CoralEject;
 import frc.robot.commands.CoralIntake;
 import frc.robot.subsystems.Algae;
@@ -38,7 +37,6 @@ import frc.robot.subsystems.Ladder.LadderSP;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
-import frc.robot.subsystems.oldVision;
 
 import java.util.Map;
 
@@ -53,23 +51,18 @@ import java.util.Map;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	// TEST
-	// private final PhotonCamera camera1 = new PhotonCamera("PhotonVision 1");
-	// private final PhotonCamera camera2 = new PhotonCamera("PhotonVision 2");
-	// private final PhotonCamera camera3 = new PhotonCamera("PhotonVision 3");
-	// private final PhotonCamera camera4 = new PhotonCamera("PhotonVision 4");
-	// private final List<PhotonCamera> cameras = List.of(camera1, camera2, camera3,
-	// camera4);
 
-	// private final Vision vision = new Vision(cameras.get(0), cameras.get(1),
-	// cameras.get(2), cameras.get(3));
-
-	// private final Vision vision;
 	private final Chassis chassis = new Chassis();
 	private final Ladder ladder = new Ladder();
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(chassis, ladder, algae);
 	private final Climber climber = new Climber();
+	private final Vision vision = new Vision(
+			chassis::addVisionMeasurement,
+			new VisionIOPhotonVision(VisionConstants.camera0Name,
+					VisionConstants.robotToCamera0),
+			new VisionIOPhotonVision(VisionConstants.camera1Name,
+					VisionConstants.robotToCamera1));
 
 	// Define HIDs
 	private final CommandXboxController m_driverController = new CommandXboxController(
@@ -78,7 +71,6 @@ public class RobotContainer {
 			OIConstants.kOperatorControllerPort);
 	private final GenericHID m_operatorHID = new GenericHID(
 			OIConstants.kOperatorControllerPort);
-
 
 	public final Command goBarge = new SequentialCommandGroup(
 			new WaitUntilCommand(() -> ladder.isLadderZeroed()),
@@ -187,50 +179,6 @@ public class RobotContainer {
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
-		// TEST
-		// vision = new Vision(
-		// chassis::addVisionMeasurement,
-		// new VisionIOPhotonVision(VisionConstants.camera0Name,
-		// VisionConstants.robotToCamera0),
-		// new VisionIOPhotonVision(VisionConstants.camera1Name,
-		// VisionConstants.robotToCamera1));
-
-		// algaeTab.add("Processor3", algae.processor);
-		// algaeTab.add("Floor3", algae.floor);
-		// algaeTab.add("Intake3", algae.intake);
-		// algaeTab.add("Eject3", algae.eject);
-
-		// cmdTab.add("climberStow", climberStow);
-		// cmdTab.add("climberReady", climberReady);
-		// cmdTab.add("climberZero", climberZero);
-		// cmdTab.add("climberClimb", climberClimb);
-
-		// cmdTab.add("algaeStow", algaeStow);
-		// cmdTab.add("algaeZero", algaeZero);
-		// cmdTab.add("algaeBarge", algaeBarge);
-		// cmdTab.add("algaeProcessor", algaeProcessor);
-		// cmdTab.add("algaeFloor", algaeFloor);
-		// cmdTab.add("algaeL3", algaeL3);
-		// cmdTab.add("algaeL2", algaeL2);
-
-		// cmdTab.add("coralStow", coralStow);
-		// cmdTab.add("coralZero", coralZero);
-		// cmdTab.add("coralStation", coralStation);
-		// cmdTab.add("coralL4", coralL4);
-		// cmdTab.add("coralL3", coralL3);
-		// cmdTab.add("coralL2", coralL2);
-		// cmdTab.add("coralL1", coralL1);
-
-		// compTab.add("Chassis", chassis);
-		// compTab.add("Coral", coral);
-		// compTab.add("Algae", algae);
-		// compTab.add("Ladder", ladder);
-		// compTab.add("Climber", climber);
-		// TEST
-		// for (PhotonCamera camera : cameras) {
-		// camera.setPipelineIndex(0); // default pipeline set up in PhotonVision web
-		// interface
-		// }
 
 		// Configure the trigger bindings
 		configureBindings();
@@ -249,39 +197,6 @@ public class RobotContainer {
 										* chassis.spdMultiplier, OIConstants.kDriveDeadband),
 								true),
 						chassis));
-
-		// climber.setDefaultCommand(
-		// // The right Y stick controls movement
-		// new RunCommand(
-		// () -> climber.moveClimber(
-		// -MathUtil.applyDeadband(m_operatorController.getRightY(), 0.10)),
-		// // OIConstants.kDriveDeadband)),
-		// climber));
-
-		// coral.setDefaultCommand(
-		// // The left stick controls translation of the robot.
-		// // Turning is controlled by the X axis of the right stick.
-		// new RunCommand(
-		// () -> coral.moveTilt(
-		// -MathUtil.applyDeadband(m_operatorController.getLeftX(),
-		// OIConstants.kDriveDeadband)),
-		// coral));
-
-		// algae.setDefaultCommand(
-		// // The left stick controls translation of the robot.
-		// // Turning is controlled by the X axis of the right stick.
-		// new RunCommand(
-		// () -> algae.moveTilt(
-		// -MathUtil.applyDeadband(m_operatorController.getRightX(),
-		// OIConstants.kDriveDeadband)),
-		// algae));
-
-		// Shuffleboard.getTab("Automomous")
-		// .addCamera("PhotonVision 2", "PhotonVision 2",
-		// "mjpg:http://10.44.53:1185/?action=stream")
-		// .withProperties(Map.of("showControls", false))
-		// .withPosition(0, 0)
-		// .withSize(6, 6);
 
 		ShuffleboardLayout toggleCommands = cmdTab
 				.getLayout("Toggle", BuiltInLayouts.kList)
@@ -352,21 +267,6 @@ public class RobotContainer {
 				.onFalse(new InstantCommand(() -> chassis.setPoseErr()))
 				.onTrue(new InstantCommand(() -> chassis.setPoseZero()));
 
-		// m_driverController.x().onTrue(chassis.setX);
-
-		// m_operatorController.y().onTrue(climber.stow);
-		// m_operatorController.b().onTrue(climber.ready);
-		// m_operatorController.a().onTrue(climber.climb);
-		// m_operatorController.x().onTrue(climber.zero);
-
-		// m_operatorController.start().onTrue(algae.intake);
-		// m_operatorController.back().onTrue(algae.eject);
-
-		// new POVButton(m_operatorHID, 0).onTrue(algae.stow);
-		// new POVButton(m_operatorHID, 90).onTrue(algae.processor);
-		// new POVButton(m_operatorHID, 270).onTrue(algae.processor);
-		// new POVButton(m_operatorHID, 180).onTrue(algae.floor);
-
 		m_operatorController.y().onTrue(this.goL4);
 		m_operatorController.x().onTrue(this.goL3);
 		m_operatorController.b().onTrue(this.goL2);
@@ -382,7 +282,7 @@ public class RobotContainer {
 		m_operatorController.start().onTrue(climber.climb);
 
 		m_operatorController.leftBumper().onTrue(this.goL35);
-		m_operatorController.rightBumper().onTrue(this.coral.eject); //was doAction 10:35 AM
+		m_operatorController.rightBumper().onTrue(this.coral.eject); // was doAction 10:35 AM
 
 		m_operatorController.rightStick().onTrue(algae.eject);
 		m_operatorController.leftStick().onTrue(coral.intake);
