@@ -57,6 +57,7 @@ public class RobotContainer {
 	private final Algae algae = new Algae(ladder);
 	private final Coral coral = new Coral(chassis, ladder, algae);
 	private final Climber climber = new Climber();
+	@SuppressWarnings("unused")
 	private final Vision vision = new Vision(
 			chassis::addVisionMeasurement,
 			new VisionIOPhotonVision(VisionConstants.camera0Name,
