@@ -60,7 +60,7 @@ public class Algae extends SubsystemBase {
 	}
 
 	public enum AlgaeSP {
-		STOWUP(90.0, Constants.Algae.STOP),
+		STOWUP(70.0, Constants.Algae.STOP),
 		STOWDN(-75.0, Constants.Algae.STOP),
 		ZERO(0.0, Constants.Algae.STOP),
 		PROCESSOR(10.0, Constants.Algae.EJECT),
@@ -289,6 +289,8 @@ public class Algae extends SubsystemBase {
 	public Command stowdn = new InstantCommand(() -> setTiltPos(AlgaeSP.STOWDN), this);
 
 	public Command toggleExtract = new InstantCommand(() -> toggleExtract());
+	public Command setExtractTrue = new InstantCommand(() -> setExtract(true));
+	public Command setExtractFalse = new InstantCommand(() -> setExtract(false));
 
 	public Command intake = new AlgaeIntake(this);
 
@@ -445,5 +447,9 @@ public class Algae extends SubsystemBase {
 
 	public boolean getExtract() {
 		return extractAlgae;
+	}
+
+	public void setExtract(boolean b) {
+		extractAlgae = b;
 	}
 }

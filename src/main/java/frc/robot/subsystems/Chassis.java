@@ -16,6 +16,7 @@ import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -27,6 +28,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -81,31 +84,34 @@ public class Chassis extends SubsystemBase {
 	/**************************************************************
 	 * Initialize Shuffleboard entries
 	 **************************************************************/
-	private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
+	// private final ShuffleboardTab chassisTab = Shuffleboard.getTab("Chassis");
 	private final ShuffleboardTab cmdTab = Shuffleboard.getTab("Commands");
 	private final ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
-	private final GenericEntry sbAngle = chassisTab.addPersistent("Angle", 0)
-			.withWidget("Text View").withPosition(3, 0).withSize(2, 1).getEntry();
-	private final GenericEntry sbFusedHeading = chassisTab.addPersistent("FusedHeading", 0)
-			.withWidget("Text View").withPosition(3, 1).withSize(2, 1).getEntry();
-	private final GenericEntry sbCompassHeading = chassisTab.addPersistent("CompassHeading", 0)
-			.withWidget("Text View").withPosition(3, 2).withSize(2, 1).getEntry();
-	private final GenericEntry sbRotDegree = chassisTab.addPersistent("Rotation2d", 0)
-			.withWidget("Text View").withPosition(3, 3).withSize(2, 1).getEntry();
-	private final GenericEntry sbPitch = chassisTab.addPersistent("Pitch", 0)
-			.withWidget("Text View").withPosition(5, 0).withSize(2, 1).getEntry();
-	private final GenericEntry sbRoll = chassisTab.addPersistent("Roll", 0)
-			.withWidget("Text View").withPosition(5, 1).withSize(2, 1).getEntry();
-	private final GenericEntry sbYaw = chassisTab.addPersistent("Yaw", 0)
-			.withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
+	// private final GenericEntry sbAngle = chassisTab.addPersistent("Angle", 0)
+	// .withWidget("Text View").withPosition(3, 0).withSize(2, 1).getEntry();
+	// private final GenericEntry sbFusedHeading =
+	// chassisTab.addPersistent("FusedHeading", 0)
+	// .withWidget("Text View").withPosition(3, 1).withSize(2, 1).getEntry();
+	// private final GenericEntry sbCompassHeading =
+	// chassisTab.addPersistent("CompassHeading", 0)
+	// .withWidget("Text View").withPosition(3, 2).withSize(2, 1).getEntry();
+	// private final GenericEntry sbRotDegree =
+	// chassisTab.addPersistent("Rotation2d", 0)
+	// .withWidget("Text View").withPosition(3, 3).withSize(2, 1).getEntry();
+	// private final GenericEntry sbPitch = chassisTab.addPersistent("Pitch", 0)
+	// .withWidget("Text View").withPosition(5, 0).withSize(2, 1).getEntry();
+	// private final GenericEntry sbRoll = chassisTab.addPersistent("Roll", 0)
+	// .withWidget("Text View").withPosition(5, 1).withSize(2, 1).getEntry();
+	// private final GenericEntry sbYaw = chassisTab.addPersistent("Yaw", 0)
+	// .withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
 
-	private final GenericEntry sbXVel = chassisTab.addPersistent("X Vel", 0)
-			.withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
-	private final GenericEntry sbYVel = chassisTab.addPersistent("Y Vel", 0)
-			.withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
-	private final GenericEntry sbRVel = chassisTab.addPersistent("R Vel", 0)
-			.withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
+	// private final GenericEntry sbXVel = chassisTab.addPersistent("X Vel", 0)
+	// .withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
+	// private final GenericEntry sbYVel = chassisTab.addPersistent("Y Vel", 0)
+	// .withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
+	// private final GenericEntry sbRVel = chassisTab.addPersistent("R Vel", 0)
+	// .withWidget("Text View").withPosition(5, 2).withSize(2, 1).getEntry();
 
 	private final StructPublisher<Pose2d> origPose = NetworkTableInstance.getDefault()
 			.getStructTopic("OrigPose", Pose2d.struct).publish();
@@ -218,8 +224,13 @@ public class Chassis extends SubsystemBase {
 		zeroYaw();
 		m_ahrs.setAngleAdjustment(0.0);
 
-		getPose().getRotation().getDegrees();
-		resetPose(getPose());
+		// getPose().getRotation().getDegrees();
+		// resetPose(getPose());
+
+		// Pose2d startPose = new Pose2d(new Translation2d(5.79, 4.0),
+		// Rotation2d.fromDegrees(180));
+		// resetPose(startPose);
+		// resetOdometry(startPose);
 
 		origPose.set(getPose());
 
@@ -253,17 +264,17 @@ public class Chassis extends SubsystemBase {
 
 		currPose.set(getPose());
 
-		sbXVel.setDouble(getPose().getX());
-		sbYVel.setDouble(getPose().getY());
-		sbRVel.setDouble(getPose().getRotation().getDegrees());
+		// sbXVel.setDouble(getPose().getX());
+		// sbYVel.setDouble(getPose().getY());
+		// sbRVel.setDouble(getPose().getRotation().getDegrees());
 
-		sbAngle.setDouble(getAngle());
-		sbYaw.setDouble(getYaw());
-		sbPitch.setDouble(getPitch());
-		sbRoll.setDouble(getRoll());
-		sbFusedHeading.setDouble(getFusedHeading());
-		sbCompassHeading.setDouble(getCompassHeading());
-		sbRotDegree.setDouble(getRotation2d().getDegrees());
+		// sbAngle.setDouble(getAngle());
+		// sbYaw.setDouble(getYaw());
+		// sbPitch.setDouble(getPitch());
+		// sbRoll.setDouble(getRoll());
+		// sbFusedHeading.setDouble(getFusedHeading());
+		// sbCompassHeading.setDouble(getCompassHeading());
+		// sbRotDegree.setDouble(getRotation2d().getDegrees());
 	}
 
 	/**************************************************************
@@ -328,8 +339,16 @@ public class Chassis extends SubsystemBase {
 		poseTest = poseZero;
 	}
 
-	public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) {
-		poseEstimator.addVisionMeasurement(visionPose.plus(poseTest), timestampSeconds);
+	public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) { // , Matrix<N3, N1> stdDevs) {
+		poseEstimator.addVisionMeasurement(visionPose.plus(poseTest), timestampSeconds);// , stdDevs);
+	}
+
+	public void addVisionMeasurement(
+			Pose2d visionRobotPoseMeters,
+			double timestampSeconds,
+			Matrix<N3, N1> visionMeasurementStdDevs) {
+		poseEstimator.addVisionMeasurement(
+				visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
 	}
 
 	/**
@@ -409,7 +428,7 @@ public class Chassis extends SubsystemBase {
 	private final double COLLISION_THRESHOLD_DELTA_G = 0.5;
 	private double last_world_linear_accel_x = 0.0;
 	private double last_world_linear_accel_y = 0.0;
-	
+
 	public boolean isJerk() {
 		boolean collisionDetected = false;
 
@@ -421,7 +440,7 @@ public class Chassis extends SubsystemBase {
 		last_world_linear_accel_y = curr_world_linear_accel_y;
 
 		if ((Math.abs(currentJerkX) > COLLISION_THRESHOLD_DELTA_G) ||
-			(Math.abs(currentJerkY) > COLLISION_THRESHOLD_DELTA_G)) {
+				(Math.abs(currentJerkY) > COLLISION_THRESHOLD_DELTA_G)) {
 			collisionDetected = true;
 		} else {
 			collisionDetected = false;

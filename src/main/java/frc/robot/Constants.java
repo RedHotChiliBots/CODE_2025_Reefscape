@@ -33,6 +33,10 @@ public final class Constants {
 		public static final double kDriveDeadband = 0.05;
 	}
 
+	public static final class PWMId {
+		public static final int kGrenadePin = 0;
+	}
+
 	public static final class CANId {
 
 		public static final int kPDHCanID = 1;
@@ -145,15 +149,15 @@ public final class Constants {
 		// The MAXSwerve module can be configured with one of three pinion gears: 12T,
 		// 13T, or 14T. This changes the drive speed of the module (a pinion gear with
 		// more teeth will result in a robot that drives faster).
-		public static final int kDrivingMotorPinionTeeth = 14;
+		public static final int kDrivingMotorPinionTeeth = 16;
 
 		// Calculations required for driving motor conversion factors and feed forward
-		public static final double kDrivingMotorFreeSpeedRps = MotorConstants.kNeoFreeSpeedRpm / 60;
+		public static final double kDrivingMotorFreeSpeedRps = MotorConstants.kVortexFreeSpeedRpm / 60;
 		public static final double kWheelDiameterMeters = Units.inchesToMeters(4.0); // 0.0762;
 		public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
 		// 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
 		// teeth on the bevel pinion
-		public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+		public static final double kDrivingMotorReduction = 5.9;	//(45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
 		public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
 				/ kDrivingMotorReduction;
 	}
@@ -237,8 +241,8 @@ public final class Constants {
 		public static final double kTiltPosP = 0.01;	// MaxMotion 0.0015;
 		public static final double kTiltPosI = 0.000001;	// MaxMotion 0.0;
 		public static final double kTiltPosD = 0.0;	// MaxMotion 0.0;
-		public static final double kTiltPosMinOutput = -0.85; // MaxMotion 1.0;
-		public static final double kTiltPosMaxOutput = 0.85; // MaxMotion 1.0;
+		public static final double kTiltPosMinOutput = -0.88; // MaxMotion 1.0;
+		public static final double kTiltPosMaxOutput = 0.88; // MaxMotion 1.0;
 
 		public static final double kTiltPosMaxVel = 8000.0;	//30000.0;
 		public static final double kTiltPosMaxAccel = 24000.0;	//40000.0;
@@ -247,7 +251,7 @@ public final class Constants {
 		public static final IdleMode kIntakeIdleMode = IdleMode.kBrake;
 		public static final IdleMode kTiltIdleMode = IdleMode.kBrake;
 
-		public static final double kStopCurrent = 5.0; // amps
+		public static final double kStopCurrent = 4.0; // amps
 		public static final int kLeftPDHChannel = 11; // amps
 		public static final int kRightPDHChannel = 15; // amps
 
@@ -266,7 +270,7 @@ public final class Constants {
 		public static final double INTAKE = 5000.0;
 		public static final double EJECT = -5000.0;
 
-		public static final double kTiltZeroOffset = 0.1599263;
+		public static final double kTiltZeroOffset = 0.4808731;
 		public static final boolean kTiltZeroCentered = true;
 		public static final boolean kTiltMotorInverted = true;
 		public static final boolean kTiltEncoderInverted = true;
@@ -296,11 +300,11 @@ public final class Constants {
 		public static final double kIntakeVelAllowedErr = 1.0;
 
 
-		public static final double kTiltPosP = 0.019;	//01; // MaxMotion 0.005;
+		public static final double kTiltPosP = 0.01;	//01; // MaxMotion 0.005;
 		public static final double kTiltPosI = 0.0;	//00001; // MaxMotion 0.0;
 		public static final double kTiltPosD = 0.0; // MaxMotion 0.02;
-		public static final double kTiltPosMinOutput = -0.5; // MaxMotion 1.0;
-		public static final double kTiltPosMaxOutput = 0.5; // MaxMotion 1.0;
+		public static final double kTiltPosMinOutput = -0.6; // MaxMotion 1.0;
+		public static final double kTiltPosMaxOutput = 0.6; // MaxMotion 1.0;
 
 		public static final double kTiltPosMaxVel = 10000.0;
 		public static final double kTiltPosMaxAccel = 30000.0;
@@ -342,14 +346,15 @@ public final class Constants {
 				* kStage3perStage1;
 		public static final double kLiftVelocityFactor = kLiftPostionFactor / 60.0;
 
-		public static final double kPosP = 0.055;	// maxmotion 0.1;
-		public static final double kPosI = 0.00001;	// maxmotion 0.0;
-		public static final double kPosD = 0.0;	// maxmotion 0.0022;
-		public static final double kPosMinOutput = -0.5;	// maxmotion -1.0;
-		public static final double kPosMaxOutput = 0.5; // maxmotion 1.0;
+		public static final double kPosP = 0.1;	//0.055;	// maxmotion 0.1;
+		public static final double kPosI = 0.0;	//0.000001;	// maxmotion 0.0;
+		public static final double kPosD = 0.0022;	//0.0;	// maxmotion 0.0022;
+		public static final double kPosMinOutput = -1.0;	//-0.7;	// maxmotion -1.0;
+		public static final double kPosMaxOutput = 1.0;	//0.7; // maxmotion 1.0;
 
-		public static final double kMaxVel = 5500;	//3000.0; //100000
-		public static final double kMaxAccel = 12000; // 17000
+		public static final double kMaxVel = 5500;
+			//3000.0; //100000
+		public static final double kMaxAccel = 10000; //5000 // 12000
 		public static final double kAllowedErr = 0.2;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
@@ -363,19 +368,18 @@ public final class Constants {
 
 		public static final double kTollerance = 0.5; // degrees
 
-		public static final double kLeftZeroOffset = 0.7228662;
+		public static final double kLeftZeroOffset = 0.6643792;
 		public static final boolean kLeftZeroCentered = true;
 		public static final boolean kLeftMotorInverted = true;
 		public static final boolean kLeftEncoderInverted = true;
 
-		public static final double kRightZeroOffset = 0.8273262;
+		public static final double kRightZeroOffset = 0.4019657;
 		public static final boolean kRightZeroCentered = true;
-		public static final boolean kRightMotorInverted = true;
-		public static final boolean kRightEncoderInverted = true;
+		public static final boolean kRightMotorInverted = false;
+		public static final boolean kRightEncoderInverted = false;
 
 		public static final boolean kLeftEncodeWrapping = false;
 		public static final boolean kRightEncodeWrapping = false;
-
 
 		public static final double kTiltPositionFactor = 360; // 1.0 / (GearBox.Max9 * GearBox.Max5 * GearBox.Max5) *
 																				// 360.0; // degrees
@@ -384,15 +388,15 @@ public final class Constants {
 		// public static final double kTiltPosP = 0.002;
 		// public static final double kTiltPosI = 0.000001;
 		// public static final double kTiltPosD = 0.0;
-		
-		public static final double kPosP = 0.01;	// maxmotion 0.025;
+
+		public static final double kPosP = 0.01; // maxmotion 0.025;
 		public static final double kPosI = 0.0; // maxmotion 0.0
 		public static final double kPosD = 0.0; // maxmotion 0.0
 		public static final double kPosMinOutput = -0.5; // maxmotion -1.0
 		public static final double kPosMaxOutput = 0.5; // maxmotion 1.0
 
-		public static final double kPosMaxVel = 100000.0;	//5000.0
-		public static final double kPosMaxAccel = 40000.0;	//5000.0
+		public static final double kPosMaxVel = 100000.0; //5000.0
+		public static final double kPosMaxAccel = 40000.0; //5000.0
 		public static final double kPosAllowedErr = 0.1;
 
 		public static final IdleMode kLeftIdleMode = IdleMode.kBrake;
@@ -400,5 +404,24 @@ public final class Constants {
 
 		public static final int kLeftCurrentLimit = 50; // amps
 		public static final int kRightCurrentLimit = 50; // amps
+	}
+	
+	public static final class Vision {
+		public static final double kXP = 0.6;
+		public static final double kXI = 0.0;
+		public static final double kXD = 0.0;
+		public static final double kXTollerance = 0.1;
+
+		public static final double kYP = 0.6;
+		public static final double kYI = 0.0;
+		public static final double kYD = 0.0;
+		public static final double kYTollerance = 0.1;
+
+		public static final double kRP = 0.03;
+		public static final double kRI = 0.0;
+		public static final double kRD = 0.0;
+		public static final double kRTollerance = 0.1;
+		public static final double kRMin = 0.0;
+		public static final double kRMax = 360.0;
 	}
 }

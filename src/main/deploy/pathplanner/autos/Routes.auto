@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "resetPose"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "resetOdo"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ExtractTrue"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "1-Leave-C"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2-EA-AB"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5-P"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": null,
+  "choreoAuto": false
+}
